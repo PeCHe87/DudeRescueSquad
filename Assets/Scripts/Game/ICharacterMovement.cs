@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using static DudeResqueSquad.Character;
 
 namespace DudeResqueSquad
@@ -11,5 +12,7 @@ namespace DudeResqueSquad
 
         float Horizontal();
         float Vertical();
+
+        Vector3 Direction();
     }
 }

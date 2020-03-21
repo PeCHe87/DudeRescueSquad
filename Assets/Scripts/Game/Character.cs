@@ -79,15 +79,16 @@ namespace DudeResqueSquad
 
             // Do movement
             Vector3 currentPosition = _characterTransform.position;
-            float x = _movement.Horizontal();
-            float y = _movement.Vertical();
+            //float x = _movement.Horizontal();
+            //float y = _movement.Vertical();
 
-            _targetDirection = new Vector3(x, 0, y).normalized;
+            var dir = _movement.Direction();
+            _targetDirection = new Vector3(dir.x, 0, dir.y).normalized; //new Vector3(x, 0, y).normalized;
 
             if (_canDebug)
             {
                 Debug.DrawRay(currentPosition, _targetDirection * _speedMovement, Color.yellow);
-                Debug.Log(string.Format("[{0},{1}]", x, y));
+                //Debug.Log(string.Format("[{0},{1}]", x, y));
             }
 
             _rotator.Rotate(_targetDirection);
