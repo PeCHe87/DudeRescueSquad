@@ -19,11 +19,21 @@ namespace DudeResqueSquad
 
         #region Inspector properties
 
+        [SerializeField] private PlayerData _data = null;
         [SerializeField] private float _speedMovement = 0;
         [SerializeField] private float _maxDistanceDelta = 2;
         [SerializeField] private RotateTowardsTarget _rotator = null;
         [SerializeField] private float _delayAttackTime = 1;
         [SerializeField] private bool _canDebug = false;
+
+        [Header("Item equipped")]
+        [SerializeField] private Transform _weaponPivot = null;
+
+        #endregion
+
+        #region Public properties
+
+        public PlayerData Data { get => _data; }
 
         #endregion
 
@@ -35,8 +45,11 @@ namespace DudeResqueSquad
         private Vector3 _targetDirection = Vector3.zero;
         private bool _isMoving = false;
         private bool _isAttacking = false;
+        private GameObject _currentItemEquipped = null;
 
         #endregion
+
+        #region Private methods
 
         private void Awake()
         {
@@ -52,6 +65,8 @@ namespace DudeResqueSquad
             }
 
             _state = GetComponent<CharacterState>();
+
+            Item.OnCollect += CollectItem;
         }
 
         private void Start()
@@ -67,6 +82,8 @@ namespace DudeResqueSquad
                 _movement.OnStartMoving -= StartMoving;
                 _movement.OnStopMoving -= StopMoving;
             }
+
+            Item.OnCollect -= CollectItem;
         }
 
         private void Update()
@@ -130,5 +147,50 @@ namespace DudeResqueSquad
             else
                 _state.SetState(CharacterState.CharacterStates.IDLE);
         }
+
+        private void EquipItem(ItemData itemData)
+        {
+            if (itemData.Type == Enums.ItemType.WEAPON)
+            {
+                // Unequip current item if there was another one equipped
+                if (_data.CurrentItem != null)
+                    UnequipItem(_data.CurrentItem);
+
+                // Set new current item equipped
+                _data.CurrentItem = itemData;
+
+                // Create new instance of the item equipped
+                _currentItemEquipped = Instantiate(itemData.PrefabEquipable);
+
+                // Positionate it at the right pivot
+                _currentItemEquipped.transform.SetParent(_weaponPivot);
+                _currentItemEquipped.transform.localPosition = Vector3.zero;
+                _currentItemEquipped.transform.localRotation = Quaternion.identity;
+            }
+        }
+
+        private void UnequipItem(ItemData currentItem)
+        {
+            Destroy(_currentItemEquipped);
+
+            _data.CurrentItem = null;
+        }
+
+        #endregion
+
+        #region Event methods
+
+        private void CollectItem(ItemData item, string playerId)
+        {
+            if (_data == null)
+                return;
+
+            if (!_data.UID.Equals(playerId))
+                return;
+
+            EquipItem(item);
+        }
+
+        #endregion
     }
 }

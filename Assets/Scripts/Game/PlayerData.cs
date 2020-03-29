@@ -2,8 +2,10 @@
 
 namespace DudeResqueSquad
 {
-    public class PlayerData : MonoBehaviour
+    [CreateAssetMenu(fileName = "PlayerData", menuName = "Data/Player Data")]
+    public class PlayerData : ScriptableObject
     {
-        [SerializeField] private Item _currentItem;
+        public string UID;
+        public ItemData CurrentItem;
     }
 }

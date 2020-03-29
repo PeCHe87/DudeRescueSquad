@@ -7,5 +7,9 @@ namespace DudeResqueSquad
     {
         public string UID;
         public string DisplayName;
+        public Enums.ItemType Type;
+
+        [Header("Equip properties")]
+        public GameObject PrefabEquipable;
     }
 }

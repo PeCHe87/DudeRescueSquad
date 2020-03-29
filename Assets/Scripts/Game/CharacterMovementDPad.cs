@@ -1,22 +1,25 @@
 ﻿using System;
 using UnityEngine;
 using static DudeResqueSquad.Character;
+using static DudeResqueSquad.Enums;
 
 namespace DudeResqueSquad
 {
     public class CharacterMovementDPad : MonoBehaviour, ICharacterMovement
     {
+        #region Events
+
         public static Action<Vector2> OnStartDrag;
         public static Action<DragInfo> OnDrag;
         public static Action<Vector2> OnTouch;
         public static Action OnEndDrag;
 
-        public enum SwipeType { NONE, UP, DOWN, LEFT, RIGHT }
+        #endregion
 
         [Serializable]
         public struct DragInfo
         {
-            public SwipeType swipeType;
+            public Enums.SwipeType swipeType;
             public Vector2 startPosition;
             public Vector2 endPosition;
             public Vector3 direction;
@@ -40,7 +43,6 @@ namespace DudeResqueSquad
 
         private FixedJoystick _joystick = null;
         private bool _isMoving = false;
-        private bool _touchStarted = false;
         private int _framesSinceTouchStarted = 0;
         private Vector2 _touchUp = Vector3.zero;
         private Vector2 _touchDown = Vector2.zero;
@@ -50,92 +52,23 @@ namespace DudeResqueSquad
 
         #endregion
 
+        #region Public properties
+
         public DragInfo CurrentDragInfo { get => _currentDragInfo; }
+
+        #endregion
 
         #region Private methods
 
         private void Awake()
         {
-            _joystick = FindObjectOfType<FixedJoystick>();
-
-            if (_joystick == null)
-                Debug.LogError("Don't find any Joystick on Scene");
-
             _currentDragInfo = new DragInfo();
         }
 
         private void Update()
         {
             ControlTouches();
-
-            /*
-            if (_joystick == null)
-                return;
-
-            float x = _joystick.Horizontal;
-            float y = _joystick.Vertical;
-
-            if (Mathf.Abs(x) <= _joystick.DeadZone && Mathf.Abs(y) <= _joystick.DeadZone)
-            {
-                bool tapDetected = DetectTap();
-
-                if (tapDetected)
-                    DoAction();
-                else if (_isMoving)
-                   StopMoving();
-
-                return;
-            }
-            else if (_touchStarted) // Reset checking of touch for action
-            {
-                _touchStarted = false;
-                _framesSinceTouchStarted = 0;
-                Debug.Log("Cancel Touch checking");
-            }
-
-            Move(x, y);
-            */
         }
-
-        /*private bool DetectTap()
-        {
-            // Make checking
-            int length = Input.touches.Length;
-
-            if (_touchStarted)
-                _framesSinceTouchStarted++;
-
-            if (length > 0)
-            {
-                var touch = Input.touches[0];
-
-                if (touch.phase == TouchPhase.Began)
-                {
-                    _touchStarted = true;
-                    _framesSinceTouchStarted = 0;
-                    Debug.Log("Touch <color=green><b>BEGAN</b></color>");
-                }
-                else if (touch.phase == TouchPhase.Moved)
-                {
-                    if (_touchStarted)
-                        Debug.Log("Touch <color=red><b>MOVED</b></color>");
-
-                    _touchStarted = false;
-                }
-                else if (touch.phase == TouchPhase.Ended && _touchStarted)
-                {
-                    _touchStarted = false;
-
-                    if (_framesSinceTouchStarted <= 30)
-                    {
-                        Debug.Log("Touch <b>ENDED</b> frames: " + _framesSinceTouchStarted);
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }*/
 
         private void ControlTouches()
         {
