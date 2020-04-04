@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,6 +6,13 @@ namespace DudeResqueSquad
 {
     public class ItemProximityIndicator : MonoBehaviour
     {
+        #region Events
+
+        public Action OnStartDetection;
+        public Action OnStopDetection;
+
+        #endregion
+
         [SerializeField] private Canvas _uiproximity = null;
 
         private const string _playerTag = "Player";
@@ -39,7 +46,11 @@ namespace DudeResqueSquad
 
                 // First character near show the UI
                 if (_charactersNear.Count == 1)
+                {
                     _uiproximity.enabled = true;
+
+                    OnStartDetection?.Invoke();
+                }
             }
         }
 
@@ -63,7 +74,11 @@ namespace DudeResqueSquad
 
                 // If there isn't any character near hide the UI
                 if (_charactersNear.Count == 0)
+                {
                     _uiproximity.enabled = false;
+
+                    OnStopDetection?.Invoke();
+                }
             }
         }
     }
