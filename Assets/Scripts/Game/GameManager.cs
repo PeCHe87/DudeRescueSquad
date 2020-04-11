@@ -5,7 +5,14 @@ namespace DudeResqueSquad
 {
     public class GameManager : MonoBehaviour
     {
+        #region Events
+
         public Action OnGameStarted;
+        public Action<Enums.KeyType, PlayerData> OnPlayerCollectKey;
+        public Action<ItemWeaponData, PlayerData> OnPlayerCollectWeapon;
+        public Action<string, int, PlayerData> OnDoorOpened;
+
+        #endregion
 
         public static GameManager Instance;
 

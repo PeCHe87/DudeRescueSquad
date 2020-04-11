@@ -9,10 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ed05815b7a3549540b980d54fab72dfb, type: 3}
-  m_Name: ItemData_Bear
+  m_Script: {fileID: 11500000, guid: 609d76608afb1ce479b1ca2d750139ba, type: 3}
+  m_Name: Key_Special
   m_EditorClassIdentifier: 
-  UID: item_bear
-  DisplayName: Little Bear
-  Type: 2
+  UID: key_special
+  DisplayName: Special Key
+  Type: 3
   PrefabEquipable: {fileID: 0}
+  KeyType: 2

@@ -72,6 +72,9 @@ namespace DudeResqueSquad
         private void Start()
         {
             _state.SetState(CharacterState.CharacterStates.IDLE);
+
+            if (_data != null)
+                _data.Clean();
         }
 
         private void OnDestroy()
@@ -96,17 +99,12 @@ namespace DudeResqueSquad
 
             // Do movement
             Vector3 currentPosition = _characterTransform.position;
-            //float x = _movement.Horizontal();
-            //float y = _movement.Vertical();
 
             var dir = _movement.Direction();
-            _targetDirection = new Vector3(dir.x, 0, dir.y).normalized; //new Vector3(x, 0, y).normalized;
+            _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
 
             if (_canDebug)
-            {
                 Debug.DrawRay(currentPosition, _targetDirection * _speedMovement, Color.yellow);
-                //Debug.Log(string.Format("[{0},{1}]", x, y));
-            }
 
             _rotator.Rotate(_targetDirection);
 
@@ -153,11 +151,11 @@ namespace DudeResqueSquad
             if (itemData.Type == Enums.ItemType.WEAPON)
             {
                 // Unequip current item if there was another one equipped
-                if (_data.CurrentItem != null)
-                    UnequipItem(_data.CurrentItem);
+                if (_data.CurrentWeaponEquipped != null)
+                    UnequipItem(_data.CurrentWeaponEquipped);
 
                 // Set new current item equipped
-                _data.CurrentItem = itemData;
+                _data.CurrentWeaponEquipped = (ItemWeaponData)itemData;
 
                 // Create new instance of the item equipped
                 _currentItemEquipped = Instantiate(itemData.PrefabEquipable);
@@ -166,6 +164,23 @@ namespace DudeResqueSquad
                 _currentItemEquipped.transform.SetParent(_weaponPivot);
                 _currentItemEquipped.transform.localPosition = Vector3.zero;
                 _currentItemEquipped.transform.localRotation = Quaternion.identity;
+
+                GameManager.Instance.OnPlayerCollectWeapon?.Invoke(_data.CurrentWeaponEquipped, _data);
+            }
+            else if (itemData.Type == Enums.ItemType.KEY)
+            {
+                ItemKeyData keyData = (ItemKeyData)itemData;
+
+                if (keyData.KeyType == Enums.KeyType.REGULAR)
+                    _data.RegularKeys++;
+                else if (keyData.KeyType == Enums.KeyType.SPECIAL)
+                    _data.SpecialKeys++;
+                else if (keyData.KeyType == Enums.KeyType.SKELETON)
+                    _data.SkeletonKeys++;
+
+                Debug.Log($"Player: '{_data.UID}' collects a <b><color=green>key</color></b> of type: '{keyData.KeyType}'");
+
+                GameManager.Instance.OnPlayerCollectKey?.Invoke(keyData.KeyType, _data);
             }
         }
 
@@ -173,7 +188,7 @@ namespace DudeResqueSquad
         {
             Destroy(_currentItemEquipped);
 
-            _data.CurrentItem = null;
+            _data.CurrentWeaponEquipped = null;
         }
 
         #endregion
