@@ -6,5 +6,8 @@ namespace DudeResqueSquad
     public class ItemWeaponData : ItemData
     {
         public Sprite PreviewPic;
+        public Enums.WeaponAttackType AttackType;
+        public float Damage;
+        public float FireRate;
     }
 }

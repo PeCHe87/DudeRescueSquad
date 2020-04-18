@@ -5,17 +5,7 @@ namespace DudeResqueSquad
 {
     public class Character : MonoBehaviour
     {
-        public class MovementEventArgs : EventArgs
-        {
-            public float x;
-            public float y;
-
-            public MovementEventArgs(float x, float y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
+        public Action OnEquipItem;
 
         #region Inspector properties
 
@@ -145,9 +135,7 @@ namespace DudeResqueSquad
 
         private void MoveWithForce()
         {
-            UpdatePhysicsMovement();
-
-            //ClampOnMaxSpeed();            
+            UpdatePhysicsMovement();            
         }
 
         private void UpdatePhysicsMovement()
@@ -178,7 +166,7 @@ namespace DudeResqueSquad
                 StopForceMovement();
         }
 
-        private void StartMoving(object sender, MovementEventArgs e)
+        private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)
         {
             // Update state
             _state.SetState(CharacterState.CharacterStates.RUNNING);
@@ -265,6 +253,8 @@ namespace DudeResqueSquad
                 return;
 
             EquipItem(item);
+
+            OnEquipItem?.Invoke();
         }
 
         #endregion

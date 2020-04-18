@@ -7,7 +7,7 @@ namespace DudeResqueSquad
     public interface ICharacterMovement
     {
         event EventHandler OnDoAction;
-        event EventHandler<MovementEventArgs> OnStartMoving;
+        event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         event EventHandler OnStopMoving;
 
         float Horizontal();

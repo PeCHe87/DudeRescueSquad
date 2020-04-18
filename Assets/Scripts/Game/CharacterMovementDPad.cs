@@ -200,7 +200,7 @@ namespace DudeResqueSquad
                    horizontalDistance > _minDistanceForSwipe;
         }
 
-        private void StartMoving(MovementEventArgs e)
+        private void StartMoving(CustomEventArgs.MovementEventArgs e)
         {
             _isMoving = true;
 
@@ -222,7 +222,7 @@ namespace DudeResqueSquad
         private void Move(float x, float y)
         {
             if (!_isMoving)
-                StartMoving(new MovementEventArgs(x, y));
+                StartMoving(new CustomEventArgs.MovementEventArgs(x, y));
         }
 
         #endregion
@@ -230,7 +230,7 @@ namespace DudeResqueSquad
         #region ICharacterMovement Implementation
 
         public event EventHandler OnDoAction;
-        public event EventHandler<MovementEventArgs> OnStartMoving;
+        public event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         public event EventHandler OnStopMoving;
 
         public float Horizontal()
