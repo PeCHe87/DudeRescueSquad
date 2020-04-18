@@ -5,9 +5,7 @@ namespace DudeResqueSquad
 {
     public class Door : MonoBehaviour
     {
-        [SerializeField] private string _uid = string.Empty;  // TODO: this will be replaced with DoorData
-        [SerializeField] private int _keysRequired = 0;  // TODO: this will be replaced with DoorData
-        [SerializeField] private Enums.KeyType _keyType = Enums.KeyType.NONE;  // TODO: this will be replaced with DoorData
+        [SerializeField] private DoorData _data = null;
         [SerializeField] private BoxCollider _blockCollider = null;
         [SerializeField] private GameObject _art = null;
 
@@ -35,14 +33,14 @@ namespace DudeResqueSquad
 
                 int keys = 0;
 
-                if (_keyType == Enums.KeyType.REGULAR)
+                if (_data.KeyType == Enums.KeyType.REGULAR)
                     keys = (playerData != null) ? playerData.RegularKeys : 0;
-                else if (_keyType == Enums.KeyType.SPECIAL)
+                else if (_data.KeyType == Enums.KeyType.SPECIAL)
                     keys = (playerData != null) ? playerData.SpecialKeys : 0;
-                else if (_keyType == Enums.KeyType.SKELETON)
+                else if (_data.KeyType == Enums.KeyType.SKELETON)
                     keys = (playerData != null) ? playerData.SkeletonKeys : 0;
 
-                if (keys >= _keysRequired)
+                if (keys >= _data.KeysRequired)
                     OpenDoor(playerData);
                 else
                     ShowHowToOpen();
@@ -53,17 +51,17 @@ namespace DudeResqueSquad
         {
             // TODO: invokes a method to show a message on UI floating popup with the amount and type of key required to open it
 
-            Debug.Log($"Close door, you need <b>{_keysRequired}</b> keys of type <color=red><b>'{_keyType}'</b></color>");
+            Debug.Log($"Close door, you need <b>{_data.KeysRequired}</b> keys of type <color=red><b>'{_data.KeyType}'</b></color>");
         }
 
         private void OpenDoor(PlayerData playerData)
         {
-            if (_keyType == Enums.KeyType.REGULAR)
-                playerData.RegularKeys -= _keysRequired;
-            else if (_keyType == Enums.KeyType.SPECIAL)
-                playerData.SpecialKeys -= _keysRequired;
-            else if (_keyType == Enums.KeyType.SKELETON)
-                playerData.SkeletonKeys -= _keysRequired;
+            if (_data.KeyType == Enums.KeyType.REGULAR)
+                playerData.RegularKeys -= _data.KeysRequired;
+            else if (_data.KeyType == Enums.KeyType.SPECIAL)
+                playerData.SpecialKeys -= _data.KeysRequired;
+            else if (_data.KeyType == Enums.KeyType.SKELETON)
+                playerData.SkeletonKeys -= _data.KeysRequired;
 
             _isClosed = false;
 
@@ -71,7 +69,7 @@ namespace DudeResqueSquad
 
             _art.SetActive(false);
 
-            GameManager.Instance.OnDoorOpened?.Invoke(_uid, _keysRequired, playerData);
+            GameManager.Instance.OnDoorOpened?.Invoke(_data.UID, _data.KeysRequired, playerData);
         }
 
         #endregion

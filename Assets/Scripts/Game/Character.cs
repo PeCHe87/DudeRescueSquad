@@ -24,6 +24,11 @@ namespace DudeResqueSquad
         [SerializeField] private float _maxDistanceDelta = 2;
         [SerializeField] private RotateTowardsTarget _rotator = null;
         [SerializeField] private float _delayAttackTime = 1;
+        [SerializeField] private bool _moveTransformMode = false;
+        [SerializeField] private ForceMode _forceMode = ForceMode.Acceleration;
+        [SerializeField] private Vector3 _velocity = Vector3.zero;
+        [SerializeField] private float _velocityStep = 0;
+        [SerializeField] private float _initialSpeedVelocity = 0;
         [SerializeField] private bool _canDebug = false;
 
         [Header("Item equipped")]
@@ -46,6 +51,8 @@ namespace DudeResqueSquad
         private bool _isMoving = false;
         private bool _isAttacking = false;
         private GameObject _currentItemEquipped = null;
+        private Rigidbody _rb = null;
+        private float _currentSpeed = 0;
 
         #endregion
 
@@ -53,6 +60,8 @@ namespace DudeResqueSquad
 
         private void Awake()
         {
+            _rb = GetComponent<Rigidbody>();
+
             _characterTransform = transform;
 
             _movement = GetComponent<ICharacterMovement>();
@@ -108,7 +117,54 @@ namespace DudeResqueSquad
 
             _rotator.Rotate(_targetDirection);
 
+            // Move transform
+            if (_moveTransformMode)
+                MoveTowards();
+        }
+
+        private void FixedUpdate()
+        {
+            _velocity = _rb.velocity;
+
+            if (!_isMoving)
+                return;
+
+            if (_isAttacking)
+                return;
+
+            if (_moveTransformMode)
+                return;
+
+            MoveWithForce();
+        }
+
+        private void MoveTowards()
+        {
             _characterTransform.position = Vector3.MoveTowards(_characterTransform.position, _targetDirection * _speedMovement, _maxDistanceDelta * Time.deltaTime);
+        }
+
+        private void MoveWithForce()
+        {
+            UpdatePhysicsMovement();
+
+            //ClampOnMaxSpeed();            
+        }
+
+        private void UpdatePhysicsMovement()
+        {
+            // Reset velocity at each fixed frame to avoid slippering or skid behaviors on character movement
+            _rb.velocity = Vector3.zero;
+
+            // Current speed increases gradually until reaches max speed allowed
+            _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _speedMovement);
+
+            _rb.AddForce(_targetDirection * _currentSpeed, _forceMode);
+        }
+
+        private void StopForceMovement()
+        {
+            _rb.velocity = Vector3.zero;
+            _currentSpeed = 0;
         }
 
         private void StopMoving(object sender, EventArgs e)
@@ -117,6 +173,9 @@ namespace DudeResqueSquad
                 _state.SetState(CharacterState.CharacterStates.IDLE);
 
             _isMoving = false;
+
+            if (!_moveTransformMode)
+                StopForceMovement();
         }
 
         private void StartMoving(object sender, MovementEventArgs e)
@@ -125,6 +184,8 @@ namespace DudeResqueSquad
             _state.SetState(CharacterState.CharacterStates.RUNNING);
 
             _isMoving = true;
+
+            _currentSpeed = _initialSpeedVelocity;
         }
 
         private void DoAction(object sender, EventArgs e)

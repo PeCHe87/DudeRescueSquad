@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 887580030141920893}
   - component: {fileID: 887580030141920892}
   m_Layer: 0
-  m_Name: Door_Regular
+  m_Name: Door_Skeleton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c7fa4c16fb805f64cb3314294e479b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _data: {fileID: 11400000, guid: 0b3c23106af879548bf72bbb5062efa1, type: 2}
+  _data: {fileID: 11400000, guid: 46a35363a5f30e44e9eb4560205fb095, type: 2}
   _blockCollider: {fileID: 887580030883533902}
   _art: {fileID: 887580030883533896}
 --- !u!65 &887580030141920892
@@ -119,7 +119,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 19dd3d16111c25e4ca31687a07bfec01, type: 2}
+  - {fileID: 2100000, guid: 3a4e2aabdd069e24ba4620120937a493, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
