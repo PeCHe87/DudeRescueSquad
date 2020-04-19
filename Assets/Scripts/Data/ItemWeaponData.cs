@@ -8,6 +8,10 @@ namespace DudeResqueSquad
         public Sprite PreviewPic;
         public Enums.WeaponAttackType AttackType;
         public float Damage;
+        public float DetectionAreaRadius;
+        public float AngleAttackArea;
         public float FireRate;
+        public float AttackDelayTime;
+        public float DelayToApplyDamage;
     }
 }

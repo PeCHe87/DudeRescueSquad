@@ -29,6 +29,7 @@ namespace DudeResqueSquad
         #region Public properties
 
         public PlayerData Data { get => _data; }
+        public CharacterState State { get => _state; set => _state = value; }
 
         #endregion
 
@@ -39,7 +40,6 @@ namespace DudeResqueSquad
         private Transform _characterTransform = null;
         private Vector3 _targetDirection = Vector3.zero;
         private bool _isMoving = false;
-        private bool _isAttacking = false;
         private GameObject _currentItemEquipped = null;
         private Rigidbody _rb = null;
         private float _currentSpeed = 0;
@@ -58,7 +58,6 @@ namespace DudeResqueSquad
 
             if (_movement != null)
             {
-                _movement.OnDoAction += DoAction;
                 _movement.OnStartMoving += StartMoving;
                 _movement.OnStopMoving += StopMoving;
             }
@@ -70,7 +69,7 @@ namespace DudeResqueSquad
 
         private void Start()
         {
-            _state.SetState(CharacterState.CharacterStates.IDLE);
+            _state.SetState(Enums.CharacterStates.IDLE);
 
             if (_data != null)
                 _data.Clean();
@@ -80,7 +79,6 @@ namespace DudeResqueSquad
         {
             if (_movement != null)
             {
-                _movement.OnDoAction -= DoAction;
                 _movement.OnStartMoving -= StartMoving;
                 _movement.OnStopMoving -= StopMoving;
             }
@@ -93,7 +91,7 @@ namespace DudeResqueSquad
             if (!_isMoving)
                 return;
 
-            if (_isAttacking)
+            if (_state.CurrentState == Enums.CharacterStates.ATTACKING)
                 return;
 
             // Do movement
@@ -119,7 +117,7 @@ namespace DudeResqueSquad
             if (!_isMoving)
                 return;
 
-            if (_isAttacking)
+            if (_state.CurrentState == Enums.CharacterStates.ATTACKING)
                 return;
 
             if (_moveTransformMode)
@@ -157,8 +155,8 @@ namespace DudeResqueSquad
 
         private void StopMoving(object sender, EventArgs e)
         {
-            if (!_isAttacking)
-                _state.SetState(CharacterState.CharacterStates.IDLE);
+            if (_state.CurrentState != Enums.CharacterStates.ATTACKING)
+                _state.SetState(Enums.CharacterStates.IDLE);
 
             _isMoving = false;
 
@@ -169,30 +167,19 @@ namespace DudeResqueSquad
         private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)
         {
             // Update state
-            _state.SetState(CharacterState.CharacterStates.RUNNING);
+            _state.SetState(Enums.CharacterStates.RUNNING);
 
             _isMoving = true;
 
             _currentSpeed = _initialSpeedVelocity;
         }
 
-        private void DoAction(object sender, EventArgs e)
+        public void AttackFinished()
         {
-            _state.SetState(CharacterState.CharacterStates.ATTACKING);
-
-            _isAttacking = true;
-
-            Invoke("AttackFinished", _delayAttackTime);
-        }
-
-        private void AttackFinished()
-        {
-            _isAttacking = false;
-
             if (_isMoving)
-                _state.SetState(CharacterState.CharacterStates.RUNNING);
+                _state.SetState(Enums.CharacterStates.RUNNING);
             else
-                _state.SetState(CharacterState.CharacterStates.IDLE);
+                _state.SetState(Enums.CharacterStates.IDLE);
         }
 
         private void EquipItem(ItemData itemData)

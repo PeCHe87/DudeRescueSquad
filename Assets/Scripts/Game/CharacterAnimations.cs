@@ -1,6 +1,4 @@
-﻿using System;
-using UnityEngine;
-using static UnityEngine.CullingGroup;
+﻿using UnityEngine;
 
 namespace DudeResqueSquad
 {
@@ -36,13 +34,13 @@ namespace DudeResqueSquad
                 _characterState.OnChanged -= CharacterStateChanged;
         }
 
-        private void CharacterStateChanged(CharacterState.CharacterStates state)
+        private void CharacterStateChanged(Enums.CharacterStates state)
         {
-            if (state == CharacterState.CharacterStates.IDLE)
+            if (state == Enums.CharacterStates.IDLE)
                 Idle();
-            else if (state == CharacterState.CharacterStates.RUNNING)
+            else if (state == Enums.CharacterStates.RUNNING)
                 Run();
-            else if (state == CharacterState.CharacterStates.ATTACKING)
+            else if (state == Enums.CharacterStates.ATTACKING)
                 Attack();
         }
 

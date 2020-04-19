@@ -22,7 +22,6 @@ namespace DudeResqueSquad
         [SerializeField] private float _delayBetweenDetections = 0;
         [SerializeField] private Transform _nearestTarget = null;
         [SerializeField] private bool _globalRotation = false;
-        [SerializeField] private bool _enabled = false;
 
         #endregion
 
@@ -36,7 +35,7 @@ namespace DudeResqueSquad
         #region Public properties
 
         public float Radius { get => _viewRadius; set => _viewRadius = value; }
-        public float ViewAngle { get => _viewAngle; }
+        public float ViewAngle { get => _viewAngle; set => _viewAngle = value; }
 
         public List<Transform> VisibleTargets { get => _visibleTargets; }
 
@@ -53,9 +52,6 @@ namespace DudeResqueSquad
 
         private void Update()
         {
-            if (!_enabled)
-                return;
-
             if (_timeToDetect > 0)
             {
                 _timeToDetect -= Time.deltaTime;

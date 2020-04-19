@@ -1,5 +1,28 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &2235620054989535046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2234860614106798738}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ebb41b54a1658742b7d52114007c90b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _viewRadius: 3
+  _viewAngle: 75
+  _targetMask:
+    serializedVersion: 2
+    m_Bits: 512
+  _obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  _delayBetweenDetections: 0.25
+  _nearestTarget: {fileID: 0}
+  _globalRotation: 1
 --- !u!1 &2235620054699550798
 GameObject:
   m_ObjectHideFlags: 0
@@ -61,30 +84,6 @@ Transform:
   m_Father: {fileID: 2235620055079876603}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2235620054989535046
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2234860614106798738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ebb41b54a1658742b7d52114007c90b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _viewRadius: 3
-  _viewAngle: 75
-  _targetMask:
-    serializedVersion: 2
-    m_Bits: 512
-  _obstacleMask:
-    serializedVersion: 2
-    m_Bits: 1024
-  _delayBetweenDetections: 0.25
-  _nearestTarget: {fileID: 0}
-  _globalRotation: 1
-  _enabled: 1
 --- !u!1 &2235620055079876580
 GameObject:
   m_ObjectHideFlags: 0
@@ -102,6 +101,7 @@ GameObject:
   - component: {fileID: 2235620055079876604}
   - component: {fileID: 2235620055079876605}
   - component: {fileID: 2235620055079876594}
+  - component: {fileID: 4551482153735301047}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -252,6 +252,19 @@ MonoBehaviour:
   _imgDragDirection: {fileID: 0}
   _directionOffset: 30
   _timeToHideTouch: 1
+--- !u!114 &4551482153735301047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2235620055079876580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9c77d93368a6b4245afbdfd4340763d3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _fov: {fileID: 2235620054989535046}
 --- !u!1001 &2235620053587155973
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -348,16 +361,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: SM_Chr_Homeless_Male_01
       objectReference: {fileID: 0}
-    - target: {fileID: 95208774547029062, guid: 5f12d3436f23d6e4a8e79bba8ca88303,
-        type: 3}
-      propertyPath: m_Controller
-      value: 
-      objectReference: {fileID: 9100000, guid: 158eaa3c300c08247922a7c1723fb80a, type: 2}
-    - target: {fileID: 95208774547029062, guid: 5f12d3436f23d6e4a8e79bba8ca88303,
-        type: 3}
-      propertyPath: m_ApplyRootMotion
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 4000983385670848, guid: 5f12d3436f23d6e4a8e79bba8ca88303, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -402,6 +405,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 95208774547029062, guid: 5f12d3436f23d6e4a8e79bba8ca88303,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 158eaa3c300c08247922a7c1723fb80a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5f12d3436f23d6e4a8e79bba8ca88303, type: 3}
 --- !u!1 &2234860614106798738 stripped

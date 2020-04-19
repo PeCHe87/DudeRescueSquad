@@ -124,6 +124,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _initialHealth: 10
+  _art: {fileID: 8544990690248230386}
 --- !u!65 &4666972386164532245
 BoxCollider:
   m_ObjectHideFlags: 0

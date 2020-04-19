@@ -19,5 +19,9 @@ MonoBehaviour:
     type: 3}
   PreviewPic: {fileID: 21300000, guid: 7acd89982aba5f8479c86ce17007b9c0, type: 3}
   AttackType: 1
-  Damage: 5
+  Damage: 2
+  DetectionAreaRadius: 2
+  AngleAttackArea: 120
   FireRate: 0
+  AttackDelayTime: 0.7
+  DelayToApplyDamage: 0.25

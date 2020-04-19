@@ -5,14 +5,13 @@ namespace DudeResqueSquad
 {
     public class CharacterState : MonoBehaviour
     {
-        public Action<CharacterStates> OnChanged;
+        public Action<Enums.CharacterStates> OnChanged;
 
-        [Serializable]
-        public enum CharacterStates { NONE, IDLE, RUNNING, ATTACKING }
+        [SerializeField] private Enums.CharacterStates _currentState = Enums.CharacterStates.NONE;
 
-        [SerializeField] private CharacterStates _currentState = CharacterStates.NONE;
+        public Enums.CharacterStates CurrentState { get => _currentState; }
 
-        public void SetState(CharacterStates state)
+        public void SetState(Enums.CharacterStates state)
         {
             if (state.Equals(_currentState))
                 return;

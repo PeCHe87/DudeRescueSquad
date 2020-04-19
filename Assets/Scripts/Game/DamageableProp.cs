@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace DudeResqueSquad
@@ -8,10 +6,15 @@ namespace DudeResqueSquad
     public class DamageableProp : MonoBehaviour, IDamageable
     {
         [SerializeField] private float _initialHealth = 0;
+        [SerializeField] private GameObject _art = null;
+
+        private Collider _collider = null;
 
         private void Start()
         {
-            Health = _initialHealth;
+            _collider = GetComponent<Collider>();
+
+            Health = MaxHealth = _initialHealth;
         }
 
         #region IDamageable implementation
@@ -31,7 +34,13 @@ namespace DudeResqueSquad
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
 
             if (Health == 0)
+            {
+                _art.SetActive(false);
+
+                _collider.enabled = false;
+
                 OnDied?.Invoke(this, EventArgs.Empty);
+            }
             else
                 OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(value));
         }
