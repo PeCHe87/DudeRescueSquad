@@ -12,6 +12,7 @@ namespace DudeResqueSquad
         public float AngleAttackArea;
         public float FireRate;
         public float AttackDelayTime;
+        public float ComboDelayTime;
         public float DelayToApplyDamage;
     }
 }

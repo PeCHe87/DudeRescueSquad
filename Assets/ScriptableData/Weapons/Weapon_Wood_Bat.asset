@@ -24,4 +24,5 @@ MonoBehaviour:
   AngleAttackArea: 120
   FireRate: 0
   AttackDelayTime: 0.7
+  ComboDelayTime: 0.4
   DelayToApplyDamage: 0.25

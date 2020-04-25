@@ -7,6 +7,8 @@ namespace DudeResqueSquad
     {
         [SerializeField] private float _initialHealth = 0;
         [SerializeField] private GameObject _art = null;
+        [SerializeField] private GameObject _hitEffect = null;
+        [SerializeField] private Transform _hitPivot = null;
 
         private Collider _collider = null;
 
@@ -15,6 +17,16 @@ namespace DudeResqueSquad
             _collider = GetComponent<Collider>();
 
             Health = MaxHealth = _initialHealth;
+        }
+
+        private void ShowHitEffect()
+        {
+            if (_hitEffect == null)
+                return;
+
+            GameObject hit = Instantiate(_hitEffect, _hitPivot);
+            hit.transform.localPosition = Vector3.zero;
+            hit.transform.SetParent(transform.parent);
         }
 
         #region IDamageable implementation
@@ -32,6 +44,8 @@ namespace DudeResqueSquad
         public void TakeDamage(float value)
         {
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
+
+            ShowHitEffect();
 
             if (Health == 0)
             {

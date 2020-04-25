@@ -13,8 +13,8 @@ namespace DudeResqueSquad
 
         public void SetState(Enums.CharacterStates state)
         {
-            if (state.Equals(_currentState))
-                return;
+            //if (state.Equals(_currentState))
+            //    return;
 
             _currentState = state;
 

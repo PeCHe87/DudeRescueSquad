@@ -138,17 +138,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _data: {fileID: 11400000, guid: 386737ed115cec140b84b07b729953ca, type: 2}
-  _speedMovement: 5
+  _maxSpeedMovement: 4.5
   _maxDistanceDelta: 4
   _rotator: {fileID: 2235620055079876601}
   _delayAttackTime: 0.8
   _moveTransformMode: 0
   _forceMode: 1
   _velocity: {x: 0, y: 0, z: 0}
-  _velocityStep: 1.5
-  _initialSpeedVelocity: 2.5
+  _velocityStep: 0.8
+  _initialSpeedVelocity: 2
   _canDebug: 1
   _weaponPivot: {fileID: 2235620054699550797}
+  _angle: 0
+  _angleThreshold: 45
 --- !u!114 &2235620055079876602
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +220,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 116
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!136 &2235620055079876605
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -229,7 +231,7 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  m_Radius: 0.5
+  m_Radius: 0.3
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}

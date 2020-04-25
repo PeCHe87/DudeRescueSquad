@@ -10,7 +10,7 @@ namespace DudeResqueSquad
         #region Inspector properties
 
         [SerializeField] private PlayerData _data = null;
-        [SerializeField] private float _speedMovement = 0;
+        [SerializeField] private float _maxSpeedMovement = 0;
         [SerializeField] private float _maxDistanceDelta = 2;
         [SerializeField] private RotateTowardsTarget _rotator = null;
         [SerializeField] private float _delayAttackTime = 1;
@@ -19,6 +19,7 @@ namespace DudeResqueSquad
         [SerializeField] private Vector3 _velocity = Vector3.zero;
         [SerializeField] private float _velocityStep = 0;
         [SerializeField] private float _initialSpeedVelocity = 0;
+        [SerializeField] private float _angleThreshold = 30;
         [SerializeField] private bool _canDebug = false;
 
         [Header("Item equipped")]
@@ -43,6 +44,8 @@ namespace DudeResqueSquad
         private GameObject _currentItemEquipped = null;
         private Rigidbody _rb = null;
         private float _currentSpeed = 0;
+        private Vector3 _oldDirection = Vector3.zero;
+        private float _angle = 0;
 
         #endregion
 
@@ -101,7 +104,7 @@ namespace DudeResqueSquad
             _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
 
             if (_canDebug)
-                Debug.DrawRay(currentPosition, _targetDirection * _speedMovement, Color.yellow);
+                Debug.DrawRay(currentPosition, _targetDirection * _maxSpeedMovement, Color.yellow);
 
             _rotator.Rotate(_targetDirection);
 
@@ -123,17 +126,52 @@ namespace DudeResqueSquad
             if (_moveTransformMode)
                 return;
 
-            MoveWithForce();
+            Debug.DrawRay(transform.position, _targetDirection, Color.green);
+            Debug.DrawRay(transform.position, _oldDirection, Color.red);
+
+            //MoveWithForce();
+
+            MoveWithChangeVelocityForce();
+
+            _oldDirection = _targetDirection;
         }
 
         private void MoveTowards()
         {
-            _characterTransform.position = Vector3.MoveTowards(_characterTransform.position, _targetDirection * _speedMovement, _maxDistanceDelta * Time.deltaTime);
+            _characterTransform.position = Vector3.MoveTowards(_characterTransform.position, _targetDirection * _maxSpeedMovement, _maxDistanceDelta * Time.deltaTime);
         }
 
         private void MoveWithForce()
         {
             UpdatePhysicsMovement();            
+        }
+
+        private void MoveWithChangeVelocityForce()
+        {
+            if (_oldDirection != Vector3.zero)
+            {
+                _angle = Vector3.Angle(_targetDirection, _oldDirection);
+
+                if (Mathf.Abs(_angle) > _angleThreshold)
+                {
+                    _currentSpeed = _initialSpeedVelocity;
+                    Debug.Log("Reset current speed");
+                }
+            }
+
+            // Current speed increases gradually until reaches max speed allowed
+            //_currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
+            _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
+
+            _rb.AddForce(_targetDirection * _currentSpeed, ForceMode.VelocityChange);
+
+            CancelMomentum();
+        }
+
+        private void CancelMomentum()
+        {
+            _rb.AddForce(Vector3.right * -_rb.velocity.x, ForceMode.VelocityChange);
+            _rb.AddForce(Vector3.forward * -_rb.velocity.z, ForceMode.VelocityChange);
         }
 
         private void UpdatePhysicsMovement()
@@ -142,7 +180,7 @@ namespace DudeResqueSquad
             _rb.velocity = Vector3.zero;
 
             // Current speed increases gradually until reaches max speed allowed
-            _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _speedMovement);
+            _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
 
             _rb.AddForce(_targetDirection * _currentSpeed, _forceMode);
         }
@@ -162,6 +200,8 @@ namespace DudeResqueSquad
 
             if (!_moveTransformMode)
                 StopForceMovement();
+
+            _oldDirection = Vector3.zero;
         }
 
         private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)
