@@ -7,6 +7,7 @@ namespace DudeResqueSquad
     {
         #region Events
 
+        public static Action<CustomEventArgs.CollectItemEventArgs> OnCollected;
         public static Action<ItemData, string> OnCollect;
 
         #endregion
@@ -49,6 +50,7 @@ namespace DudeResqueSquad
             DestroyIt();
 
             OnCollect?.Invoke(_data, playerId);
+            OnCollected?.Invoke(new CustomEventArgs.CollectItemEventArgs(_data, playerId));
         }
 
         private void DestroyIt()

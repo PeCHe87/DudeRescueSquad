@@ -101,6 +101,10 @@ namespace DudeResqueSquad
 
             Debug.DrawRay(startWorldPosition, info.direction * 2, Color.blue);
 
+            float angle = Vector2.Angle(info.startPosition.normalized, info.direction.normalized);
+            Debug.Log($"Angle to desired direction: {angle}");
+
+
             Vector3 directionPosition = startPosition;
             directionPosition += info.direction * _directionOffset;
             directionPosition.z = 0;

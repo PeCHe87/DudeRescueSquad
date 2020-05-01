@@ -7,6 +7,8 @@ namespace DudeResqueSquad
     {
         public Sprite PreviewPic;
         public Enums.WeaponAttackType AttackType;
+        public float AnimationSpeed;
+        public GameObject AttackEffect;
         public float Damage;
         public float DetectionAreaRadius;
         public float AngleAttackArea;

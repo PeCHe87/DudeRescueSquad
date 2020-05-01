@@ -35,5 +35,17 @@ namespace DudeResqueSquad
                 this.heal = value;
             }
         }
+
+        public class CollectItemEventArgs : EventArgs
+        {
+            public ItemData item;
+            public string playerUID;
+
+            public CollectItemEventArgs(ItemData item, string playerUID)
+            {
+                this.item = item;
+                this.playerUID = playerUID;
+            }
+        }
     }
 }

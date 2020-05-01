@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: MainCharacterAC_Assault_2_Hands
+  m_Controller: {fileID: 9100000, guid: ff6d60a9731aafd499a71737744de680, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: -203655887218126122, guid: 6f12c9b3663e0c54f9bf3bd1453921a9,
+      type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 963ec4a345e3a384aa7f5f144679620b,
+      type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: f35827c99b4b38548a4120b51e293e05,
+      type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 387aeac5b62e5584794fa55d6b299571,
+      type: 3}
+  - m_OriginalClip: {fileID: -203655887218126122, guid: d837dd263eb42fb4ab9cf756e63aea13,
+      type: 3}
+    m_OverrideClip: {fileID: -203655887218126122, guid: 228e2996dfd7e1f46a9793217d96f7fa,
+      type: 3}

@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 198008df6aee4944da02155983ab45e1, type: 3}
-  m_Name: Weapon_Wood_Bat
+  m_Name: Weapon_Shotgun_SM_Wep_Hybrid_04
   m_EditorClassIdentifier: 
-  UID: weapon_wood_bat
-  DisplayName: Wood Bat
+  UID: weapon_shotgun_hybrid_04
+  DisplayName: Shotgun
   Type: 1
-  PrefabEquipable: {fileID: 5279276859514850368, guid: 693787305f0ef01409c5d3ea0f632858,
+  PrefabEquipable: {fileID: 1092074819094010, guid: 412516f9c9f45e24da346463ff73744c,
     type: 3}
   PreviewPic: {fileID: 21300000, guid: 7acd89982aba5f8479c86ce17007b9c0, type: 3}
-  AttackType: 1
-  AnimationSpeed: 3
+  AttackType: 2
+  AnimationSpeed: 1
   AttackEffect: {fileID: 0}
-  Damage: 2
-  DetectionAreaRadius: 2
-  AngleAttackArea: 120
-  FireRate: 0
-  AttackDelayTime: 0.7
+  Damage: 8
+  DetectionAreaRadius: 4
+  AngleAttackArea: 140
+  FireRate: 2
+  AttackDelayTime: 2
   ComboDelayTime: 0.5
-  DelayToApplyDamage: 0.3
+  DelayToApplyDamage: 1.8

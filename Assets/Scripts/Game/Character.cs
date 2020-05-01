@@ -21,6 +21,7 @@ namespace DudeResqueSquad
         [SerializeField] private float _initialSpeedVelocity = 0;
         [SerializeField] private float _angleThreshold = 30;
         [SerializeField] private bool _canDebug = false;
+        [SerializeField] private int _maxFixedUpdatesPerFrame = 5;
 
         [Header("Item equipped")]
         [SerializeField] private Transform _weaponPivot = null;
@@ -46,6 +47,7 @@ namespace DudeResqueSquad
         private float _currentSpeed = 0;
         private Vector3 _oldDirection = Vector3.zero;
         private float _angle = 0;
+        private int _fixedUpdateFrames = 0;
 
         #endregion
 
@@ -75,7 +77,14 @@ namespace DudeResqueSquad
             _state.SetState(Enums.CharacterStates.IDLE);
 
             if (_data != null)
+            {
                 _data.Clean();
+
+                var characterAnimations = GetComponent<CharacterAnimations>();
+
+                if (characterAnimations != null)
+                    characterAnimations.Init(_data);
+            }
         }
 
         private void OnDestroy()
@@ -103,6 +112,8 @@ namespace DudeResqueSquad
             var dir = _movement.Direction();
             _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
 
+            // TODO: Clamp direction
+
             if (_canDebug)
                 Debug.DrawRay(currentPosition, _targetDirection * _maxSpeedMovement, Color.yellow);
 
@@ -113,8 +124,21 @@ namespace DudeResqueSquad
                 MoveTowards();
         }
 
+        private void LateUpdate()
+        {
+            _fixedUpdateFrames = 0;
+            _oldDirection = _targetDirection;
+        }
+
         private void FixedUpdate()
         {
+            _fixedUpdateFrames++;
+
+            Debug.Log($"Fixed update frames: {_fixedUpdateFrames}");
+
+            if (_fixedUpdateFrames >= _maxFixedUpdatesPerFrame)
+                return;
+
             _velocity = _rb.velocity;
 
             if (!_isMoving)
@@ -126,6 +150,9 @@ namespace DudeResqueSquad
             if (_moveTransformMode)
                 return;
 
+            var dir = _movement.Direction();
+            _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
+
             Debug.DrawRay(transform.position, _targetDirection, Color.green);
             Debug.DrawRay(transform.position, _oldDirection, Color.red);
 
@@ -133,7 +160,7 @@ namespace DudeResqueSquad
 
             MoveWithChangeVelocityForce();
 
-            _oldDirection = _targetDirection;
+            //_oldDirection = _targetDirection;
         }
 
         private void MoveTowards()
@@ -201,7 +228,9 @@ namespace DudeResqueSquad
             if (!_moveTransformMode)
                 StopForceMovement();
 
+            _targetDirection = Vector3.zero;
             _oldDirection = Vector3.zero;
+            _fixedUpdateFrames = 0;
         }
 
         private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)
@@ -237,9 +266,11 @@ namespace DudeResqueSquad
                 _currentItemEquipped = Instantiate(itemData.PrefabEquipable);
 
                 // Positionate it at the right pivot
+                var localPos = _currentItemEquipped.transform.localPosition;
+                var localRot = _currentItemEquipped.transform.localRotation;
                 _currentItemEquipped.transform.SetParent(_weaponPivot);
-                _currentItemEquipped.transform.localPosition = Vector3.zero;
-                _currentItemEquipped.transform.localRotation = Quaternion.identity;
+                _currentItemEquipped.transform.localPosition = localPos;
+                _currentItemEquipped.transform.localRotation = localRot;
 
                 GameManager.Instance.OnPlayerCollectWeapon?.Invoke(_data.CurrentWeaponEquipped, _data);
             }
