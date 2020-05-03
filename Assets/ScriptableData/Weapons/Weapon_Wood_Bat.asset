@@ -19,7 +19,7 @@ MonoBehaviour:
     type: 3}
   PreviewPic: {fileID: 21300000, guid: 7acd89982aba5f8479c86ce17007b9c0, type: 3}
   AttackType: 1
-  AnimationSpeed: 3
+  AnimationSpeed: 5
   AttackEffect: {fileID: 0}
   Damage: 2
   DetectionAreaRadius: 2

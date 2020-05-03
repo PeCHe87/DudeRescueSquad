@@ -22,9 +22,9 @@ MonoBehaviour:
   AnimationSpeed: 1
   AttackEffect: {fileID: 0}
   Damage: 8
-  DetectionAreaRadius: 4
+  DetectionAreaRadius: 6
   AngleAttackArea: 140
   FireRate: 2
-  AttackDelayTime: 2
+  AttackDelayTime: 1
   ComboDelayTime: 0.5
-  DelayToApplyDamage: 1.8
+  DelayToApplyDamage: 0.9

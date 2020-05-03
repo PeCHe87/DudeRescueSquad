@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4654499761512070}
   - component: {fileID: 33006174838482836}
   - component: {fileID: 23476011139662758}
+  - component: {fileID: -5085884936955240817}
   m_Layer: 0
   m_Name: Weapon_Shotgun_SM_Wep_Hybrid_04
   m_TagString: Untagged
@@ -81,6 +82,20 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!114 &-5085884936955240817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1092074819094010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b5452e00f2bc57418e883966f5e6c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _isEnabled: 0
+  _leftHandPivot: {fileID: 0}
 --- !u!1 &1110461034046764
 GameObject:
   m_ObjectHideFlags: 0

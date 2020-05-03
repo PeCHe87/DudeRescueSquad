@@ -22,9 +22,11 @@ namespace DudeResqueSquad
         [SerializeField] private float _angleThreshold = 30;
         [SerializeField] private bool _canDebug = false;
         [SerializeField] private int _maxFixedUpdatesPerFrame = 5;
+        [SerializeField] private bool _maxSpeedConstant = true;
 
         [Header("Item equipped")]
         [SerializeField] private Transform _weaponPivot = null;
+        [SerializeField] private Transform _leftHandPivot = null;
 
         #endregion
 
@@ -120,8 +122,8 @@ namespace DudeResqueSquad
             _rotator.Rotate(_targetDirection);
 
             // Move transform
-            if (_moveTransformMode)
-                MoveTowards();
+            //if (_moveTransformMode)
+            //    MoveTowards();
         }
 
         private void LateUpdate()
@@ -156,11 +158,7 @@ namespace DudeResqueSquad
             Debug.DrawRay(transform.position, _targetDirection, Color.green);
             Debug.DrawRay(transform.position, _oldDirection, Color.red);
 
-            //MoveWithForce();
-
             MoveWithChangeVelocityForce();
-
-            //_oldDirection = _targetDirection;
         }
 
         private void MoveTowards()
@@ -175,24 +173,32 @@ namespace DudeResqueSquad
 
         private void MoveWithChangeVelocityForce()
         {
-            if (_oldDirection != Vector3.zero)
+            if (_maxSpeedConstant)
             {
-                _angle = Vector3.Angle(_targetDirection, _oldDirection);
+                _rb.velocity = Vector3.zero;
 
-                if (Mathf.Abs(_angle) > _angleThreshold)
-                {
-                    _currentSpeed = _initialSpeedVelocity;
-                    Debug.Log("Reset current speed");
-                }
+                _rb.AddForce(_targetDirection * _maxSpeedMovement, ForceMode.VelocityChange);
             }
+            else
+            {
+                if (_oldDirection != Vector3.zero)
+                {
+                    _angle = Vector3.Angle(_targetDirection, _oldDirection);
 
-            // Current speed increases gradually until reaches max speed allowed
-            //_currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
-            _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
+                    if (Mathf.Abs(_angle) > _angleThreshold)
+                    {
+                        _currentSpeed = _initialSpeedVelocity;
+                        Debug.Log("Reset current speed");
+                    }
+                }
 
-            _rb.AddForce(_targetDirection * _currentSpeed, ForceMode.VelocityChange);
+                // Current speed increases gradually until reaches max speed allowed
+                _currentSpeed = Mathf.Clamp(_currentSpeed + (_velocityStep * Time.fixedDeltaTime), 0, _maxSpeedMovement);
 
-            CancelMomentum();
+                _rb.AddForce(_targetDirection * _currentSpeed, ForceMode.VelocityChange);
+
+                CancelMomentum();
+            }
         }
 
         private void CancelMomentum()
@@ -271,6 +277,15 @@ namespace DudeResqueSquad
                 _currentItemEquipped.transform.SetParent(_weaponPivot);
                 _currentItemEquipped.transform.localPosition = localPos;
                 _currentItemEquipped.transform.localRotation = localRot;
+
+                // Check if it is a two hands assault weapon
+                if (_data.CurrentWeaponEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+                {
+                    var twoHandsFollower = _currentItemEquipped.GetComponent<TwoHandsWeaponFollower>();
+
+                    if (twoHandsFollower != null)
+                        twoHandsFollower.Init(_leftHandPivot);
+                }
 
                 GameManager.Instance.OnPlayerCollectWeapon?.Invoke(_data.CurrentWeaponEquipped, _data);
             }

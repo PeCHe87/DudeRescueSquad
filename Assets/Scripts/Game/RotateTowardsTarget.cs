@@ -5,6 +5,7 @@ namespace DudeResqueSquad
     public class RotateTowardsTarget : MonoBehaviour
     {
         [SerializeField] private Transform _transform = null;
+        [SerializeField] private float _speed = 0;
 
         //private Vector3 _target = Vector3.zero;
         //private bool _isRotating = false;
@@ -39,9 +40,10 @@ namespace DudeResqueSquad
 
         public void Rotate(Vector3 target)
         {
-            //_target = target;
-            //_isRotating = true;
-            _transform.rotation = Quaternion.LookRotation(target, Vector3.up);
+            //_transform.rotation = Quaternion.LookRotation(target, Vector3.up);
+
+            var newDirection = Quaternion.LookRotation(target, Vector3.up);
+            _transform.rotation = newDirection; //Quaternion.Slerp(_transform.rotation, newDirection, Time.deltaTime * _speed );
         }
     }
 }
