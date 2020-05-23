@@ -7,9 +7,12 @@ namespace DudeResqueSquad
 {
     public class PlayerAttackController : MonoBehaviour
     {
+        public Action<CustomEventArgs.ShotEventArgs> OnShot;
+
         #region Inspector properties
 
         [SerializeField] private FieldOfView _fov = null;
+        [SerializeField] private bool _canDebug = false;
 
         #endregion
 
@@ -76,7 +79,7 @@ namespace DudeResqueSquad
             _fov.enabled = true;
         }
 
-        private void Attack(object sender, EventArgs e)
+        private void Attack(object sender, CustomEventArgs.TouchEventArgs e)
         {
             if (_fov == null)
                 return;
@@ -96,7 +99,8 @@ namespace DudeResqueSquad
             if (_attackInProgress)
                 return;
 
-            Debug.Log("<color=green>Attack!</color>");
+            if (_canDebug)
+                Debug.Log("<color=green>Attack!</color>");
 
             // Check weapon equipped to cause damage based on its configuration
             _character.State.SetState(Enums.CharacterStates.ATTACKING);
@@ -109,9 +113,36 @@ namespace DudeResqueSquad
 
             float delayAttackTime = _currentItemEquipped.AttackDelayTime;
 
-            Invoke("AttackFinished", delayAttackTime);
+            // Rotates toward the nearest target
+            RotateTowardsNearestTarget();
 
-            StartCoroutine(ApplyDamage());
+            // If it is an assault attack then communicate that to anyone interested
+            if (_currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND || _currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+            {
+                OnShot?.Invoke(new CustomEventArgs.ShotEventArgs(_currentItemEquipped, _character.Data.UID));
+
+                // Delay to rotate again if target was moving
+                Invoke("RotateTowardsNearestTarget", _currentItemEquipped.DelayFireEffect - 0.05f);
+            }
+            else
+            {
+                StartCoroutine(ApplyDamage());
+            }
+
+            Invoke("AttackFinished", delayAttackTime);
+        }
+
+        private void RotateTowardsNearestTarget()
+        {
+            var nearestTarget = _fov.NearestTarget;
+
+            if (nearestTarget == null)
+                return;
+
+            Vector3 direction = nearestTarget.position - transform.position;
+            direction.Normalize();
+            Vector3 attackTargetDirection = new Vector3(direction.x, 0, direction.z).normalized;
+            _character.Rotator.Rotate(attackTargetDirection);
         }
 
         private void AttackFinished()
@@ -186,7 +217,8 @@ namespace DudeResqueSquad
                     if (target.IsDead)
                         continue;
 
-                    Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
+                    if (_canDebug)
+                        Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
 
                     target.TakeDamage(damage);
 

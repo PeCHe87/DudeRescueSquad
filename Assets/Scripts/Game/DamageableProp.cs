@@ -12,7 +12,7 @@ namespace DudeResqueSquad
 
         private Collider _collider = null;
 
-        private void Start()
+        private void Awake()
         {
             _collider = GetComponent<Collider>();
 

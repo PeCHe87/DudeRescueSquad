@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 504428940}
   - component: {fileID: 504428939}
   - component: {fileID: 504428938}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: UIProximity
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   - component: {fileID: 1690721135}
   - component: {fileID: 1690721137}
   - component: {fileID: 1690721136}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -209,7 +209,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4099412133092475614}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Art
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 1306933418245650406}
   - component: {fileID: 1854778934926233332}
   - component: {fileID: 5352427952362408756}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: ItemKey_Regular
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -304,7 +304,7 @@ GameObject:
   - component: {fileID: 8262860481708056244}
   - component: {fileID: 5996760063454634898}
   - component: {fileID: 5146884692254439932}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: TemporalKey
   m_TagString: Untagged
   m_Icon: {fileID: 0}

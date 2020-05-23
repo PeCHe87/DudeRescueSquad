@@ -13,15 +13,19 @@ namespace DudeResqueSquad
         [SerializeField] private Image _imgDragDirection = null;
         [SerializeField] private float _directionOffset = 2;
         [SerializeField] private float _timeToHideTouch = 1;
+        [SerializeField] private bool _canDebug = false;
 
         private bool _hiddingTouch = false;
         private float _remainingTime = 0;
+        private RectTransform _imgDragDirectionRectTransform = null;
 
         private void Awake()
         {
             _imgTouch.enabled = false;
             _imgDragDirection.enabled = false;
             _imgDragOrigin.enabled = false;
+
+            _imgDragDirectionRectTransform = _imgDragDirection.GetComponent<RectTransform>();
 
             CharacterMovementDPad.OnDrag += DragMovement;
             CharacterMovementDPad.OnStartDrag += StartDrag;
@@ -57,7 +61,8 @@ namespace DudeResqueSquad
             _imgTouch.transform.position = position;
             _imgTouch.enabled = true;
 
-            Debug.Log("<color=yellow>Touch</color>");
+            if (_canDebug)
+                Debug.Log("<color=yellow>Touch</color>");
 
             _hiddingTouch = true;
 
@@ -79,7 +84,8 @@ namespace DudeResqueSquad
             _imgDragDirection.transform.position = startPosition;
             _imgDragDirection.enabled = true;
 
-            Debug.Log("<color=green>Start Drag</color>");
+            if (_canDebug)
+                Debug.Log("<color=green>Start Drag</color>");
         }
 
         private void EndDrag()
@@ -90,7 +96,8 @@ namespace DudeResqueSquad
             _imgDragOrigin.transform.position = Vector3.zero;
             _imgDragDirection.transform.position = Vector3.zero;
 
-            Debug.Log("<color=red>End Drag</color>");
+            if (_canDebug)
+                Debug.Log("<color=red>End Drag</color>");
         }
 
         private void DragMovement(CharacterMovementDPad.DragInfo info)
@@ -102,14 +109,16 @@ namespace DudeResqueSquad
             Debug.DrawRay(startWorldPosition, info.direction * 2, Color.blue);
 
             float angle = Vector2.Angle(info.startPosition.normalized, info.direction.normalized);
-            Debug.Log($"Angle to desired direction: {angle}");
+
+            if (_canDebug)
+                Debug.Log($"Angle to desired direction: {angle}");
 
 
             Vector3 directionPosition = startPosition;
-            directionPosition += info.direction * _directionOffset;
+            directionPosition += info.direction.normalized * _directionOffset;
             directionPosition.z = 0;
 
-            _imgDragDirection.transform.position = directionPosition;
+            _imgDragDirectionRectTransform.position = directionPosition;
         }
     }
 }

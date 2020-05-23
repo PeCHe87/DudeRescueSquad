@@ -91,6 +91,9 @@ namespace DudeResqueSquad
                 return;
 
             // Check which kind of controller should be assigned
+            if (!(args.item is ItemWeaponData))
+                return;
+
             var weaponItem = ((ItemWeaponData)args.item);
             var weaponType = weaponItem.AttackType;
 

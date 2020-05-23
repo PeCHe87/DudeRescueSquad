@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Survivor
+  - FX
   layers:
   - Default
   - TransparentFX
@@ -17,8 +18,8 @@ TagManager:
   - Minimap
   - Damageable
   - Level
-  - 
-  - 
+  - Ground
+  - Collectable
   - 
   - 
   - 

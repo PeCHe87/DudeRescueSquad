@@ -36,6 +36,7 @@ namespace DudeResqueSquad
 
         [SerializeField] private Camera _camera = null;
         [SerializeField] private float _zOffet = 10;
+        [SerializeField] private LayerMask _groundLayerMask;
 
         #endregion
 
@@ -123,7 +124,15 @@ namespace DudeResqueSquad
                         {
                             OnTouch?.Invoke(_touchDown);
 
-                            DoAction();
+                            var ray = _camera.ScreenPointToRay(new Vector3(_touchDown.x, _touchDown.y, _zOffet));//_camera.ScreenToWorldPoint(new Vector3(_touchDown.x, _touchDown.y, _zOffet));
+                            RaycastHit hit;
+                            var touchWorldPosition = Vector3.zero;
+                            if (Physics.Raycast(ray, out hit, 1000, _groundLayerMask))
+                            {
+                                touchWorldPosition = hit.point;
+                            }
+
+                            DoAction(touchWorldPosition);
                         }
                     }
 
@@ -214,9 +223,9 @@ namespace DudeResqueSquad
             OnStopMoving?.Invoke(this, EventArgs.Empty);
         }
 
-        private void DoAction()
+        private void DoAction(Vector3 position)
         {
-            OnDoAction?.Invoke(this, EventArgs.Empty);
+            OnDoAction?.Invoke(this, new CustomEventArgs.TouchEventArgs(position));
         }
 
         private void Move(float x, float y)
@@ -229,7 +238,7 @@ namespace DudeResqueSquad
 
         #region ICharacterMovement Implementation
 
-        public event EventHandler OnDoAction;
+        public event EventHandler<CustomEventArgs.TouchEventArgs> OnDoAction;
         public event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         public event EventHandler OnStopMoving;
 

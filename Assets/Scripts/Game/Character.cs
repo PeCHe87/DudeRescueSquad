@@ -21,6 +21,7 @@ namespace DudeResqueSquad
         [SerializeField] private float _initialSpeedVelocity = 0;
         [SerializeField] private float _angleThreshold = 30;
         [SerializeField] private bool _canDebug = false;
+        [SerializeField] private bool _canBreak = false;
         [SerializeField] private int _maxFixedUpdatesPerFrame = 5;
         [SerializeField] private bool _maxSpeedConstant = true;
 
@@ -28,12 +29,15 @@ namespace DudeResqueSquad
         [SerializeField] private Transform _weaponPivot = null;
         [SerializeField] private Transform _leftHandPivot = null;
 
+        [SerializeField] private GameObject _cube;
+
         #endregion
 
         #region Public properties
 
         public PlayerData Data { get => _data; }
         public CharacterState State { get => _state; set => _state = value; }
+        public RotateTowardsTarget Rotator { get => _rotator; }
 
         #endregion
 
@@ -67,6 +71,7 @@ namespace DudeResqueSquad
             {
                 _movement.OnStartMoving += StartMoving;
                 _movement.OnStopMoving += StopMoving;
+                _movement.OnDoAction += DoAction;
             }
 
             _state = GetComponent<CharacterState>();
@@ -95,6 +100,7 @@ namespace DudeResqueSquad
             {
                 _movement.OnStartMoving -= StartMoving;
                 _movement.OnStopMoving -= StopMoving;
+                _movement.OnDoAction -= DoAction;
             }
 
             Item.OnCollect -= CollectItem;
@@ -119,7 +125,7 @@ namespace DudeResqueSquad
             if (_canDebug)
                 Debug.DrawRay(currentPosition, _targetDirection * _maxSpeedMovement, Color.yellow);
 
-            _rotator.Rotate(_targetDirection);
+            //_rotator.Rotate(_targetDirection);
 
             // Move transform
             //if (_moveTransformMode)
@@ -128,6 +134,9 @@ namespace DudeResqueSquad
 
         private void LateUpdate()
         {
+            if (_state.CurrentState == Enums.CharacterStates.RUNNING)
+                _rotator.Rotate(_targetDirection);
+
             _fixedUpdateFrames = 0;
             _oldDirection = _targetDirection;
         }
@@ -136,7 +145,7 @@ namespace DudeResqueSquad
         {
             _fixedUpdateFrames++;
 
-            Debug.Log($"Fixed update frames: {_fixedUpdateFrames}");
+            //Debug.Log($"Fixed update frames: {_fixedUpdateFrames}");
 
             if (_fixedUpdateFrames >= _maxFixedUpdatesPerFrame)
                 return;
@@ -237,6 +246,45 @@ namespace DudeResqueSquad
             _targetDirection = Vector3.zero;
             _oldDirection = Vector3.zero;
             _fixedUpdateFrames = 0;
+        }
+
+        private void DoAction(object sender, CustomEventArgs.TouchEventArgs e)
+        {
+            if (_data == null)
+                return;
+
+            if (_data.CurrentWeaponEquipped == null)
+                return;
+
+            if (_data.CurrentWeaponEquipped.Type != Enums.ItemType.WEAPON)
+                return;
+
+            var weaponItem = _data.CurrentWeaponEquipped;
+
+            if (weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND ||
+                weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+            {
+                // Rotates character towards touched direction
+                Vector3 currentPosition = _characterTransform.position;
+                var touchPosition = e.touchPosition;
+
+                _cube.transform.position = touchPosition;
+
+                /*Vector3 direction = touchPosition - currentPosition;
+                direction.Normalize();
+                Vector3 attackTargetDirection = new Vector3(direction.x, 0, direction.z).normalized;
+
+                if (_canDebug)
+                {
+                    Debug.DrawRay(currentPosition, attackTargetDirection * _maxSpeedMovement, Color.red);
+                    Debug.DrawRay(currentPosition, direction * _maxSpeedMovement, Color.green);
+                }
+
+                _rotator.Rotate(attackTargetDirection);
+
+                if (_canBreak)
+                    Debug.Break();*/
+            }
         }
 
         private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)

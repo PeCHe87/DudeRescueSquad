@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace DudeResqueSquad
 {
@@ -45,6 +46,28 @@ namespace DudeResqueSquad
             {
                 this.item = item;
                 this.playerUID = playerUID;
+            }
+        }
+
+        public class ShotEventArgs : EventArgs
+        {
+            public ItemWeaponData weaponData;
+            public string playerUID;
+
+            public ShotEventArgs(ItemWeaponData weapon, string playerUID)
+            {
+                this.weaponData = weapon;
+                this.playerUID = playerUID;
+            }
+        }
+
+        public class TouchEventArgs
+        {
+            public Vector3 touchPosition;
+
+            public TouchEventArgs(Vector3 position)
+            {
+                this.touchPosition = position;
             }
         }
     }

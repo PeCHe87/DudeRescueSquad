@@ -1,12 +1,11 @@
 ﻿using System;
 using UnityEngine;
-using static DudeResqueSquad.Character;
 
 namespace DudeResqueSquad
 {
     public interface ICharacterMovement
     {
-        event EventHandler OnDoAction;
+        event EventHandler<CustomEventArgs.TouchEventArgs> OnDoAction;
         event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         event EventHandler OnStopMoving;
 

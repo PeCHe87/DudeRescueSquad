@@ -16,5 +16,9 @@ namespace DudeResqueSquad
         public float AttackDelayTime;
         public float ComboDelayTime;
         public float DelayToApplyDamage;
+        public float DelayFireEffect;
+
+        [Header("Projectile configuration")]
+        public projectileActor.projectile ProjectileConfiguration;
     }
 }

@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
+using DudeResqueSquad;
 
 /* THIS CODE IS JUST FOR PREVIEW AND TESTING */
 // Feel free to use any code and picking on it, I cannot guaratnee it will fit into your project
 public class ExplodingProjectile : MonoBehaviour
 {
+    [SerializeField] private LayerMask _collisionMask;
+    [SerializeField] private float _damage = 0;
+
     public GameObject impactPrefab;
     public GameObject explosionPrefab;
     public float thrust;
@@ -27,6 +31,9 @@ public class ExplodingProjectile : MonoBehaviour
     float timer;
 
     private Vector3 previousPosition;
+    private bool _exploded = false;
+
+    public float Damage { get => _damage; set => _damage = value; }
 
     // Use this for initialization
     void Start()
@@ -43,10 +50,9 @@ public class ExplodingProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        /*     if(Input.GetButtonUp("Fire2"))
-             {
-                 Explode();
-             }*/
+        if (_exploded)
+            return;
+
         timer += Time.deltaTime;
         if (timer >= explosionTimer && explodeOnTimer == true)
         {
@@ -83,13 +89,18 @@ public class ExplodingProjectile : MonoBehaviour
         Vector3 direction = transform.position - prevPos;
         Ray ray = new Ray(prevPos, direction);
         float dist = Vector3.Distance(transform.position, prevPos);
-        if (Physics.Raycast(ray, out hit, dist))
+        if (Physics.Raycast(ray, out hit, dist, _collisionMask))
         {
             transform.position = hit.point;
             Quaternion rot = Quaternion.FromToRotation(Vector3.forward, hit.normal);
             Vector3 pos = hit.point;
             Instantiate(impactPrefab, pos, rot);
-            if (!explodeOnTimer && Missile == false)
+
+            CheckDamageable(hit.collider.gameObject);
+
+            _exploded = true;
+
+            if (!Missile)   //if (!explodeOnTimer && Missile == false)
             {
                 Destroy(gameObject);
             }
@@ -100,8 +111,17 @@ public class ExplodingProjectile : MonoBehaviour
                 thisRigidbody.velocity = Vector3.zero;
                 Destroy(gameObject, 5);
             }
-
         }
+    }
+
+    private void CheckDamageable(GameObject hitObject)
+    {
+        IDamageable damageable = hitObject.GetComponent<IDamageable>();
+
+        if (damageable == null)
+            return;
+
+        damageable.TakeDamage(_damage);
     }
 
     void OnCollisionEnter(Collision collision)
@@ -116,6 +136,11 @@ public class ExplodingProjectile : MonoBehaviour
             }
             Vector3 pos = contact.point;
             Instantiate(impactPrefab, pos, rot);
+
+            CheckDamageable(collision.gameObject);
+
+            _exploded = true;
+
             if (!explodeOnTimer && Missile == false)
             {
                 Destroy(gameObject);
@@ -135,7 +160,9 @@ public class ExplodingProjectile : MonoBehaviour
 
     void Explode()
     {
-        Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.Euler(0, 0, 0));
+        if (explosionPrefab != null)
+            Instantiate(explosionPrefab, gameObject.transform.position, Quaternion.Euler(0, 0, 0));
+
         Destroy(gameObject);
     }
 

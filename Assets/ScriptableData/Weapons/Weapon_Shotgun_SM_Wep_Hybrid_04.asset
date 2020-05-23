@@ -28,3 +28,19 @@ MonoBehaviour:
   AttackDelayTime: 1
   ComboDelayTime: 0.5
   DelayToApplyDamage: 0.9
+  DelayFireEffect: 0.45
+  ProjectileConfiguration:
+    name: Goldfire Bullet Small Shotgun
+    bombPrefab: {fileID: 54212628334827884, guid: 6c6c2a3bbf7c85449b8e9515d0c6f273,
+      type: 3}
+    muzzleflare: {fileID: 1584403288528622, guid: a7f7e53efb9c16141af1c5631e25cbb8,
+      type: 3}
+    min: 1500
+    max: 2500
+    rapidFire: 1
+    rapidFireCooldown: 0.4
+    shotgunBehavior: 1
+    shotgunPellets: 8
+    shellPrefab: {fileID: 1467181274829480, guid: 41e86fd3ee46b76448791422f9949474,
+      type: 3}
+    hasShells: 1

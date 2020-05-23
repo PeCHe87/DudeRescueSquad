@@ -51,7 +51,7 @@ namespace DudeResqueSquad
         {
             // TODO: invokes a method to show a message on UI floating popup with the amount and type of key required to open it
 
-            Debug.Log($"Close door, you need <b>{_data.KeysRequired}</b> keys of type <color=red><b>'{_data.KeyType}'</b></color>");
+            Debug.Log($"Closed door, you need <b>{_data.KeysRequired}</b> keys of type <color=red><b>'{_data.KeyType}'</b></color>");
         }
 
         private void OpenDoor(PlayerData playerData)
@@ -68,6 +68,8 @@ namespace DudeResqueSquad
             _blockCollider.enabled = false;
 
             _art.SetActive(false);
+
+            // TODO: animate door
 
             GameManager.Instance.OnDoorOpened?.Invoke(_data.UID, _data.KeysRequired, playerData);
         }
