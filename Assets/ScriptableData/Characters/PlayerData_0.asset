@@ -13,4 +13,7 @@ MonoBehaviour:
   m_Name: PlayerData_0
   m_EditorClassIdentifier: 
   UID: 001
-  _currentItem: {fileID: 0}
+  CurrentWeaponEquipped: {fileID: 0}
+  RegularKeys: 0
+  SpecialKeys: 0
+  SkeletonKeys: 0

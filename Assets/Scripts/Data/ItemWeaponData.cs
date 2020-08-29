@@ -18,7 +18,32 @@ namespace DudeResqueSquad
         public float DelayToApplyDamage;
         public float DelayFireEffect;
 
-        [Header("Projectile configuration")]
+        [Header("Assault configuration")]
         public projectileActor.projectile ProjectileConfiguration;
+        public int CurrentBulletsAmount;
+        public int MaxBulletsAmount;
+        public bool AutoFire;
+        public float DelayBetweenBullets;
+        public int BulletsMagazine;
+        public int CurrentBulletsMagazine;
+        public int BulletsToReload;
+        public float ReloadTime;
+        public float RemainingReloadTime;
+        public bool IsReloading;
+        [Tooltip("Updates position of projectile spawner")]
+        public Vector3 PositionProjectileSpawner;
+        [Tooltip("Updates position of muzzle spawner")]
+        public Vector3 PositionMuzzleSpawner;
+        [Tooltip("Projectile lifetime duration, after this time it explodes")]
+        public float projectileLifetime;
+
+        [Header("Melee configuration")]
+        public float CurrentDurability;
+        public float MaxDurability;
+        [Tooltip("Percentage of durability to consume per effective use of this item")]
+        public float DurabilityAmountConsumptionByUse;
+        public float DurabilityRecoveryTime;
+        public float RemainingDurabilityRecoveryTime;
+        public bool IsRecoveringDurability;
     }
 }

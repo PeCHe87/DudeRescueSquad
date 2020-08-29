@@ -5,18 +5,15 @@ namespace DudeResqueSquad
 {
     public class Item : MonoBehaviour
     {
-        #region Events
-
-        public static Action<CustomEventArgs.CollectItemEventArgs> OnCollected;
-        public static Action<ItemData, string> OnCollect;
-
-        #endregion
-
         #region Inspector properties
 
         [SerializeField] private ItemData _data = null;
         [SerializeField] private GameObject _graphic = null;
         [SerializeField] private float _destroyTime = 2;
+
+        [Header("Initial data")]
+        [SerializeField] private float _initialDurability = 0;
+        [SerializeField] private int _initialBullets = 0;
 
         #endregion
 
@@ -27,6 +24,32 @@ namespace DudeResqueSquad
         #endregion
 
         #region Private methods
+
+        private void Start()
+        {
+            if (_data == null)
+                return;
+
+            if (_data is ItemWeaponData)
+            {
+                ItemWeaponData weapon = (ItemWeaponData)_data;
+
+                weapon.CurrentDurability = _initialDurability;
+
+                // Load current magazine bullets
+                weapon.CurrentBulletsMagazine = (_initialBullets <= weapon.BulletsMagazine) ? _initialBullets : weapon.BulletsMagazine;
+                
+                // Load total amount of remaining bullets
+                weapon.CurrentBulletsAmount = Mathf.Clamp(_initialBullets - weapon.CurrentBulletsMagazine, 0, _initialBullets);
+
+                // Clean data
+                weapon.IsReloading = false;
+                weapon.RemainingReloadTime = 0;
+                weapon.BulletsToReload = 0;
+                weapon.RemainingDurabilityRecoveryTime = 0;
+                weapon.IsRecoveringDurability = false;
+            }
+        }
 
         private void OnTriggerEnter(Collider other)
         {
@@ -49,8 +72,7 @@ namespace DudeResqueSquad
             // Destroy item
             DestroyIt();
 
-            OnCollect?.Invoke(_data, playerId);
-            OnCollected?.Invoke(new CustomEventArgs.CollectItemEventArgs(_data, playerId));
+            GameEvents.OnCollectItem?.Invoke(this, new CustomEventArgs.CollectItemEventArgs(_data, playerId));
         }
 
         private void DestroyIt()

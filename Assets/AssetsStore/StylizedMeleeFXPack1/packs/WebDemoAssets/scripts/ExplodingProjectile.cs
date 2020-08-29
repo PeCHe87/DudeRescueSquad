@@ -100,7 +100,9 @@ public class ExplodingProjectile : MonoBehaviour
 
             _exploded = true;
 
-            if (!Missile)   //if (!explodeOnTimer && Missile == false)
+            Destroy(gameObject);
+
+            /*if (!Missile)   //if (!explodeOnTimer && Missile == false)
             {
                 Destroy(gameObject);
             }
@@ -110,7 +112,7 @@ public class ExplodingProjectile : MonoBehaviour
                 particleKillGroup.SetActive(false);
                 thisRigidbody.velocity = Vector3.zero;
                 Destroy(gameObject, 5);
-            }
+            }*/
         }
     }
 
@@ -141,7 +143,9 @@ public class ExplodingProjectile : MonoBehaviour
 
             _exploded = true;
 
-            if (!explodeOnTimer && Missile == false)
+            Destroy(gameObject);
+
+            /*if (!Missile)   //if (!explodeOnTimer && Missile == false)
             {
                 Destroy(gameObject);
             }
@@ -154,7 +158,7 @@ public class ExplodingProjectile : MonoBehaviour
 
                 Destroy(gameObject, 5);
 
-            }
+            }*/
         }
     }
 

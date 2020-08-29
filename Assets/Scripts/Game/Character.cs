@@ -72,11 +72,15 @@ namespace DudeResqueSquad
                 _movement.OnStartMoving += StartMoving;
                 _movement.OnStopMoving += StopMoving;
                 _movement.OnDoAction += DoAction;
+                _movement.OnStartAction += StartAction;
+                _movement.OnStopAction += StopAction;
             }
+
+            GameEvents.OnStopAction += StopAction;
 
             _state = GetComponent<CharacterState>();
 
-            Item.OnCollect += CollectItem;
+            GameEvents.OnCollectItem += CollectItem;
         }
 
         private void Start()
@@ -96,14 +100,19 @@ namespace DudeResqueSquad
 
         private void OnDestroy()
         {
+
             if (_movement != null)
             {
                 _movement.OnStartMoving -= StartMoving;
                 _movement.OnStopMoving -= StopMoving;
                 _movement.OnDoAction -= DoAction;
+                _movement.OnStartAction -= StartAction;
+                _movement.OnStopAction -= StopAction;
             }
 
-            Item.OnCollect -= CollectItem;
+            GameEvents.OnStopAction -= StopAction;
+
+            GameEvents.OnCollectItem -= CollectItem;
         }
 
         private void Update()
@@ -120,16 +129,11 @@ namespace DudeResqueSquad
             var dir = _movement.Direction();
             _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
 
-            // TODO: Clamp direction
-
             if (_canDebug)
                 Debug.DrawRay(currentPosition, _targetDirection * _maxSpeedMovement, Color.yellow);
 
-            //_rotator.Rotate(_targetDirection);
-
-            // Move transform
-            //if (_moveTransformMode)
-            //    MoveTowards();
+            //if (_state.CurrentState == Enums.CharacterStates.RUNNING)
+                _rotator.Rotate(_targetDirection);
         }
 
         private void LateUpdate()
@@ -161,12 +165,15 @@ namespace DudeResqueSquad
             if (_moveTransformMode)
                 return;
 
+			// TODO: check what happen if these two lines aren't present, because direction is calculated at Update (may be it isn't needed calculate it for each fixed frame)
             var dir = _movement.Direction();
             _targetDirection = new Vector3(dir.x, 0, dir.y).normalized;
 
             Debug.DrawRay(transform.position, _targetDirection, Color.green);
             Debug.DrawRay(transform.position, _oldDirection, Color.red);
 
+			// TODO: check if it is neeeded avoid movement when direction.magnitude is less than a threshold value
+			
             MoveWithChangeVelocityForce();
         }
 
@@ -250,7 +257,7 @@ namespace DudeResqueSquad
 
         private void DoAction(object sender, CustomEventArgs.TouchEventArgs e)
         {
-            if (_data == null)
+            /*if (_data == null)
                 return;
 
             if (_data.CurrentWeaponEquipped == null)
@@ -262,29 +269,15 @@ namespace DudeResqueSquad
             var weaponItem = _data.CurrentWeaponEquipped;
 
             if (weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND ||
-                weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+                weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS ||
+                weaponItem.AttackType == Enums.WeaponAttackType.ASSAULT_RIFLE)
             {
                 // Rotates character towards touched direction
                 Vector3 currentPosition = _characterTransform.position;
                 var touchPosition = e.touchPosition;
 
                 _cube.transform.position = touchPosition;
-
-                /*Vector3 direction = touchPosition - currentPosition;
-                direction.Normalize();
-                Vector3 attackTargetDirection = new Vector3(direction.x, 0, direction.z).normalized;
-
-                if (_canDebug)
-                {
-                    Debug.DrawRay(currentPosition, attackTargetDirection * _maxSpeedMovement, Color.red);
-                    Debug.DrawRay(currentPosition, direction * _maxSpeedMovement, Color.green);
-                }
-
-                _rotator.Rotate(attackTargetDirection);
-
-                if (_canBreak)
-                    Debug.Break();*/
-            }
+            }*/
         }
 
         private void StartMoving(object sender, CustomEventArgs.MovementEventArgs e)
@@ -295,14 +288,6 @@ namespace DudeResqueSquad
             _isMoving = true;
 
             _currentSpeed = _initialSpeedVelocity;
-        }
-
-        public void AttackFinished()
-        {
-            if (_isMoving)
-                _state.SetState(Enums.CharacterStates.RUNNING);
-            else
-                _state.SetState(Enums.CharacterStates.IDLE);
         }
 
         private void EquipItem(ItemData itemData)
@@ -327,7 +312,7 @@ namespace DudeResqueSquad
                 _currentItemEquipped.transform.localRotation = localRot;
 
                 // Check if it is a two hands assault weapon
-                if (_data.CurrentWeaponEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+                if (_data.CurrentWeaponEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS || _data.CurrentWeaponEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_RIFLE)
                 {
                     var twoHandsFollower = _currentItemEquipped.GetComponent<TwoHandsWeaponFollower>();
 
@@ -361,21 +346,52 @@ namespace DudeResqueSquad
             _data.CurrentWeaponEquipped = null;
         }
 
+        private void StartAction(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
+        private void StopAction(object sender, EventArgs e)
+        {
+            //throw new NotImplementedException();
+        }
+
         #endregion
 
         #region Event methods
 
-        private void CollectItem(ItemData item, string playerId)
+        private void CollectItem(object sender, CustomEventArgs.CollectItemEventArgs e)
         {
             if (_data == null)
                 return;
 
+            var playerId = e.playerUID;
+
             if (!_data.UID.Equals(playerId))
                 return;
+
+            var item = e.item;
 
             EquipItem(item);
 
             OnEquipItem?.Invoke();
+        }
+
+        #endregion
+
+        #region Public methods
+
+        public void AttackFinished()
+        {
+            if (_isMoving)
+                _state.SetState(Enums.CharacterStates.RUNNING);
+            else
+                _state.SetState(Enums.CharacterStates.IDLE);
+        }
+
+        public Weapon GetWeapon()
+        {
+            return (_currentItemEquipped != null) ? _currentItemEquipped.GetComponent<Weapon>() : null;
         }
 
         #endregion

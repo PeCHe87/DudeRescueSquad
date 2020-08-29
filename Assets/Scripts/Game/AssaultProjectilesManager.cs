@@ -8,6 +8,7 @@ namespace DudeResqueSquad
     {
         #region Inspector properties
 
+        [SerializeField] private PlayerData _data = null;
         [SerializeField] private Transform spawnLocator;
         [SerializeField] private Transform spawnLocatorMuzzleFlare;
         [SerializeField] private Transform shellLocator;
@@ -18,9 +19,13 @@ namespace DudeResqueSquad
 
         #endregion
 
+        #region Private properties
+
         private bool firing;
         private PlayerAttackController _attackController = null;
         private ItemWeaponData _currentWeapon = null;
+
+        #endregion
 
         #region Private methods
 
@@ -32,6 +37,8 @@ namespace DudeResqueSquad
                 return;
 
             _attackController.OnShot += Shot;
+
+            GameEvents.OnCollectItem += CollectItem;
         }
 
         private void OnDestroy()
@@ -40,19 +47,46 @@ namespace DudeResqueSquad
                 return;
 
             _attackController.OnShot -= Shot;
+
+            GameEvents.OnCollectItem -= CollectItem;
         }
 
-        private void Shot(CustomEventArgs.ShotEventArgs e)
+        private void CollectItem(object sender, CustomEventArgs.CollectItemEventArgs e)
+        {
+            var item = e.item;
+
+            if (item.Type != Enums.ItemType.WEAPON)
+                return;
+
+            var playerUID = e.playerUID;
+
+            if (!_data.UID.Equals(playerUID))
+                return;
+
+            var weapon = (ItemWeaponData)item;
+
+            // Change projectile locator position
+            spawnLocator.localPosition = weapon.PositionProjectileSpawner;
+
+            // Change muzzle position
+            spawnLocatorMuzzleFlare.localPosition = weapon.PositionMuzzleSpawner;
+        }
+
+        private void Shot(CustomEventArgs.PlayerAttackEventArgs e)
         {
             // Check assault weapon equipped
             if (e.weaponData.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND || 
-                e.weaponData.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
+                e.weaponData.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS ||
+                e.weaponData.AttackType == Enums.WeaponAttackType.ASSAULT_RIFLE)
             {
                 // Fire projectile related with assault weapon equipped
                 _currentWeapon = e.weaponData;
 
+                spawnLocator.localPosition = _currentWeapon.PositionProjectileSpawner;
+                spawnLocatorMuzzleFlare.localPosition = _currentWeapon.PositionMuzzleSpawner;
+
                 // Spawn new projectile
-                Invoke("Fire", e.weaponData.DelayFireEffect);
+                Fire();
             }
         }
 
@@ -78,13 +112,7 @@ namespace DudeResqueSquad
             rocketInstance = Instantiate(projectileConfig.bombPrefab, spawnLocator.position, spawnLocator.rotation) as Rigidbody;
 
             // Set projectile damage
-            var projectile = rocketInstance.GetComponent<ExplodingProjectile>();
-
-            if (projectile != null)
-            {
-                projectile.Damage = _currentWeapon.Damage;
-                projectile.explodeOnTimer = true;
-            }
+            SetProjectileDamage(_currentWeapon.Damage, rocketInstance.gameObject);
 
             rocketInstance.transform.localScale = Vector3.one * 0.5f;
 
@@ -98,10 +126,26 @@ namespace DudeResqueSquad
 
                     rocketInstanceShotgun = Instantiate(projectileConfig.bombPrefab, shotgunLocator[i].position, shotgunLocator[i].rotation) as Rigidbody;
 
+                    // Set projectile damage
+                    SetProjectileDamage(_currentWeapon.Damage, rocketInstanceShotgun.gameObject);
+
                     rocketInstanceShotgun.transform.localScale = Vector3.one * 0.5f;
 
                     rocketInstanceShotgun.AddForce(shotgunLocator[i].forward * UnityEngine.Random.Range(projectileConfig.min, projectileConfig.max));
                 }
+            }
+        }
+
+        private void SetProjectileDamage(float damage, GameObject rocketInstance)
+        {
+            var projectile = rocketInstance.GetComponent<ExplodingProjectile>();
+
+            if (projectile != null)
+            {
+                projectile.Damage = _currentWeapon.Damage;
+                projectile.explodeOnTimer = true;
+                //projectile.explosionTimer = _currentWeapon.AttackDelayTime * 2;
+                projectile.explosionTimer = _currentWeapon.projectileLifetime;
             }
         }
 

@@ -8,6 +8,7 @@ namespace DudeResqueSquad
         [SerializeField] private DoorData _data = null;
         [SerializeField] private BoxCollider _blockCollider = null;
         [SerializeField] private GameObject _art = null;
+        [SerializeField] private GameObject _ceiling = null;
 
         #region Private constants
 
@@ -66,6 +67,9 @@ namespace DudeResqueSquad
             _isClosed = false;
 
             _blockCollider.enabled = false;
+
+            // Hide ceiling
+            _ceiling.SetActive(false);
 
             _art.SetActive(false);
 

@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 198008df6aee4944da02155983ab45e1, type: 3}
+  m_Name: Weapon_SM_Wep_AssaultRifle_01
+  m_EditorClassIdentifier: 
+  UID: weapon_assault_rifle_01
+  DisplayName: Assault Rifle
+  Type: 1
+  PrefabEquipable: {fileID: 1900586067242068, guid: f0ecff21a5b65cc47bcbe3326afc94a7,
+    type: 3}
+  PreviewPic: {fileID: 21300000, guid: 3d2605d82d669ae4cb89d37030806dda, type: 3}
+  AttackType: 5
+  AnimationSpeed: 1
+  AttackEffect: {fileID: 0}
+  Damage: 2
+  DetectionAreaRadius: 8
+  AngleAttackArea: 360
+  FireRate: 2
+  AttackDelayTime: 0.8
+  ComboDelayTime: 0.5
+  DelayToApplyDamage: 0.9
+  DelayFireEffect: 0.45
+  ProjectileConfiguration:
+    name: Goldfire Bullet Small Machine gun
+    bombPrefab: {fileID: 54453457801900860, guid: edc555170136714468e06ae43a7e0c86,
+      type: 3}
+    muzzleflare: {fileID: 1000012903210382, guid: 01e91ba42e028824b86d47ee5f416589,
+      type: 3}
+    min: 1500
+    max: 2500
+    rapidFire: 1
+    rapidFireCooldown: 0.4
+    shotgunBehavior: 0
+    shotgunPellets: 1
+    shellPrefab: {fileID: 1467181274829480, guid: 41e86fd3ee46b76448791422f9949474,
+      type: 3}
+    hasShells: 1
+  CurrentBulletsAmount: 0
+  MaxBulletsAmount: 30
+  AutoFire: 1
+  DelayBetweenBullets: 0.15
+  BulletsMagazine: 50
+  CurrentBulletsMagazine: 0
+  BulletsToReload: 0
+  ReloadTime: 2
+  RemainingReloadTime: 0
+  IsReloading: 0
+  PositionProjectileSpawner: {x: 0.25, y: 0.9, z: 0.81}
+  PositionMuzzleSpawner: {x: 0.24, y: 1, z: 0.8}
+  projectileLifetime: 5
+  CurrentDurability: 0
+  MaxDurability: 0
+  DurabilityAmountConsumptionByUse: 0
+  DurabilityRecoveryTime: 0
+  RemainingDurabilityRecoveryTime: 0
+  IsRecoveringDurability: 0

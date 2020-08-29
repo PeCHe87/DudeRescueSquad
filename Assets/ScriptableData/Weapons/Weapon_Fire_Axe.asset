@@ -23,8 +23,26 @@ MonoBehaviour:
   AttackEffect: {fileID: 0}
   Damage: 4
   DetectionAreaRadius: 2
-  AngleAttackArea: 120
+  AngleAttackArea: 360
   FireRate: 0
-  AttackDelayTime: 0.8
+  AttackDelayTime: 0.5
   ComboDelayTime: 0.4
   DelayToApplyDamage: 0.3
+  DelayFireEffect: 0
+  ProjectileConfiguration:
+    name: 
+    bombPrefab: {fileID: 0}
+    muzzleflare: {fileID: 0}
+    min: 0
+    max: 0
+    rapidFire: 0
+    rapidFireCooldown: 0
+    shotgunBehavior: 0
+    shotgunPellets: 0
+    shellPrefab: {fileID: 0}
+    hasShells: 0
+  CurrentBulletsAmount: 0
+  MaxBulletsAmount: 0
+  CurrentDurability: 0
+  MaxDurability: 100
+  DurabilityAmountConsumptionByUse: 0.1

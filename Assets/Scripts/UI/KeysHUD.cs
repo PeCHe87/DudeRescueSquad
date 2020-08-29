@@ -1,5 +1,4 @@
-﻿using System;
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 
 namespace DudeResqueSquad
@@ -8,9 +7,9 @@ namespace DudeResqueSquad
     {
         #region Inspector properties
 
-        [SerializeField] private TextMeshProUGUI _txtRegularKeys = null;
-        [SerializeField] private TextMeshProUGUI _txtSpecialKeys = null;
-        [SerializeField] private TextMeshProUGUI _txtSkeletonKeys = null;
+        [SerializeField] private TextMeshProUGUI _txtRegularKeys;
+        [SerializeField] private TextMeshProUGUI _txtSpecialKeys;
+        [SerializeField] private TextMeshProUGUI _txtSkeletonKeys;
 
         #endregion
 
@@ -18,6 +17,8 @@ namespace DudeResqueSquad
 
         private void Start()
         {
+            Debug.Log(_txtRegularKeys);
+
             GameManager.Instance.OnPlayerCollectKey += KeyCollected;
             GameManager.Instance.OnDoorOpened += DoorOpened;
         }

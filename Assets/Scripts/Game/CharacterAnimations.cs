@@ -9,6 +9,7 @@ namespace DudeResqueSquad
 
         private const string _attackKey = "attack";
         private const string _runningKey = "running";
+        private const string _autoFireKey = "autoFire";
 
         #endregion
 
@@ -21,6 +22,7 @@ namespace DudeResqueSquad
         [SerializeField] private RuntimeAnimatorController _animNoEquipment = null;
         [SerializeField] private RuntimeAnimatorController _animMelee2Hands = null;
         [SerializeField] private RuntimeAnimatorController _animAssault2Hands = null;
+        [SerializeField] private RuntimeAnimatorController _animAssaultRifle = null;
 
         #endregion
 
@@ -29,6 +31,7 @@ namespace DudeResqueSquad
         private PlayerData _data = null;
         private Enums.WeaponAttackType _currentWeaponAttackType = Enums.WeaponAttackType.NONE;
         private float _animationAttackSpeed = 1;
+        private ItemWeaponData _currentWeapon = null;
 
         #endregion
 
@@ -41,7 +44,7 @@ namespace DudeResqueSquad
 
             _anim.SetBool(_runningKey, false);
 
-            Item.OnCollected += CollectItem;
+            GameEvents.OnCollectItem += CollectItem;
         }
 
         private void OnDestroy()
@@ -49,7 +52,7 @@ namespace DudeResqueSquad
             if (_characterState != null)
                 _characterState.OnChanged -= CharacterStateChanged;
 
-            Item.OnCollected -= CollectItem;
+            GameEvents.OnCollectItem -= CollectItem;
         }
 
         private void CharacterStateChanged(Enums.CharacterStates state)
@@ -66,6 +69,7 @@ namespace DudeResqueSquad
         {
             _anim.speed = 1;
             _anim.SetBool(_runningKey, false);
+            _anim.SetBool(_autoFireKey, false);
             _anim.ResetTrigger(_attackKey);
         }
 
@@ -73,6 +77,7 @@ namespace DudeResqueSquad
         {
             _anim.speed = 1;
             _anim.SetBool(_runningKey, true);
+            _anim.SetBool(_autoFireKey, false);
             _anim.ResetTrigger(_attackKey);
         }
 
@@ -80,28 +85,30 @@ namespace DudeResqueSquad
         {
             _anim.speed = _animationAttackSpeed;
             _anim.SetTrigger(_attackKey);
+            _anim.SetBool(_autoFireKey, (_currentWeapon != null) ? _currentWeapon.AutoFire : false);
         }
 
-        private void CollectItem(CustomEventArgs.CollectItemEventArgs args)
+        private void CollectItem(object sender, CustomEventArgs.CollectItemEventArgs e)
         {
             if (_data == null)
                 return;
 
-            if (!_data.UID.Equals(args.playerUID))
+            if (!_data.UID.Equals(e.playerUID))
                 return;
 
             // Check which kind of controller should be assigned
-            if (!(args.item is ItemWeaponData))
+            if (!(e.item is ItemWeaponData))
                 return;
 
-            var weaponItem = ((ItemWeaponData)args.item);
-            var weaponType = weaponItem.AttackType;
+            _currentWeapon = ((ItemWeaponData)e.item);
+
+            var weaponType = _currentWeapon.AttackType;
 
             if (weaponType.Equals(_currentWeaponAttackType))
                 return;
 
             _currentWeaponAttackType = weaponType;
-            _animationAttackSpeed = weaponItem.AnimationSpeed;
+            _animationAttackSpeed = _currentWeapon.AnimationSpeed;
 
             // Update animator based on current equipment
             switch (weaponType)
@@ -116,6 +123,10 @@ namespace DudeResqueSquad
 
                 case Enums.WeaponAttackType.ASSAULT_2_HANDS:
                     _anim.runtimeAnimatorController = _animAssault2Hands;
+                    break;
+
+                case Enums.WeaponAttackType.ASSAULT_RIFLE:
+                    _anim.runtimeAnimatorController = _animAssaultRifle;
                     break;
             }
         }

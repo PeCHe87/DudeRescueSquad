@@ -17,15 +17,15 @@ MonoBehaviour:
   Type: 1
   PrefabEquipable: {fileID: 1092074819094010, guid: 412516f9c9f45e24da346463ff73744c,
     type: 3}
-  PreviewPic: {fileID: 21300000, guid: 7acd89982aba5f8479c86ce17007b9c0, type: 3}
+  PreviewPic: {fileID: 21300000, guid: f145cf512a42c484e995310f3e5675fc, type: 3}
   AttackType: 2
   AnimationSpeed: 1
   AttackEffect: {fileID: 0}
   Damage: 8
   DetectionAreaRadius: 6
-  AngleAttackArea: 140
+  AngleAttackArea: 360
   FireRate: 2
-  AttackDelayTime: 1
+  AttackDelayTime: 0.8
   ComboDelayTime: 0.5
   DelayToApplyDamage: 0.9
   DelayFireEffect: 0.45
@@ -44,3 +44,22 @@ MonoBehaviour:
     shellPrefab: {fileID: 1467181274829480, guid: 41e86fd3ee46b76448791422f9949474,
       type: 3}
     hasShells: 1
+  CurrentBulletsAmount: 0
+  MaxBulletsAmount: 30
+  AutoFire: 0
+  DelayBetweenBullets: 0.5
+  BulletsMagazine: 4
+  CurrentBulletsMagazine: 0
+  BulletsToReload: 0
+  ReloadTime: 2
+  RemainingReloadTime: 0
+  IsReloading: 0
+  PositionProjectileSpawner: {x: 0, y: 1.25, z: 1}
+  PositionMuzzleSpawner: {x: 0, y: 1.498, z: 0.795}
+  projectileLifetime: 0.5
+  CurrentDurability: 0
+  MaxDurability: 0
+  DurabilityAmountConsumptionByUse: 0
+  DurabilityRecoveryTime: 0
+  RemainingDurabilityRecoveryTime: 0
+  IsRecoveringDurability: 0

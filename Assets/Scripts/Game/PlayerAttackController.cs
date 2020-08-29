@@ -7,11 +7,23 @@ namespace DudeResqueSquad
 {
     public class PlayerAttackController : MonoBehaviour
     {
-        public Action<CustomEventArgs.ShotEventArgs> OnShot;
+        #region Events
+
+        public Action<CustomEventArgs.PlayerAttackEventArgs> OnShot;
+        public Action<CustomEventArgs.PlayerAttackEventArgs> OnMeleeAttack;
+        public Action<CustomEventArgs.PlayerAttackEventArgs> OnStartReloading;
+        public Action<CustomEventArgs.PlayerAttackEventArgs> OnFinishReloading;
+        public Action OnCancelReloading;
+        public Action OnReloading;
+        public Action OnNoBullets;
+
+        #endregion
 
         #region Inspector properties
 
         [SerializeField] private FieldOfView _fov = null;
+        [SerializeField] private ParticleSystem _meleeTrailEffect = null;
+        [SerializeField] private float _delayToStartReloading = 1;
         [SerializeField] private bool _canDebug = false;
 
         #endregion
@@ -26,6 +38,8 @@ namespace DudeResqueSquad
         private int _currentAttack = 0;
         private bool _attackInProgress = false;
         private List<IDamageable> _cacheTargets = null;
+        private bool _isReloading = false;
+        private bool _autoFireActive = false;
 
         #endregion
 
@@ -44,8 +58,42 @@ namespace DudeResqueSquad
                 return;
 
             _movement.OnDoAction += Attack;
+            _movement.OnStartAction += StartAction;
+            _movement.OnStopAction += StopAction;
+
+            GameEvents.OnStopAction += StopAction;
 
             _cacheTargets = new List<IDamageable>();
+        }
+
+        private void Update()
+        {
+            if (_currentItemEquipped == null)
+                return;
+
+            // If there is a current item and it is reloading then update its remaining time to finish the reloading.
+            if (_currentItemEquipped.IsReloading)
+            {
+                _currentItemEquipped.RemainingReloadTime -= Time.deltaTime;
+
+                if (_currentItemEquipped.RemainingReloadTime <= 0)
+                {
+                    // Update current bullets magazine
+                    _currentItemEquipped.CurrentBulletsMagazine = _currentItemEquipped.BulletsToReload;
+
+                    // Update current bullets amount
+                    _currentItemEquipped.CurrentBulletsAmount -= _currentItemEquipped.BulletsToReload;
+
+                    // Clean data
+                    _currentItemEquipped.IsReloading = false;
+                    _currentItemEquipped.BulletsToReload = 0;
+                    _currentItemEquipped.RemainingReloadTime = 0;
+
+                    Debug.Log("RELOADING is finished");
+
+                    OnFinishReloading?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
+                }
+            }
         }
 
         private void OnDestroy()
@@ -53,10 +101,98 @@ namespace DudeResqueSquad
             if (_character != null)
                 _character.OnEquipItem -= EquipItem;
 
-            if (_movement == null)
+            if (_movement != null)
+            {
+                _movement.OnDoAction -= Attack;
+                _movement.OnStartAction -= StartAction;
+                _movement.OnStopAction -= StopAction;
+            }
+
+            GameEvents.OnStopAction -= StopAction;
+        }
+
+        private void StartAction(object sender, EventArgs e)
+        {
+            // Logic to start doing action until release the button
+            if (_fov == null)
                 return;
 
-            _movement.OnDoAction -= Attack;
+            if (_character == null)
+                return;
+
+            if (_currentItemEquipped == null)
+                return;
+
+            if (_currentItemEquipped.IsReloading)
+            {
+                Debug.Log("Is RELOADING!");
+                OnReloading?.Invoke();
+                return;
+            }
+
+            _autoFireActive = true;
+
+            _attackInProgress = true;
+
+            ProcessAssaultAttack();
+        }
+
+        private void StopAction(object sender, EventArgs e)
+        {
+            // Logic to stop doing current action
+            ResetAttackState();
+        }
+
+        private void ProcessAssaultAttack()
+        {
+            // If attack wan't canceled the skip logic
+            if (!_attackInProgress)
+                return;
+
+            // Check magazine current bullets remaining
+            if (_currentItemEquipped.CurrentBulletsMagazine == 0)
+            {
+                // Check amount of remaining bullets
+                if (_currentItemEquipped.CurrentBulletsAmount == 0)
+                {
+                    Debug.Log("<b>STOP ACTION</b> - No more BULLETS");
+
+                    GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
+
+                    OnNoBullets?.Invoke();
+                }
+
+                return;
+            }
+
+            // Check weapon equipped to cause damage based on its configuration
+            if (_character.State.CurrentState != Enums.CharacterStates.ATTACKING)
+                _character.State.SetState(Enums.CharacterStates.ATTACKING);
+
+            // Rotates toward the nearest target
+            RotateTowardsNearestTarget();
+
+            // Consume one bullet
+            _currentItemEquipped.CurrentBulletsMagazine--;
+
+            // Check if it should start to reload bullets
+            if (_currentItemEquipped.CurrentBulletsAmount > 0 && _currentItemEquipped.CurrentBulletsMagazine == 0)
+            {
+                //_currentItemEquipped.IsReloading = true;
+
+                Invoke("ReloadBullets", _delayToStartReloading);
+            }
+
+            // Delay to rotate again if target was moving
+            Invoke("RotateTowardsNearestTarget", _currentItemEquipped.DelayFireEffect - 0.05f);
+
+            ApplyShooting();
+
+            Debug.Log($"<color=blue>ProcessAssaultAttack</color> - Bullets: <i>{_currentItemEquipped.CurrentBulletsMagazine}/{_currentItemEquipped.CurrentBulletsAmount}</i>");
+
+            // If auto fire then invoke again after fire rate (delay between bullets)
+            if (_autoFireActive)
+                Invoke("ProcessAssaultAttack", _currentItemEquipped.DelayBetweenBullets);
         }
 
         private void EquipItem()
@@ -102,8 +238,69 @@ namespace DudeResqueSquad
             if (_canDebug)
                 Debug.Log("<color=green>Attack!</color>");
 
-            // Check weapon equipped to cause damage based on its configuration
-            _character.State.SetState(Enums.CharacterStates.ATTACKING);
+            // If it is an assault attack then communicate that to anyone interested
+            if (_currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND ||
+                _currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS ||
+                _currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_RIFLE)
+            {
+                if (_currentItemEquipped.IsReloading)
+                {
+                    Debug.Log("Is RELOADING!");
+                    OnReloading?.Invoke();
+                    return;
+                }
+
+                // Check magazine current bullets remaining
+                if (_currentItemEquipped.CurrentBulletsMagazine == 0)
+                {
+                    // Check amount of remaining bullets
+                    if (_currentItemEquipped.CurrentBulletsAmount == 0)
+                    {
+                        Debug.Log("No more BULLETS");
+                        OnNoBullets?.Invoke();
+                    }
+
+                    return;
+                }
+
+                // Check weapon equipped to cause damage based on its configuration
+                _character.State.SetState(Enums.CharacterStates.ATTACKING);
+
+                // Rotates toward the nearest target
+                RotateTowardsNearestTarget();
+
+                // Consume one bullet
+                _currentItemEquipped.CurrentBulletsMagazine--;
+
+                // Check if it should start to reload bullets
+                if (_currentItemEquipped.CurrentBulletsAmount > 0 && _currentItemEquipped.CurrentBulletsMagazine == 0)
+                {
+                    //_currentItemEquipped.IsReloading = true;
+
+                    Invoke("ReloadBullets", _delayToStartReloading);
+                }
+
+                // Delay to rotate again if target was moving
+                Invoke("RotateTowardsNearestTarget", _currentItemEquipped.DelayFireEffect - 0.05f);
+            }
+            else
+            {
+                // Check durability
+                if (_currentItemEquipped.CurrentDurability == 0)
+                {
+                    Debug.Log("No more DURABILITY");
+
+                    return;
+                }
+
+                // Check weapon equipped to cause damage based on its configuration
+                _character.State.SetState(Enums.CharacterStates.ATTACKING);
+
+                // Rotates toward the nearest target
+                RotateTowardsNearestTarget();
+
+                _meleeTrailEffect?.Play();
+            }
 
             _attackInProgress = true;
 
@@ -113,23 +310,30 @@ namespace DudeResqueSquad
 
             float delayAttackTime = _currentItemEquipped.AttackDelayTime;
 
-            // Rotates toward the nearest target
-            RotateTowardsNearestTarget();
-
-            // If it is an assault attack then communicate that to anyone interested
-            if (_currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_1_HAND || _currentItemEquipped.AttackType == Enums.WeaponAttackType.ASSAULT_2_HANDS)
-            {
-                OnShot?.Invoke(new CustomEventArgs.ShotEventArgs(_currentItemEquipped, _character.Data.UID));
-
-                // Delay to rotate again if target was moving
-                Invoke("RotateTowardsNearestTarget", _currentItemEquipped.DelayFireEffect - 0.05f);
-            }
-            else
-            {
-                StartCoroutine(ApplyDamage());
-            }
-
             Invoke("AttackFinished", delayAttackTime);
+        }
+
+        private void ReloadBullets()
+        {
+            if (_autoFireActive)
+            {
+                Debug.Log("<b>STOP ACTION</b> - START RELOADING");
+
+                GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
+            }
+
+            // Get amount of bullets to reload weapon
+            if (_currentItemEquipped.CurrentBulletsAmount <= _currentItemEquipped.BulletsMagazine)
+                _currentItemEquipped.BulletsToReload = _currentItemEquipped.CurrentBulletsAmount;
+            else
+                _currentItemEquipped.BulletsToReload = _currentItemEquipped.BulletsMagazine;
+
+            _currentItemEquipped.RemainingReloadTime = _currentItemEquipped.ReloadTime;
+            _currentItemEquipped.IsReloading = true;
+
+            Debug.Log($"<color=green>Start <b>RELOADING</b></color> - character: {_character.Data.UID}, bullets: {_currentItemEquipped.BulletsToReload}, reloading time: {_currentItemEquipped.ReloadTime}");
+
+            OnStartReloading?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
         }
 
         private void RotateTowardsNearestTarget()
@@ -154,18 +358,14 @@ namespace DudeResqueSquad
 
                 return;
             }
-            else if (_currentAttack < _currentAmountAttacks) // Checks if amount of attacks is enough
-            {
-                ComboAttack();
-
-                return;
-            }
 
             ResetAttackState();
         }
 
         private void ResetAttackState()
         {
+            _autoFireActive = false;
+
             _attackInProgress = false;
 
             _currentAmountAttacks = 0;
@@ -177,7 +377,7 @@ namespace DudeResqueSquad
             _character.AttackFinished();
         }
 
-        private void ComboAttack()
+        /*private void ComboAttack()
         {
             _character.State.SetState(Enums.CharacterStates.ATTACKING);
 
@@ -190,7 +390,7 @@ namespace DudeResqueSquad
             Invoke("AttackFinished", delayAttackTime);
 
             StartCoroutine(ApplyDamageToCache());
-        }
+        }*/
 
         private IEnumerator ApplyDamage()
         {
@@ -225,7 +425,10 @@ namespace DudeResqueSquad
                     _cacheTargets.Add(target);
                 }
 
-                // TODO: apply weapon usability based on type of weapon: melee (uses) or assault (ammo)
+                // Apply weapon usability consumption
+                float durabilityPercUsed = _currentItemEquipped.MaxDurability * _currentItemEquipped.DurabilityAmountConsumptionByUse;
+                _currentItemEquipped.CurrentDurability = Mathf.Clamp(_currentItemEquipped.CurrentDurability - durabilityPercUsed, 0, _currentItemEquipped.MaxDurability);
+                OnMeleeAttack?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
             }
         }
 
@@ -261,6 +464,56 @@ namespace DudeResqueSquad
 
                 // TODO: Check what happen if it is broken in the middle of combo, it should be stopped
             }
+        }
+
+        #endregion
+
+        #region Public method
+
+        public void ApplyMelee()
+        {
+            //_meleeTrailEffect?.Play();
+
+            float damage = _currentItemEquipped.Damage;
+
+            // Get all target visibles by weapon configuration and apply damage to all of them in the attack area detection
+            Transform[] targets = _fov.VisibleTargets.ToArray();
+
+            _cacheTargets.Clear();
+
+            int targetsAmount = targets.Length;
+
+            if (targetsAmount > 0)
+            {
+                for (int i = 0; i < targetsAmount; i++)
+                {
+                    IDamageable target = targets[i].GetComponent<IDamageable>();
+
+                    if (target == null)
+                        continue;
+
+                    if (target.IsDead)
+                        continue;
+
+                    if (_canDebug)
+                        Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
+
+                    target.TakeDamage(damage);
+
+                    _cacheTargets.Add(target);
+                }
+
+                // Apply weapon usability consumption
+                float durabilityPercUsed = _currentItemEquipped.MaxDurability * _currentItemEquipped.DurabilityAmountConsumptionByUse;
+                _currentItemEquipped.CurrentDurability = Mathf.Clamp(_currentItemEquipped.CurrentDurability - durabilityPercUsed, 0, _currentItemEquipped.MaxDurability);
+
+                OnMeleeAttack?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
+            }
+        }
+
+        public void ApplyShooting()
+        {
+            OnShot?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
         }
 
         #endregion

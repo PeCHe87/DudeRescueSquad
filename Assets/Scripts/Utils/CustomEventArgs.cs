@@ -49,12 +49,12 @@ namespace DudeResqueSquad
             }
         }
 
-        public class ShotEventArgs : EventArgs
+        public class PlayerAttackEventArgs : EventArgs
         {
             public ItemWeaponData weaponData;
             public string playerUID;
 
-            public ShotEventArgs(ItemWeaponData weapon, string playerUID)
+            public PlayerAttackEventArgs(ItemWeaponData weapon, string playerUID)
             {
                 this.weaponData = weapon;
                 this.playerUID = playerUID;

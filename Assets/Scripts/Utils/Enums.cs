@@ -10,6 +10,6 @@
 
         public enum SwipeType { NONE, UP, DOWN, LEFT, RIGHT }
 
-        public enum WeaponAttackType { NONE, MELEE_2_HANDS, ASSAULT_2_HANDS, MELEE_1_HAND, ASSAULT_1_HAND }
+        public enum WeaponAttackType { NONE, MELEE_2_HANDS, ASSAULT_2_HANDS, MELEE_1_HAND, ASSAULT_1_HAND, ASSAULT_RIFLE }
     }
 }
