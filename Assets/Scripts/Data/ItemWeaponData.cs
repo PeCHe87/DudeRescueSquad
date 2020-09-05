@@ -20,6 +20,7 @@ namespace DudeResqueSquad
 
         [Header("Assault configuration")]
         public projectileActor.projectile ProjectileConfiguration;
+        public bool InfiniteBullets;
         public int CurrentBulletsAmount;
         public int MaxBulletsAmount;
         public bool AutoFire;
@@ -38,6 +39,7 @@ namespace DudeResqueSquad
         public float projectileLifetime;
 
         [Header("Melee configuration")]
+        public bool InfiniteDurability;
         public float CurrentDurability;
         public float MaxDurability;
         [Tooltip("Percentage of durability to consume per effective use of this item")]

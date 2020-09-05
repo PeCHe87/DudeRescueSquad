@@ -59,7 +59,6 @@ namespace DudeResqueSquad
 
             _movement.OnDoAction += Attack;
             _movement.OnStartAction += StartAction;
-            _movement.OnStopAction += StopAction;
 
             GameEvents.OnStopAction += StopAction;
 
@@ -79,7 +78,7 @@ namespace DudeResqueSquad
                 if (_currentItemEquipped.RemainingReloadTime <= 0)
                 {
                     // Update current bullets magazine
-                    _currentItemEquipped.CurrentBulletsMagazine = _currentItemEquipped.BulletsToReload;
+                    _currentItemEquipped.CurrentBulletsMagazine = (_currentItemEquipped.InfiniteBullets) ? _currentItemEquipped.BulletsMagazine : _currentItemEquipped.BulletsToReload;
 
                     // Update current bullets amount
                     _currentItemEquipped.CurrentBulletsAmount -= _currentItemEquipped.BulletsToReload;
@@ -105,7 +104,6 @@ namespace DudeResqueSquad
             {
                 _movement.OnDoAction -= Attack;
                 _movement.OnStartAction -= StartAction;
-                _movement.OnStopAction -= StopAction;
             }
 
             GameEvents.OnStopAction -= StopAction;
@@ -176,22 +174,29 @@ namespace DudeResqueSquad
             _currentItemEquipped.CurrentBulletsMagazine--;
 
             // Check if it should start to reload bullets
-            if (_currentItemEquipped.CurrentBulletsAmount > 0 && _currentItemEquipped.CurrentBulletsMagazine == 0)
+            if (_currentItemEquipped.CurrentBulletsMagazine == 0)
             {
-                //_currentItemEquipped.IsReloading = true;
-
-                Invoke("ReloadBullets", _delayToStartReloading);
+                if (_currentItemEquipped.InfiniteBullets || _currentItemEquipped.CurrentBulletsAmount > 0)
+                    Invoke("ReloadBullets", _delayToStartReloading);
             }
 
             // Delay to rotate again if target was moving
             Invoke("RotateTowardsNearestTarget", _currentItemEquipped.DelayFireEffect - 0.05f);
 
-            ApplyShooting();
+            OnShot?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
 
-            Debug.Log($"<color=blue>ProcessAssaultAttack</color> - Bullets: <i>{_currentItemEquipped.CurrentBulletsMagazine}/{_currentItemEquipped.CurrentBulletsAmount}</i>");
+            //Debug.Log($"<color=blue>ProcessAssaultAttack</color> - Bullets: <i>{_currentItemEquipped.CurrentBulletsMagazine}/{_currentItemEquipped.CurrentBulletsAmount}</i>");
 
             // If auto fire then invoke again after fire rate (delay between bullets)
-            if (_autoFireActive)
+            if (_currentItemEquipped.CurrentBulletsMagazine == 0)
+            {
+                Debug.Log("<b>STOP ACTION</b> - No more BULLETS");
+
+                GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
+
+                OnNoBullets?.Invoke();
+            }
+            else if (_autoFireActive)
                 Invoke("ProcessAssaultAttack", _currentItemEquipped.DelayBetweenBullets);
         }
 

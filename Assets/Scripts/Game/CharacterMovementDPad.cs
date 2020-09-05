@@ -242,7 +242,6 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         public event EventHandler OnStopMoving;
         public event EventHandler OnStartAction;
-        public event EventHandler OnStopAction;
 
         public float Horizontal()
         {

@@ -102,7 +102,8 @@ namespace DudeResqueSquad
 
             Debug.Log($"<color=red>Stop <b>ACTION</b></color> - {_character.Data.CurrentWeaponEquipped.DisplayName}");
 
-            OnStopAction?.Invoke(this, EventArgs.Empty);
+            //OnStopAction?.Invoke(this, EventArgs.Empty);
+            GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
         }
 
         #region ICharacterMovement Implementation
@@ -111,7 +112,6 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.MovementEventArgs> OnStartMoving;
         public event EventHandler OnStopMoving;
         public event EventHandler OnStartAction;
-        public event EventHandler OnStopAction;
 
         public float Horizontal()
         {

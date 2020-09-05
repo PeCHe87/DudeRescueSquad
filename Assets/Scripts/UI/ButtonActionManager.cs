@@ -214,8 +214,8 @@ namespace DudeResqueSquad
 
             if (!_data.CurrentWeaponEquipped.AutoFire)
                 StartRefillActionTime(_data.CurrentWeaponEquipped.AttackDelayTime);
-            else
-                Debug.Log($"UI - Update bullets {_data.CurrentWeaponEquipped.CurrentBulletsMagazine}");
+            //else
+            //    Debug.Log($"UI - Update bullets {_data.CurrentWeaponEquipped.CurrentBulletsMagazine}");
 
             // If it is an assault weapon consume bullets, else check if it should show durability consumption
             if (IsAssault())

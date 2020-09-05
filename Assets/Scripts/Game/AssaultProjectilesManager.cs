@@ -24,6 +24,8 @@ namespace DudeResqueSquad
         private bool firing;
         private PlayerAttackController _attackController = null;
         private ItemWeaponData _currentWeapon = null;
+        private bool _muzzleWasCreated = false;
+        private GameObject _muzzle = null;
 
         #endregion
 
@@ -39,6 +41,7 @@ namespace DudeResqueSquad
             _attackController.OnShot += Shot;
 
             GameEvents.OnCollectItem += CollectItem;
+            GameEvents.OnStopAction += StopAction;
         }
 
         private void OnDestroy()
@@ -49,6 +52,17 @@ namespace DudeResqueSquad
             _attackController.OnShot -= Shot;
 
             GameEvents.OnCollectItem -= CollectItem;
+            GameEvents.OnStopAction -= StopAction;
+        }
+
+        private void StopAction(object sender, EventArgs e)
+        {
+            _muzzleWasCreated = false;
+
+            if (_muzzle != null)
+                Destroy(_muzzle);
+
+            Debug.Log(" ---- Destroy muzzle (?)");
         }
 
         private void CollectItem(object sender, CustomEventArgs.CollectItemEventArgs e)
@@ -99,8 +113,34 @@ namespace DudeResqueSquad
 
             var projectileConfig = _currentWeapon.ProjectileConfiguration;
 
-            var muzzle = Instantiate(projectileConfig.muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
-            muzzle.transform.localScale = Vector3.one * 0.5f;
+            if (_currentWeapon.AutoFire)
+            {
+                if (!_muzzleWasCreated)
+                {
+                    _muzzleWasCreated = true;
+
+                    _muzzle = Instantiate(projectileConfig.muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
+                    _muzzle.transform.localScale = Vector3.one * 0.5f;
+
+                    var destroyBehavior = _muzzle.GetComponent<destroyMe>();
+
+                    if (destroyBehavior != null)
+                        destroyBehavior.enabled = false;
+
+                    Debug.Log(" ---- Create muzzle");
+                }
+                else
+                {
+                    _muzzle.GetComponent<ParticleSystem>().Play();
+                    _muzzle.transform.position = spawnLocatorMuzzleFlare.position;
+                    _muzzle.transform.rotation = spawnLocatorMuzzleFlare.rotation;
+                }
+            }
+            else
+            {
+                var muzzle = Instantiate(projectileConfig.muzzleflare, spawnLocatorMuzzleFlare.position, spawnLocatorMuzzleFlare.rotation);
+                muzzle.transform.localScale = Vector3.one * 0.5f;
+            }
 
             if (projectileConfig.hasShells)
             {

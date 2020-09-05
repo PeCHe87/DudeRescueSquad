@@ -44,12 +44,13 @@ MonoBehaviour:
     shellPrefab: {fileID: 1467181274829480, guid: 41e86fd3ee46b76448791422f9949474,
       type: 3}
     hasShells: 1
+  InfiniteBullets: 1
   CurrentBulletsAmount: 0
   MaxBulletsAmount: 30
   AutoFire: 1
   DelayBetweenBullets: 0.15
   BulletsMagazine: 50
-  CurrentBulletsMagazine: 0
+  CurrentBulletsMagazine: 13
   BulletsToReload: 0
   ReloadTime: 2
   RemainingReloadTime: 0
@@ -57,6 +58,7 @@ MonoBehaviour:
   PositionProjectileSpawner: {x: 0.25, y: 0.9, z: 0.81}
   PositionMuzzleSpawner: {x: 0.24, y: 1, z: 0.8}
   projectileLifetime: 5
+  InfiniteDurability: 0
   CurrentDurability: 0
   MaxDurability: 0
   DurabilityAmountConsumptionByUse: 0

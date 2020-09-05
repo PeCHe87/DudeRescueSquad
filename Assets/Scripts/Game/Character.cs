@@ -73,7 +73,7 @@ namespace DudeResqueSquad
                 _movement.OnStopMoving += StopMoving;
                 _movement.OnDoAction += DoAction;
                 _movement.OnStartAction += StartAction;
-                _movement.OnStopAction += StopAction;
+                //_movement.OnStopAction += StopAction;
             }
 
             GameEvents.OnStopAction += StopAction;
@@ -107,7 +107,7 @@ namespace DudeResqueSquad
                 _movement.OnStopMoving -= StopMoving;
                 _movement.OnDoAction -= DoAction;
                 _movement.OnStartAction -= StartAction;
-                _movement.OnStopAction -= StopAction;
+                //_movement.OnStopAction -= StopAction;
             }
 
             GameEvents.OnStopAction -= StopAction;

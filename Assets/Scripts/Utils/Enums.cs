@@ -11,5 +11,7 @@
         public enum SwipeType { NONE, UP, DOWN, LEFT, RIGHT }
 
         public enum WeaponAttackType { NONE, MELEE_2_HANDS, ASSAULT_2_HANDS, MELEE_1_HAND, ASSAULT_1_HAND, ASSAULT_RIFLE }
+
+        public enum EnemyStates { NONE, IDLE, PATROLLING, CHASING, ATTACKING, TAKING_DAMAGE, DEAD }
     }
 }
