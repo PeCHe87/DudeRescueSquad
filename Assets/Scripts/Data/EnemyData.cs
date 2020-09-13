@@ -12,6 +12,7 @@ namespace DudeResqueSquad
         public float SpeedPatrollingMovement;
         public float SpeedChasingMovement;
         public float RadiusDetection;
+        public float AngleDetection;
         public float RadiusAttack;
         public float DelayBetweenAttacks;
         public Enums.EnemyStates State;
@@ -19,5 +20,7 @@ namespace DudeResqueSquad
         public float MaxDamage;
         public float MinPatrollingTime;
         public float MaxPatrollingTime;
+        public LayerMask TargetMaskDetection;
+        public LayerMask ObstacleMaskDetection;
     }
 }

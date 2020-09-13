@@ -36,10 +36,10 @@ namespace DudeResqueSquad
 
         public float Radius { get => _viewRadius; set => _viewRadius = value; }
         public float ViewAngle { get => _viewAngle; set => _viewAngle = value; }
-
         public List<Transform> VisibleTargets { get => _visibleTargets; }
-
         public Transform NearestTarget { get => _nearestTarget; }
+        public LayerMask TargetMask { get => _targetMask; set => _targetMask = value; }
+        public LayerMask ObstacleMask { get => _obstacleMask; set => _obstacleMask = value; }
 
         #endregion
 

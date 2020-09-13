@@ -17,8 +17,9 @@ MonoBehaviour:
   MaxHealth: 0
   CurrentHealth: 0
   SpeedPatrollingMovement: 2
-  SpeedChasingMovement: 0
-  RadiusDetection: 0
+  SpeedChasingMovement: 3
+  RadiusDetection: 8
+  AngleDetection: 90
   RadiusAttack: 0
   DelayBetweenAttacks: 0
   State: 0
@@ -26,3 +27,9 @@ MonoBehaviour:
   MaxDamage: 0
   MinPatrollingTime: 20
   MaxPatrollingTime: 30
+  TargetMaskDetection:
+    serializedVersion: 2
+    m_Bits: 16384
+  ObstacleMaskDetection:
+    serializedVersion: 2
+    m_Bits: 8192
