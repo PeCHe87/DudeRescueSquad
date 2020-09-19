@@ -34,6 +34,13 @@ namespace DudeResqueSquad
             _points = points;
         }
 
+        #region IState implementation
+
+        public Enums.EnemyStates State()
+        {
+            return Enums.EnemyStates.PATROLLING;
+        }
+
         public void Tick()
         {
             if (_agent.isStopped)
@@ -87,5 +94,7 @@ namespace DudeResqueSquad
 
             Debug.Log("<b>MOVE BETWEEN POINTS</b> - <color=red>OnExit</color>");
         }
+
+        #endregion
     }
 }

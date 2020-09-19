@@ -5,6 +5,7 @@ namespace DudeResqueSquad
 {
     public class DamageableProp : MonoBehaviour, IDamageable
     {
+        [SerializeField] private string _uid = string.Empty;
         [SerializeField] private float _initialHealth = 0;
         [SerializeField] private GameObject _art = null;
         [SerializeField] private GameObject _hitEffect = null;
@@ -38,7 +39,7 @@ namespace DudeResqueSquad
         public bool IsDead => Health == 0;
 
         public event EventHandler<CustomEventArgs.DamageEventArgs> OnTakeDamage;
-        public event EventHandler OnDied;
+        public event EventHandler<CustomEventArgs.EntityDeadEventArgs> OnDied;
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
 
         public void TakeDamage(float value)
@@ -53,17 +54,17 @@ namespace DudeResqueSquad
 
                 _collider.enabled = false;
 
-                OnDied?.Invoke(this, EventArgs.Empty);
+                OnDied?.Invoke(this, new CustomEventArgs.EntityDeadEventArgs(_uid));
             }
             else
-                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(value));
+                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));
         }
 
         public void Heal(float value)
         {
             Health = Mathf.Clamp(Health + value, 0, MaxHealth);
 
-            OnHealed?.Invoke(this, new CustomEventArgs.HealEventArgs(value));
+            OnHealed?.Invoke(this, new CustomEventArgs.HealEventArgs(_uid, value));
         }
 
         #endregion

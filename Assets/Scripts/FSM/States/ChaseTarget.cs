@@ -14,10 +14,9 @@ namespace DudeResqueSquad
 
         #region Private properties
 
-        private Transform _transform = null;
-        private Transform _currentTarget = null;
-        private float _distanceChaseDetection = 0;
-        private float _distanceAttackDetection = 0;
+
+        private EnemyData _data = null;
+        private float _minDistanceChasing = 0;
         private bool _isChasing = false;
         private bool _isOnAttackRange = false;
         private NavMeshAgent _agent = null;
@@ -28,6 +27,7 @@ namespace DudeResqueSquad
 
         public ChaseTarget(EnemyData data, FieldOfView fov, NavMeshAgent agent, Animator animator)
         {
+            _data = data;
             _agent = agent;
             _fov = fov;
             _speedChaseMovement = data.SpeedChasingMovement;
@@ -35,11 +35,17 @@ namespace DudeResqueSquad
 
         #region IState implementation
 
+        public Enums.EnemyStates State()
+        {
+            return Enums.EnemyStates.CHASING;
+        }
+
         public void Tick()
         {
             if (!_isChasing)
                 return;
 
+            // If there isn't any detected target stop chasing
             if (_fov.NearestTarget == null)
             {
                 _isChasing = false;
@@ -49,6 +55,23 @@ namespace DudeResqueSquad
                 return;
             }
 
+            //Debug.Log($"<color=magenta>Chasing</color> - distance: {_agent.remainingDistance}");
+
+            // Check if distance to target is enough or it should continue chasing it
+            if (_agent.remainingDistance <= _data.MinChasingDistance)
+            {
+                // If nav agent is moving then stop it
+                if (!_agent.isStopped)
+                    _agent.isStopped = true;
+
+                return;
+            }
+
+            // Check if it should resume nav agent movement
+            if (_agent.isStopped)
+                _agent.isStopped = false;
+
+            // If it isn't closed enough chase the target
             _agent.SetDestination(_fov.NearestTarget.position);
         }
 

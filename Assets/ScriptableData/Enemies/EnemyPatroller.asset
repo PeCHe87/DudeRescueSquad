@@ -12,19 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25aa48421dfc72942bd1c5c1d78ef6a8, type: 3}
   m_Name: EnemyPatroller
   m_EditorClassIdentifier: 
-  MinIdleTime: 5
-  MaxIdleTime: 10
+  UID: 
   MaxHealth: 0
   CurrentHealth: 0
+  MinIdleTime: 3
+  MaxIdleTime: 5
   SpeedPatrollingMovement: 2
-  SpeedChasingMovement: 3
-  RadiusDetection: 8
-  AngleDetection: 90
-  RadiusAttack: 0
-  DelayBetweenAttacks: 0
-  State: 0
-  MinDamage: 0
-  MaxDamage: 0
   MinPatrollingTime: 20
   MaxPatrollingTime: 30
   TargetMaskDetection:
@@ -33,3 +26,12 @@ MonoBehaviour:
   ObstacleMaskDetection:
     serializedVersion: 2
     m_Bits: 8192
+  SpeedChasingMovement: 3
+  MinChasingDistance: 2.5
+  RadiusDetection: 8
+  AngleDetection: 90
+  RadiusAttack: 3
+  DelayBetweenAttacks: 1
+  MinDamage: 1.5
+  MaxDamage: 3
+  TimeForRecoveringAfterDamage: 0

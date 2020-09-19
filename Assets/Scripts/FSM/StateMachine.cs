@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 using Object = System.Object;
@@ -21,8 +23,16 @@ using Object = System.Object;
 
 namespace DudeResqueSquad
 {
-    public class StateMachine
+    public class StateMachine : INotifyPropertyChanged
     {
+        #region Public properties
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion
+
+        #region Private properties
+
         private IState _currentState;
 
         private Dictionary<Type, List<Transition>> _transitions = new Dictionary<Type, List<Transition>>();
@@ -30,6 +40,10 @@ namespace DudeResqueSquad
         private List<Transition> _anyTransitions = new List<Transition>();
 
         private static List<Transition> EmptyTransitions = new List<Transition>(0);
+
+        #endregion
+
+        #region Public methods
 
         public void Tick()
         {
@@ -53,6 +67,8 @@ namespace DudeResqueSquad
                 _currentTransitions = EmptyTransitions;
 
             _currentState.OnEnter();
+
+            NotifyPropertyChanged();
         }
 
         public void AddTransition(IState from, IState to, Func<bool> predicate)
@@ -70,6 +86,18 @@ namespace DudeResqueSquad
         {
             _anyTransitions.Add(new Transition(state, predicate));
         }
+
+        public Enums.EnemyStates GetCurrentState()
+        {
+            if (_currentState == null)
+                return Enums.EnemyStates.NONE;
+
+            return _currentState.State();
+        }
+
+        #endregion
+
+        #region Private methods
 
         private class Transition
         {
@@ -95,5 +123,22 @@ namespace DudeResqueSquad
 
             return null;
         }
+
+        #endregion
+
+        #region INotifyPropertyChanged implementation
+
+        // This method is called by the Set accessor of each property.
+        // The CallerMemberName attribute that is applied to the optional propertyName
+        // parameter causes the property name of the caller to be substituted as an argument.
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        #endregion
     }
 }

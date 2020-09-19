@@ -12,8 +12,7 @@ namespace DudeResqueSquad
 
         #region Private properties
 
-        private float _minTime = 0;
-        private float _maxTime = 0;
+        private EnemyData _data = null;
         private float _remainingTime = 0;
 
         #endregion
@@ -22,13 +21,17 @@ namespace DudeResqueSquad
 
         public Idle(EnemyData data)
         {
-            _minTime = data.MinIdleTime;
-            _maxTime = data.MaxIdleTime;
+            _data = data;
         }
 
         #endregion
 
         #region IState implementation 
+
+        public Enums.EnemyStates State()
+        {
+            return Enums.EnemyStates.IDLE;
+        }
 
         public void Tick()
         {
@@ -43,7 +46,7 @@ namespace DudeResqueSquad
 
         public void OnEnter()
         {
-            _remainingTime = Random.Range(_minTime, _maxTime);
+            _remainingTime = Random.Range(_data.MinIdleTime, _data.MaxIdleTime);
 
             // TODO: move animator to "IDLE" state
 
