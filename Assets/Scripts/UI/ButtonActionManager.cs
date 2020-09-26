@@ -246,5 +246,14 @@ namespace DudeResqueSquad
         }
 
         #endregion
+
+        #region Public methods
+
+        public void ProcessAction()
+        {
+            GameEvents.OnProcessAction?.Invoke(this, System.EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

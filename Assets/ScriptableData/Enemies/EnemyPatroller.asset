@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: EnemyPatroller
   m_EditorClassIdentifier: 
   UID: 
-  MaxHealth: 0
-  CurrentHealth: 0
+  MaxHealth: 200
+  CurrentHealth: 100
   MinIdleTime: 3
   MaxIdleTime: 5
   SpeedPatrollingMovement: 2
@@ -28,10 +28,10 @@ MonoBehaviour:
     m_Bits: 8192
   SpeedChasingMovement: 3
   MinChasingDistance: 2.5
-  RadiusDetection: 8
+  RadiusDetection: 10
   AngleDetection: 90
   RadiusAttack: 3
   DelayBetweenAttacks: 1
   MinDamage: 1.5
   MaxDamage: 3
-  TimeForRecoveringAfterDamage: 0
+  TimeForRecoveringAfterDamage: 1

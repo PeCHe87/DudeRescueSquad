@@ -17,6 +17,16 @@ namespace DudeResqueSquad
 
         #region Private methods
 
+        private void Awake()
+        {
+            GameEvents.OnProcessAction += ProcessAction;
+        }
+
+        private void OnDestroy()
+        {
+            GameEvents.OnProcessAction -= ProcessAction;
+        }
+
         private void Start()
         {
             _character = GetComponent<Character>();
@@ -53,6 +63,22 @@ namespace DudeResqueSquad
                 return false;
 
             return true;
+        }
+
+        private void ProcessAction(object sender, EventArgs e)
+        {
+            if (_character.Data.CurrentWeaponEquipped == null)
+                return;
+
+            // Skip it if current weapon is auto fire
+            if (_character.Data.CurrentWeaponEquipped.AutoFire)
+                return;
+
+            // Check if can performs this action based on current character state
+            if (!CanPerformAttack())
+                return;
+
+            OnDoAction?.Invoke(this, new CustomEventArgs.TouchEventArgs(Vector3.zero));
         }
 
         #endregion

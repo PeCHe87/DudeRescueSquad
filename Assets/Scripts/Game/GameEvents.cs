@@ -10,6 +10,11 @@ namespace DudeResqueSquad
         public static EventHandler OnStopAction;
 
         /// <summary>
+        /// Process the player's action
+        /// </summary>
+        public static EventHandler OnProcessAction;
+
+        /// <summary>
         /// Invoked when a player collects an item
         /// </summary>
         public static EventHandler<CustomEventArgs.CollectItemEventArgs> OnCollectItem;

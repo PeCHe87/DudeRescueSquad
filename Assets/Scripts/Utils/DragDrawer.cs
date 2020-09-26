@@ -21,6 +21,9 @@ namespace DudeResqueSquad
 
         private void Awake()
         {
+            if (!enabled)
+                return;
+
             _imgTouch.enabled = false;
             _imgDragDirection.enabled = false;
             _imgDragOrigin.enabled = false;

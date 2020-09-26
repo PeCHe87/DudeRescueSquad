@@ -8,6 +8,9 @@ namespace DudeResqueSquad
 
         private void Start()
         {
+            if (GameManager.Instance == null)
+                return;
+
             _camera = GameManager.Instance.MinimapCamera.transform;
         }
 

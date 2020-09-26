@@ -12,6 +12,7 @@ namespace DudeResqueSquad
     {
         #region Inspector properties
 
+        [SerializeField] private EnemyData _templateData = null;
         [SerializeField] private EnemyData _data = null;
         [SerializeField] private Enums.EnemyStates _state;
         [SerializeField] private Transform[] _points = null;
@@ -31,8 +32,16 @@ namespace DudeResqueSquad
 
         private void Awake()
         {
+            // Generate a copy of template configuration data
+            _data = ScriptableObject.Instantiate(_templateData);
+
+            // Init Health data
+            Health = _data.CurrentHealth;
+            MaxHealth = _data.MaxHealth;
+
             NavMeshAgent navMeshAgent = GetComponent<NavMeshAgent>();
 
+            // Field of View
             _fieldOfView = GetComponent<FieldOfView>();
             _fieldOfView.Radius = _data.RadiusDetection;
             _fieldOfView.ViewAngle = _data.AngleDetection;
@@ -49,6 +58,7 @@ namespace DudeResqueSquad
             var stateChasing = new ChaseTarget(_data, _fieldOfView, navMeshAgent, _animator);
             var stateAttacking = new Attack(_data, transform, _fieldOfView, _animator);
             var stateTakingDamage = new TakeDamage(_data, _animator);
+            var stateDead = new Dead(_data, _animator);
 
             #region Create transitions from "IDLE" state
 
@@ -79,18 +89,37 @@ namespace DudeResqueSquad
 
             #endregion
 
-            #region Create transitions from ANY state
+            #region Create transitions from "TAKING DAMAGE" state
 
-            // If there is a detected target and not in attacking range then start Chasing it
-            _stateMachine.AddAnyTransition(stateChasing, () => !IsDead && !stateTakingDamage.IsRecovering && !IsOnAttackingRange() && _fieldOfView.NearestTarget != null);
+            // Taking damage over -> Patrolling
+            _stateMachine.AddTransition(stateTakingDamage, stateMoveBetweenPoints, () => !IsDead && !stateTakingDamage.IsRecovering && _fieldOfView.NearestTarget == null);
 
-            // If it is in range to Attack
-            _stateMachine.AddAnyTransition(stateAttacking, () => !IsDead && !stateTakingDamage.IsRecovering && IsOnAttackingRange());
+            // Taking damage over -> Chasing
+            _stateMachine.AddTransition(stateTakingDamage, stateChasing, () => !IsDead && !stateTakingDamage.IsRecovering && _fieldOfView.NearestTarget != null && !IsOnAttackingRange());
 
-            // If takes damage then move to this state
-            _stateMachine.AddAnyTransition(stateTakingDamage, () => _isTakingDamage);
+            // Taking damage over -> Attacking
+            _stateMachine.AddTransition(stateTakingDamage, stateAttacking, () => !IsDead && !stateTakingDamage.IsRecovering && _fieldOfView.NearestTarget != null && IsOnAttackingRange());
 
             #endregion
+
+            #region Create transitions from ANY state
+
+            // If it is dead
+            _stateMachine.AddAnyTransition(stateDead, () => IsDead);
+
+            // If there is a detected target and not in attacking range then start Chasing it
+            _stateMachine.AddAnyTransition(stateChasing, () => !IsDead && !stateTakingDamage.IsRecovering && _fieldOfView.NearestTarget != null && !IsOnAttackingRange() );
+
+            // If it is in range to Attack
+            _stateMachine.AddAnyTransition(stateAttacking, () => !IsDead && !stateTakingDamage.IsRecovering && _fieldOfView.NearestTarget != null && IsOnAttackingRange());
+
+            // If takes damage then move to this state
+            _stateMachine.AddAnyTransition(stateTakingDamage, () => !IsDead && _isTakingDamage);
+
+            #endregion
+
+            // Set last state as "DEAD"
+            _stateMachine.SetLastState(stateDead);
 
             // Start State machine at "IDLE" state
             _stateMachine.SetState(stateIdle);
@@ -99,16 +128,13 @@ namespace DudeResqueSquad
         private void OnDestroy()
         {
             _stateMachine.PropertyChanged -= StateMachineHasChanged;
+
+            ScriptableObject.Destroy(_data);
         }
 
         private void Update()
         {
-            if (IsDead)
-                return;
-
             _stateMachine.Tick();
-
-            //_state = _stateMachine.GetCurrentState();
         }
 
         /// <summary>
@@ -156,7 +182,14 @@ namespace DudeResqueSquad
 
         public async void TakeDamage(float value)
         {
+            if (IsDead)
+                return;
+
+            int healthBeforeDamage = (int)Health;
+
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
+
+            Debug.Log($"<color=red>{name} takes damage, before damage: {healthBeforeDamage}, current Health: {Health}</color>");
 
             if (Health == 0)
             {
@@ -167,6 +200,10 @@ namespace DudeResqueSquad
 
                 // Communicates to the rest of the game about this situation
                 GameEvents.OnEntityHasDied?.Invoke(this, entityDeadEventArgs);
+
+                Debug.Log($"<color=red>{name} <b>IS DEAD</b></color>");
+
+                _isTakingDamage = false;
             }
             else
             {

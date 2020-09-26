@@ -34,6 +34,8 @@ namespace DudeResqueSquad
         #region Private properties
 
         private IState _currentState;
+        private IState _lastState;
+        private bool _isEnable = true;
 
         private Dictionary<Type, List<Transition>> _transitions = new Dictionary<Type, List<Transition>>();
         private List<Transition> _currentTransitions = new List<Transition>();
@@ -47,6 +49,9 @@ namespace DudeResqueSquad
 
         public void Tick()
         {
+            if (!_isEnable)
+                return;
+
             var transition = GetTransition();
             if (transition != null)
                 SetState(transition.To);
@@ -68,7 +73,20 @@ namespace DudeResqueSquad
 
             _currentState.OnEnter();
 
+            // Check if FSM reaches the last state and should be stopped
+            if (_currentState == _lastState)
+            {
+                _isEnable = false;
+
+                Debug.Log("<color=magenta>FSM</color> - <b>STOP</b>");
+            }
+
             NotifyPropertyChanged();
+        }
+
+        public void SetLastState(IState state)
+        {
+            _lastState = state;
         }
 
         public void AddTransition(IState from, IState to, Func<bool> predicate)

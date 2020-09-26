@@ -320,7 +320,8 @@ namespace DudeResqueSquad
                         twoHandsFollower.Init(_leftHandPivot);
                 }
 
-                GameManager.Instance.OnPlayerCollectWeapon?.Invoke(_data.CurrentWeaponEquipped, _data);
+                if (GameManager.Instance != null)
+                    GameManager.Instance.OnPlayerCollectWeapon?.Invoke(_data.CurrentWeaponEquipped, _data);
             }
             else if (itemData.Type == Enums.ItemType.KEY)
             {
