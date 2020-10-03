@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace DudeResqueSquad
 {
@@ -14,14 +15,18 @@ namespace DudeResqueSquad
 
         private EnemyData _data = null;
         private float _remainingTime = 0;
+        private NavMeshAgent _navMeshAgent = null;
+        private NavMeshObstacle _navMeshObstacle = null;
 
         #endregion
 
         #region Constructor 
 
-        public Idle(EnemyData data)
+        public Idle(EnemyData data, NavMeshAgent agent, NavMeshObstacle obstacle)
         {
             _data = data;
+            _navMeshAgent = agent;
+            _navMeshObstacle = obstacle;
         }
 
         #endregion
@@ -49,6 +54,12 @@ namespace DudeResqueSquad
             _remainingTime = Random.Range(_data.MinIdleTime, _data.MaxIdleTime);
 
             // TODO: move animator to "IDLE" state
+
+            // Cancel agent
+            _navMeshAgent.enabled = false;
+
+            // Activate obstacle
+            _navMeshObstacle.enabled = true;
 
             Debug.Log($"<b>IDLE</b> - <color=green>OnEnter</color> - RemainingTime: {_remainingTime}");
         }

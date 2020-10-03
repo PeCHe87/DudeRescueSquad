@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 namespace DudeResqueSquad
 {
@@ -16,15 +17,20 @@ namespace DudeResqueSquad
         private float _remainingTime = 0;
         private Transform _transform = null;
         private FieldOfView _fov = null;
+        private NavMeshAgent _navMeshAgent = null;
+        private NavMeshObstacle _navMeshObstacle = null;
 
         #endregion
 
         // Constructor
-        public Attack(EnemyData data, Transform transform, FieldOfView fov, Animator animator)
+        public Attack(EnemyData data, Transform transform, FieldOfView fov, Animator animator, NavMeshAgent agent, NavMeshObstacle obstacle)
         {
             _data = data;
             _transform = transform;
             _fov = fov;
+
+            _navMeshAgent = agent;
+            _navMeshObstacle = obstacle;
         }
 
         #region Private methods
@@ -72,6 +78,12 @@ namespace DudeResqueSquad
         public void OnEnter()
         {
             ProcessAttack();
+
+            // Deactivate agent
+            _navMeshAgent.enabled = false;
+
+            // Activate obstacle
+            _navMeshObstacle.enabled = true;
 
             Debug.Log($"<b>ATTACKING</b> - <color=green>OnEnter</color> - RemainingTimeNextAttack: {_remainingTime}");
         }

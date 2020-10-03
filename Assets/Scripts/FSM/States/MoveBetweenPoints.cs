@@ -8,23 +8,25 @@ namespace DudeResqueSquad
         #region Private properties
 
         private EnemyData _data = null;
-        private NavMeshAgent _agent = null;
+        private NavMeshAgent _navMeshAgent = null;
+        private NavMeshObstacle _navMeshObstacle = null;
         private Animator _animator = null;
         private bool _isWaiting = false;
         private Transform[] _points = null;
         private int _currentPointIndex = 0;
         private float _patrollingTime = 0;
-        private readonly float _distanceToReachGoal = 0.5f;
+        private readonly float _distanceToReachGoal = 1.5f;
 
         #endregion
 
         public bool IsWaiting { get => _isWaiting; }
 
-        public MoveBetweenPoints(EnemyData data, NavMeshAgent agent, Animator animator, Transform[] points)
+        public MoveBetweenPoints(EnemyData data, NavMeshAgent agent, Animator animator, Transform[] points, NavMeshObstacle obstacle)
         {
             _data = data;
 
-            _agent = agent;
+            _navMeshAgent = agent;
+            _navMeshObstacle = obstacle;
 
             _animator = animator;
 
@@ -43,14 +45,14 @@ namespace DudeResqueSquad
 
         public void Tick()
         {
-            if (_agent.isStopped)
+            if (_navMeshAgent.isStopped)
                 return;
 
             // Decrease patrolling time
             _patrollingTime = Mathf.Clamp(_patrollingTime - Time.deltaTime, 0, _patrollingTime);
 
             // Check if it reaches the next goal point
-            float remainingDistance = _agent.remainingDistance;
+            float remainingDistance = _navMeshAgent.remainingDistance;
 
             if (remainingDistance <= _distanceToReachGoal)
             {
@@ -59,11 +61,12 @@ namespace DudeResqueSquad
                 // If time patrolling is zero then stop moving when current goal is reached
                 if (_patrollingTime > 0)
                 {
-                    _agent.SetDestination(_points[_currentPointIndex].position);
+                    _navMeshAgent.SetDestination(_points[_currentPointIndex].position);
                 }
                 else
                 {
-                    _agent.isStopped = true;
+                    _navMeshAgent.isStopped = true;
+
                     _isWaiting = true;
                 }
             }
@@ -76,11 +79,17 @@ namespace DudeResqueSquad
             _isWaiting = false;
             _patrollingTime = Random.Range(_data.MinPatrollingTime, _data.MaxPatrollingTime);
 
+            _currentPointIndex = Random.Range(0, _points.Length);
+            
             // Get current point and start nave mesh agent movement
-            _agent.enabled = true;
-            _agent.speed = _data.SpeedPatrollingMovement;
-            _agent.SetDestination(_points[_currentPointIndex].position);
-            _agent.isStopped = false;
+            _navMeshAgent.enabled = true;
+            _navMeshAgent.speed = _data.SpeedPatrollingMovement;
+            _navMeshAgent.isStopped = false;
+            _navMeshAgent.SetDestination(_points[_currentPointIndex].position);
+
+            // Activate obstacle
+            _navMeshObstacle.enabled = false;
+
 
             // TODO: move animator state to "MOVE"
 
@@ -90,7 +99,8 @@ namespace DudeResqueSquad
         public void OnExit()
         {
             // Disables Nav mesh Agent
-            _agent.enabled = false;
+            if (_navMeshAgent.enabled)
+                _navMeshAgent.isStopped = true;
 
             Debug.Log("<b>MOVE BETWEEN POINTS</b> - <color=red>OnExit</color>");
         }

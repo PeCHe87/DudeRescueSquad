@@ -19,16 +19,20 @@ namespace DudeResqueSquad
         private float _minDistanceChasing = 0;
         private bool _isChasing = false;
         private bool _isOnAttackRange = false;
-        private NavMeshAgent _agent = null;
+        private NavMeshAgent _navMeshAgent = null;
+        private NavMeshObstacle _navMeshObstacle = null;
         private FieldOfView _fov = null;
         private float _speedChaseMovement = 0;
 
         #endregion
 
-        public ChaseTarget(EnemyData data, FieldOfView fov, NavMeshAgent agent, Animator animator)
+        public ChaseTarget(EnemyData data, FieldOfView fov, NavMeshAgent agent, Animator animator, NavMeshObstacle obstacle)
         {
             _data = data;
-            _agent = agent;
+
+            _navMeshAgent = agent;
+            _navMeshObstacle = obstacle;
+
             _fov = fov;
             _speedChaseMovement = data.SpeedChasingMovement;
         }
@@ -42,15 +46,15 @@ namespace DudeResqueSquad
 
         public void Tick()
         {
-            if (!_isChasing)
-                return;
+            //if (!_isChasing)
+            //    return;
 
             // If there isn't any detected target stop chasing
             if (_fov.NearestTarget == null)
             {
                 _isChasing = false;
 
-                _agent.isStopped = true;
+                _navMeshAgent.isStopped = true;
 
                 return;
             }
@@ -58,31 +62,43 @@ namespace DudeResqueSquad
             //Debug.Log($"<color=magenta>Chasing</color> - distance: {_agent.remainingDistance}");
 
             // Check if distance to target is enough or it should continue chasing it
-            if (_agent.remainingDistance <= _data.MinChasingDistance)
+            if (_navMeshAgent.remainingDistance <= _data.MinChasingDistance)
             {
                 // If nav agent is moving then stop it
-                if (!_agent.isStopped)
-                    _agent.isStopped = true;
+                if (!_navMeshAgent.isStopped)
+                {
+                    _navMeshAgent.isStopped = true;
+
+                    _navMeshObstacle.enabled = true;
+                }
 
                 return;
             }
 
             // Check if it should resume nav agent movement
-            if (_agent.isStopped)
-                _agent.isStopped = false;
+            if (_navMeshAgent.isStopped)
+            {
+                _navMeshAgent.isStopped = false;
+
+                _navMeshObstacle.enabled = false;
+            }
 
             // If it isn't closed enough chase the target
-            _agent.SetDestination(_fov.NearestTarget.position);
+            _navMeshAgent.SetDestination(_fov.NearestTarget.position);
         }
 
         public void OnEnter()
         {
             _isChasing = true;
 
-            _agent.enabled = true;
-            _agent.speed = _speedChaseMovement;
-            _agent.SetDestination(_fov.NearestTarget.position);
-            _agent.isStopped = false;
+            // Activate agent
+            _navMeshAgent.enabled = true;
+            _navMeshAgent.SetDestination(_fov.NearestTarget.position);
+            _navMeshAgent.isStopped = false;
+            _navMeshAgent.speed = _speedChaseMovement;
+
+            // Activate obstacle
+            _navMeshObstacle.enabled = false;
 
             // TODO: move animator to "CHASE" state
 
@@ -92,7 +108,8 @@ namespace DudeResqueSquad
         public void OnExit()
         {
             // Disables Nav mesh Agent
-            _agent.enabled = false;
+            if (_navMeshAgent.enabled)
+                _navMeshAgent.isStopped = true;
 
             Debug.Log("<b>CHASE TARGET</b> - <color=red>OnExit</color>");
         }

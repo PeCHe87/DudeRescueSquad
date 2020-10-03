@@ -15,9 +15,9 @@ MonoBehaviour:
   UID: 
   MaxHealth: 200
   CurrentHealth: 100
-  MinIdleTime: 3
-  MaxIdleTime: 5
-  SpeedPatrollingMovement: 2
+  MinIdleTime: 2
+  MaxIdleTime: 3
+  SpeedPatrollingMovement: 3
   MinPatrollingTime: 20
   MaxPatrollingTime: 30
   TargetMaskDetection:
@@ -26,10 +26,10 @@ MonoBehaviour:
   ObstacleMaskDetection:
     serializedVersion: 2
     m_Bits: 8192
-  SpeedChasingMovement: 3
+  SpeedChasingMovement: 4
   MinChasingDistance: 2.5
-  RadiusDetection: 10
-  AngleDetection: 90
+  RadiusDetection: 12
+  AngleDetection: 160
   RadiusAttack: 3
   DelayBetweenAttacks: 1
   MinDamage: 1.5

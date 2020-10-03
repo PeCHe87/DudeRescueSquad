@@ -41,6 +41,8 @@ namespace DudeResqueSquad
 
             NavMeshAgent navMeshAgent = GetComponent<NavMeshAgent>();
 
+            NavMeshObstacle navMeshObstacle = GetComponent<NavMeshObstacle>();
+
             // Field of View
             _fieldOfView = GetComponent<FieldOfView>();
             _fieldOfView.Radius = _data.RadiusDetection;
@@ -53,12 +55,12 @@ namespace DudeResqueSquad
             _stateMachine.PropertyChanged += StateMachineHasChanged;
 
             // Create states
-            var stateIdle = new Idle(_data);
-            var stateMoveBetweenPoints = new MoveBetweenPoints(_data, navMeshAgent, _animator, _points);
-            var stateChasing = new ChaseTarget(_data, _fieldOfView, navMeshAgent, _animator);
-            var stateAttacking = new Attack(_data, transform, _fieldOfView, _animator);
+            var stateIdle = new Idle(_data, navMeshAgent, navMeshObstacle);
+            var stateMoveBetweenPoints = new MoveBetweenPoints(_data, navMeshAgent, _animator, _points, navMeshObstacle);
+            var stateChasing = new ChaseTarget(_data, _fieldOfView, navMeshAgent, _animator, navMeshObstacle);
+            var stateAttacking = new Attack(_data, transform, _fieldOfView, _animator, navMeshAgent, navMeshObstacle);
             var stateTakingDamage = new TakeDamage(_data, _animator);
-            var stateDead = new Dead(_data, _animator);
+            var stateDead = new Dead(_data, _animator, navMeshAgent, navMeshObstacle);
 
             #region Create transitions from "IDLE" state
 
@@ -81,11 +83,13 @@ namespace DudeResqueSquad
 
             #region Create transitions from "ATTACK" state
 
-            // If is attacking but target is out of attack range and there isn't any target anymore
-            _stateMachine.AddTransition(stateAttacking, stateIdle, () => (!stateAttacking.IsOnRange) && _fieldOfView.NearestTarget == null);
+            // If is attacking but there isn't any target anymore
+            _stateMachine.AddTransition(stateAttacking, stateIdle, () => _fieldOfView.NearestTarget == null);
+
+            _stateMachine.AddTransition(stateAttacking, stateMoveBetweenPoints, () => _fieldOfView.NearestTarget != null && !stateAttacking.IsOnRange && !IsOnChasingRange());
 
             // If is attacking but target is in detection area yet
-            _stateMachine.AddTransition(stateAttacking, stateChasing, () => (!stateAttacking.IsOnRange) && _fieldOfView.NearestTarget != null);
+            _stateMachine.AddTransition(stateAttacking, stateChasing, () => _fieldOfView.NearestTarget != null && (!stateAttacking.IsOnRange) && IsOnChasingRange());
 
             #endregion
 
@@ -160,6 +164,25 @@ namespace DudeResqueSquad
                 float distanceMagnitude = diff.magnitude;
 
                 if (distanceMagnitude <= _data.RadiusAttack)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Detects if distance to the target is near enough to chase it. If there isn't any target then it isn't on chasing range
+        /// </summary>
+        /// <returns></returns>
+        private bool IsOnChasingRange()
+        {
+            if (_fieldOfView.NearestTarget != null)
+            {
+                // Check distance to detect if it continues in the attacking range
+                var diff = (_fieldOfView.NearestTarget.position - transform.position);
+                float distanceMagnitude = diff.magnitude;
+
+                if (distanceMagnitude <= _data.RadiusDetection)
                     return true;
             }
 
