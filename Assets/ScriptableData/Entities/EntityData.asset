@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1678e4e6ea333744a2ecfad452f03fa, type: 3}
+  m_Name: EntityData
+  m_EditorClassIdentifier: 
+  UID: 
+  MaxHealth: 100
+  CurrentHealth: 80
+  SpeedPatrollingMovement: 0
+  MinPatrollingTime: 0
+  MaxPatrollingTime: 0
+  TargetMaskDetection:
+    serializedVersion: 2
+    m_Bits: 16384
+  ObstacleMaskDetection:
+    serializedVersion: 2
+    m_Bits: 8192
+  SpeedChasingMovement: 4
+  MinChasingDistance: 0
+  RadiusDetection: 10
+  AngleDetection: 120
+  RadiusAttack: 0
+  DelayBetweenAttacks: 0
+  MinDamage: 0
+  MaxDamage: 0
+  DistanceToStop: 3
+  TimeForRecoveringAfterDamage: 0

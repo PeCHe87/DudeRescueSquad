@@ -15,6 +15,12 @@ namespace DudeResqueSquad
 
         #endregion
 
+        #region Public properties
+
+        public Transform Target { get => _target; set => _target = value; }
+
+        #endregion
+
         #region Private properties
 
         private Transform _transform = null;
@@ -31,7 +37,8 @@ namespace DudeResqueSquad
 
         private void Start()
         {
-            _transform.position = _target.position;
+            if (_target != null)
+                _transform.position = _target.position;
         }
 
         private void Update()
