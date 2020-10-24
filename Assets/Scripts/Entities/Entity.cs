@@ -17,6 +17,7 @@ namespace DudeResqueSquad
         #region Private properties
 
         private EntityAnimations _animations = null;
+        private EntityVisual _visuals = null;
         private EntityFollower _follower = null;
         private FieldOfView _fov = null;
         private float _health = 0;
@@ -30,6 +31,7 @@ namespace DudeResqueSquad
         public EntityData Data { get => _data; }
         public EntityFollower Follower { get => _follower; }
         public float DistanceToStop { get => _distanceToStop; }
+        public Enums.EnemyStates State { get => _state; }
 
         #endregion
 
@@ -39,6 +41,9 @@ namespace DudeResqueSquad
         {
             // Animations
             _animations = GetComponent<EntityAnimations>();
+
+            // Visuals
+            _visuals = GetComponent<EntityVisual>();
 
             // Field of View events subscription
             _fov = GetComponent<FieldOfView>();
@@ -74,7 +79,10 @@ namespace DudeResqueSquad
 
         private void DetectNewTarget(Transform target)
         {
-            _follower.Target = target;
+            if (IsOnChasingRange())
+                return;
+
+            _follower.SetTarget(target);
         }
 
         private void StopDetection()
@@ -82,7 +90,7 @@ namespace DudeResqueSquad
             if (_state == Enums.EnemyStates.PATROLLING)
                 return;
 
-            _follower.Target = null;
+            _follower.SetTarget(null);
         }
 
         /// <summary>
@@ -92,6 +100,8 @@ namespace DudeResqueSquad
         /// <param name="e"></param>
         private void StateMachineHasChanged(object sender, PropertyChangedEventArgs e)
         {
+            var oldState = _state;
+
             _state = _stateMachine.GetCurrentState();
 
             _animations.ProcessUpdate(_state);
@@ -102,17 +112,29 @@ namespace DudeResqueSquad
             if (_state == Enums.EnemyStates.IDLE)
             {
                 _follower.Agent.speed = 0;
-                _follower.Target = null;
-                _follower.Agent.isStopped = true;
-                _follower.Agent.enabled = false;
+
+                //_follower.Stop();
+
+                if (_follower.Target != null)
+                    _visuals.StartLookAtTarget(_follower.Target);
             }
             else if (_state == Enums.EnemyStates.PATROLLING)
             {
                 _distanceToStop = _data.PatrollingDistanceToStop;
                 _follower.Agent.speed = _data.SpeedPatrollingMovement;
-                _follower.Agent.enabled = true;
-                _follower.Agent.isStopped = false;
+
+                //_follower.ResumeMovement();
             }
+            else if (_state == Enums.EnemyStates.CHASING)
+            {
+                _distanceToStop = _data.ChasingDistanceToStop;
+                _follower.Agent.speed = _data.SpeedChasingMovement;
+
+                //_follower.ResumeMovement();
+            }
+
+            if (_state != Enums.EnemyStates.IDLE)
+                _visuals.StopLookAtTarget();
         }
 
         private void InitStateMachine()
@@ -124,14 +146,14 @@ namespace DudeResqueSquad
             // Create states
             var stateIdle = new EntityStateIdle(this);
             var statePatrolling = new EntityStatePatrolling(this, _patrollingPoints);
-            //var stateChasing = new EntityStateChasing(this);
+            var stateChasing = new EntityStateChasing(this);
             //var stateAttacking = new EntityStateAttacking(this);
             //var stateTakingDamage = new EntityStateTakingDamage(this);
             //var stateDead = new EntityStateDead(this);
 
             #region Create transitions from "IDLE" state
 
-            _stateMachine.AddTransition(stateIdle, statePatrolling, () => stateIdle.RemainingWaitingTime == 0);
+            _stateMachine.AddTransition(stateIdle, statePatrolling, () => stateIdle.RemainingWaitingTime == 0 && !IsOnChasingRange());
 
             #endregion
 
@@ -141,13 +163,27 @@ namespace DudeResqueSquad
 
             #endregion
 
-            /*
             #region Create transitions from "CHASE TARGET" state
 
             // If it isn't chasing and not in attack range or there isn't target any more
-            _stateMachine.AddTransition(stateChasing, stateIdle, () => (!stateChasing.IsChasing && !stateAttacking.IsOnRange) || _fov.NearestTarget == null);
+            //_stateMachine.AddTransition(stateChasing, stateIdle, () => (!stateChasing.IsChasing && !stateAttacking.IsOnRange) || _fov.NearestTarget == null);
+
+            _stateMachine.AddTransition(stateChasing, statePatrolling, () => _fov.NearestTarget == null);
+
+            _stateMachine.AddTransition(stateChasing, stateIdle, () => !stateChasing.IsChasing);
 
             #endregion
+
+            #region Any transitions
+
+            // If there is a detected target and not in attacking range then start Chasing it
+            _stateMachine.AddAnyTransition(stateChasing, () => _fov.NearestTarget != null && _follower.Target != null && !IsOnChasingRange());
+
+            //_stateMachine.AddAnyTransition(stateIdle, () => stateIdle.RemainingWaitingTime == 0 && IsOnChasingRange());
+
+            #endregion
+
+            /*
 
             #region Create transitions from "ATTACK" state
 
@@ -198,6 +234,22 @@ namespace DudeResqueSquad
             _stateMachine.SetState(stateIdle);
         }
 
+        /// <summary>
+        /// Checks if entity is near enough to its target when chasing
+        /// </summary>
+        private bool IsOnChasingRange()
+        {
+            if (_follower == null)
+                return false;
+
+            if (_follower.Target == null)
+                return false;
+
+            var remainingDistance = (_follower.Target.position - _follower.Agent.transform.position).magnitude;
+
+            return (remainingDistance <= _data.ChasingDistanceToStop);
+        }
+
         #endregion
 
         #region Public Method
@@ -228,12 +280,10 @@ namespace DudeResqueSquad
             var visualBehavior = GetComponent<EntityVisual>();
 
             if (visualBehavior != null)
+            {
                 visualBehavior.Target = _follower.transform;
-        }
-
-        public void SetTarget(Transform target)
-        {
-            _follower.Target = target;
+                visualBehavior.Agent = _follower.Agent;
+            }
         }
 
         #endregion

@@ -60,7 +60,7 @@ namespace DudeResqueSquad
                 // If time patrolling is zero then stop moving when current goal is reached
                 if (_patrollingTime > 0)
                 {
-                    _entity.Follower.Target = _points[_currentPointIndex];
+                    _entity.Follower.SetTarget(_points[_currentPointIndex]);
 
                     Debug.Log($"<b>PATROLLING</b> - <b>Change waypoint</b> - new waypoint: {_currentPointIndex}");
                 }
@@ -83,14 +83,14 @@ namespace DudeResqueSquad
             _distanceToStop = _entity.Data.PatrollingDistanceToStop + 0.25f;
             
             // Get current point and start nave mesh agent movement
-            _entity.Follower.Target = _points[_currentPointIndex];
+            _entity.Follower.SetTarget(_points[_currentPointIndex]);
 
             Debug.Log($"<b>PATROLLING</b> - <color=green>OnEnter</color> - current point: {_currentPointIndex}, patrolling time: {_patrollingTime}");
         }
 
         public void OnExit()
         {
-            Debug.Log("<b>MOVE BETWEEN POINTS</b> - <color=red>OnExit</color>");
+            Debug.Log("<b>PATROLLING</b> - <color=red>OnExit</color>");
         }
 
         #endregion

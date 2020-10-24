@@ -26,6 +26,7 @@ public class EntityData : ScriptableObject
     public float MinChasingDistance;
     public float RadiusDetection;
     public float AngleDetection;
+    public float ChasingDistanceToStop;
 
     [Header("Attack")]
     public float RadiusAttack;

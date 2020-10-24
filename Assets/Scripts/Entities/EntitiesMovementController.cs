@@ -43,14 +43,22 @@ namespace DudeResqueSquad
             for (int i = 0; i < amount; i++)
             {
                 var entity = _entities[i];
+                var obstacle = _obstacles[i];
+                var agent = _agents[i];
+
+                if (entity.State == Enums.EnemyStates.IDLE)
+                {
+                    Stop(agent, obstacle);
+
+                    continue;
+                }
 
                 // Check if entity has a detected target
                 if (entity.Follower.Target == null)
                     continue;
 
                 var agentTransform = _transforms[i];
-                var obstacle = _obstacles[i];
-                var agent = _agents[i];
+                
 
                 // Skip agents that aren't moving
                 if (!agent.enabled)
@@ -121,6 +129,9 @@ namespace DudeResqueSquad
             {
                 var entity = _entities[i];
 
+                if (entity.State == Enums.EnemyStates.IDLE)
+                    continue;
+
                 // Check if entity has a detected target
                 if (entity.Follower.Target == null)
                     continue;
@@ -166,23 +177,43 @@ namespace DudeResqueSquad
 
         private IEnumerator UpdateDestination(Entity entity, NavMeshAgent agent, NavMeshObstacle obstacle)
         {
-            obstacle.carving = false;
-            obstacle.enabled = false;
-
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-
-            // Check if current target exists
-            if (entity.Follower.Target != null)
+            if (entity.State != Enums.EnemyStates.IDLE)
             {
-                agent.enabled = true;
-
-                if (agent.enabled)
+                // Skip this logic if there isn't any target
+                if (entity.Follower.Target != null)
                 {
-                    agent.SetDestination(entity.Follower.Target.position);
-                    agent.isStopped = false;
+                    obstacle.carving = false;
+                    obstacle.enabled = false;
+
+                    yield return new WaitForEndOfFrame();
+                    yield return new WaitForEndOfFrame();
+
+                    // Check if current target exists
+                    if (entity.Follower.Target != null)
+                    {
+                        agent.enabled = true;
+
+                        if (agent.enabled)
+                        {
+                            agent.SetDestination(entity.Follower.Target.position);
+                            agent.isStopped = false;
+                        }
+                    }
                 }
             }
+        }
+
+        private void Stop(NavMeshAgent agent, NavMeshObstacle obstacle)
+        {
+            if (agent.enabled)
+            {
+                agent.isStopped = true;
+                agent.enabled = false;
+            }
+
+            obstacle.transform.position = agent.transform.position;
+            obstacle.enabled = true;
+            obstacle.carving = true;
         }
 
         #endregion

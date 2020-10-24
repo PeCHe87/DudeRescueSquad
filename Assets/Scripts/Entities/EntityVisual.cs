@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AI;
 
 // Reference: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/pathfinding-and-local-avoidance-for-rpgrts-games-using-unity-r3703/
 
@@ -18,6 +19,8 @@ namespace DudeResqueSquad
         #region Public properties
 
         public Transform Target { get => _target; set => _target = value; }
+        public NavMeshAgent Agent { set => _agent = value; }
+        public bool IsMoving { get => _isMoving; }
 
         #endregion
 
@@ -25,6 +28,11 @@ namespace DudeResqueSquad
 
         private Transform _transform = null;
         private Vector3 _lastPosition;
+        private NavMeshAgent _agent = null;
+        private bool _lookAtTarget = false;
+        private Transform _entityTarget = null;
+        private bool _isMoving = false;
+        private float _offsetToStopPow = 0;
 
         #endregion
 
@@ -33,6 +41,8 @@ namespace DudeResqueSquad
         private void Awake()
         {
             _transform = transform;
+
+            _offsetToStopPow = Mathf.Pow(_offsetToStop, 2);
         }
 
         private void Start()
@@ -43,12 +53,36 @@ namespace DudeResqueSquad
 
         private void Update()
         {
-            // Test if the distance between the agent (which is now the proxy) and the entity is less than the offset distance to stop
-            if ((_transform.position - _target.position).sqrMagnitude < Mathf.Pow(_offsetToStop, 2))
+            if (_lookAtTarget)
+            {
+                LookAt();
+            }
+
+            if (_target == null)
                 return;
 
+            if (_agent == null)
+                return;
+
+            //if (!_agent.enabled)
+            //    return;
+
+            //if (_agent.speed == 0)
+            //    return;
+
+            // Test if the distance between the agent (which is now the proxy) and the entity is less than the offset distance to stop
+            if ((_transform.position - _target.position).sqrMagnitude < _offsetToStopPow)    //if ((_transform.position - _target.position).sqrMagnitude < Mathf.Pow(_offsetToStop, 2))
+            {
+                _isMoving = false;
+                return;
+            }
+
+            _isMoving = true;
+
             // Follow the target proxy
-            _transform.position = Vector3.Lerp(_transform.position, _target.position, Time.deltaTime * _speed);
+            //_transform.position = Vector3.Lerp(_transform.position, _target.position, Time.deltaTime * _speed);
+            var direction = _target.position - transform.position;
+            _transform.position += direction * Time.deltaTime * _speed;
             //_transform.position = _target.position;
 
             // Rotate towards target proxy
@@ -76,9 +110,29 @@ namespace DudeResqueSquad
             _lastPosition = _transform.position;
         }
 
+        private void LookAt()
+        {
+            if (_target == null)
+                return;
+
+            transform.rotation = Quaternion.LookRotation(_entityTarget.position - transform.position);
+        }
+
         #endregion
 
         #region Public methods
+
+        public void StartLookAtTarget(Transform target)
+        {
+            _lookAtTarget = true;
+            _entityTarget = target;
+        }
+
+        public void StopLookAtTarget()
+        {
+            _lookAtTarget = false;
+            _entityTarget = null;
+        }
 
         #endregion
     }

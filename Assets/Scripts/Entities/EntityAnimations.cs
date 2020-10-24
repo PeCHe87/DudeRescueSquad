@@ -153,6 +153,8 @@ namespace DudeResqueSquad
                 Idle();
             else if (state == Enums.EnemyStates.PATROLLING)
                 Walk();
+            else if (state == Enums.EnemyStates.CHASING)
+                Run();
         }
 
         #endregion
