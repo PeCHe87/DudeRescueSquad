@@ -9,10 +9,15 @@ public class EntityData : ScriptableObject
     public int MaxHealth;
     public int CurrentHealth;
 
+    [Header("Idle")]
+    public float MinIdleTime;
+    public float MaxIdleTime;
+
     [Header("Patrolling")]
     public float SpeedPatrollingMovement;
     public float MinPatrollingTime;
     public float MaxPatrollingTime;
+    public float PatrollingDistanceToStop;
     public LayerMask TargetMaskDetection;
     public LayerMask ObstacleMaskDetection;
 

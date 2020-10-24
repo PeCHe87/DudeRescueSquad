@@ -9,7 +9,6 @@ namespace DudeResqueSquad
     {
         #region Inspector properties
 
-        [SerializeField] private Transform _target = null;  // TODO: this should come from each Entity
         [SerializeField] private Entity[] _entities = null;
         [SerializeField] private EntityFollower _followerTemplate = null;
         [SerializeField] private float _timeToStartFollowing = 1;
@@ -59,7 +58,7 @@ namespace DudeResqueSquad
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.Data.DistanceToStop)
+                if (diff <= entity.DistanceToStop)
                 {
                     if (agent.enabled)
                     {
@@ -107,9 +106,11 @@ namespace DudeResqueSquad
                 _agents[i] = entity.Follower.Agent;
             }
 
-            InvokeRepeating("Follow", 5, _timeToStartFollowing);
+            InvokeRepeating("Follow", 1, _timeToStartFollowing);
 
             _wasInitialized = true;
+
+            Debug.Log("<b>EntitiesMovementController</b> - Initialization");
         }
 
         private async void Follow()
@@ -128,7 +129,7 @@ namespace DudeResqueSquad
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.Data.DistanceToStop)
+                if (diff <= entity.DistanceToStop)
                     continue;
 
                 var obstacle = _obstacles[i];
@@ -150,7 +151,7 @@ namespace DudeResqueSquad
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.Data.DistanceToStop)
+                if (diff <= entity.DistanceToStop)
                     continue;
 
                 var obstacle = _obstacles[i];

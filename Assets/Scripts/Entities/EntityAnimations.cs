@@ -92,6 +92,13 @@ namespace DudeResqueSquad
 
         #region Public methods
 
+        public void Idle()
+        {
+            ResetState();
+
+            UpdateParams();
+        }
+
         public void Walk()
         {
             ResetState();
@@ -137,6 +144,15 @@ namespace DudeResqueSquad
             _takeDamage = true;
 
             UpdateParams();
+        }
+
+        public void ProcessUpdate(Enums.EnemyStates state)
+        {
+            // Based on current state param update the animations
+            if (state == Enums.EnemyStates.IDLE)
+                Idle();
+            else if (state == Enums.EnemyStates.PATROLLING)
+                Walk();
         }
 
         #endregion

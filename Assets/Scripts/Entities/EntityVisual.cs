@@ -49,6 +49,7 @@ namespace DudeResqueSquad
 
             // Follow the target proxy
             _transform.position = Vector3.Lerp(_transform.position, _target.position, Time.deltaTime * _speed);
+            //_transform.position = _target.position;
 
             // Rotate towards target proxy
             //_transform.rotation = _target.rotation;
