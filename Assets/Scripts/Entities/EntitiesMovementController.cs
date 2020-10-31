@@ -43,12 +43,10 @@ namespace DudeResqueSquad
             for (int i = 0; i < amount; i++)
             {
                 var entity = _entities[i];
-                var obstacle = _obstacles[i];
-                var agent = _agents[i];
 
                 if (entity.State == Enums.EnemyStates.IDLE)
                 {
-                    Stop(agent, obstacle);
+                    Stop(entity);
 
                     continue;
                 }
@@ -61,25 +59,17 @@ namespace DudeResqueSquad
                 
 
                 // Skip agents that aren't moving
-                if (!agent.enabled)
+                if (!entity.Follower.Agent.enabled)
                     continue;
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
                 if (diff <= entity.DistanceToStop)
                 {
-                    if (agent.enabled)
-                    {
-                        agent.isStopped = true;
-                        agent.enabled = false;
-                    }
-
-                    obstacle.transform.position = agent.transform.position;
-                    obstacle.enabled = true;
-                    obstacle.carving = true;
+                    Stop(entity);
 
                     if (_canDebug)
-                        Debug.Log($"Stop agent {agent.transform.name}");
+                        Debug.Log($"Stop agent {entity.name}");
                 }
             }
         }
@@ -171,19 +161,19 @@ namespace DudeResqueSquad
                 if (!Application.isPlaying)
                     break;
 
-                StartCoroutine(UpdateDestination(entity, agent, obstacle));
+                StartCoroutine(UpdateDestination(entity));
             }
         }
 
-        private IEnumerator UpdateDestination(Entity entity, NavMeshAgent agent, NavMeshObstacle obstacle)
+        private IEnumerator UpdateDestination(Entity entity)
         {
             if (entity.State != Enums.EnemyStates.IDLE)
             {
                 // Skip this logic if there isn't any target
                 if (entity.Follower.Target != null)
                 {
-                    obstacle.carving = false;
-                    obstacle.enabled = false;
+                    entity.Follower.Obstacle.carving = false;
+                    entity.Follower.Obstacle.enabled = false;
 
                     yield return new WaitForEndOfFrame();
                     yield return new WaitForEndOfFrame();
@@ -191,29 +181,39 @@ namespace DudeResqueSquad
                     // Check if current target exists
                     if (entity.Follower.Target != null)
                     {
-                        agent.enabled = true;
-
-                        if (agent.enabled)
-                        {
-                            agent.SetDestination(entity.Follower.Target.position);
-                            agent.isStopped = false;
-                        }
+                        Resume(entity);
                     }
                 }
             }
         }
 
-        private void Stop(NavMeshAgent agent, NavMeshObstacle obstacle)
+        private void Stop(Entity entity)
         {
-            if (agent.enabled)
+            if (entity.Follower.Agent.enabled)
             {
-                agent.isStopped = true;
-                agent.enabled = false;
+                entity.Follower.Agent.isStopped = true;
+                entity.Follower.Agent.enabled = false;
             }
 
-            obstacle.transform.position = agent.transform.position;
-            obstacle.enabled = true;
-            obstacle.carving = true;
+            entity.Follower.Obstacle.transform.position = entity.Follower.Agent.transform.position;  //entity.Visuals.transform.position;
+            entity.Follower.Obstacle.enabled = true;
+            entity.Follower.Obstacle.carving = true;
+        }
+
+        private void Resume(Entity entity)
+        {
+            // Move agent to visuals if agent was disabled
+            //if (!entity.Follower.Agent.enabled)
+            //    entity.Follower.Agent.transform.position = entity.transform.position;
+
+            // Enables agent
+            entity.Follower.Agent.enabled = true;
+
+            if (entity.Follower.Agent.enabled)
+            {
+                entity.Follower.Agent.SetDestination(entity.Follower.Target.position);
+                entity.Follower.Agent.isStopped = false;
+            }
         }
 
         #endregion

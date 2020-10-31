@@ -32,6 +32,7 @@ namespace DudeResqueSquad
         public EntityFollower Follower { get => _follower; }
         public float DistanceToStop { get => _distanceToStop; }
         public Enums.EnemyStates State { get => _state; }
+        public EntityVisual Visuals { get => _visuals; }
 
         #endregion
 
@@ -113,8 +114,6 @@ namespace DudeResqueSquad
             {
                 _follower.Agent.speed = 0;
 
-                //_follower.Stop();
-
                 if (_follower.Target != null)
                     _visuals.StartLookAtTarget(_follower.Target);
             }
@@ -122,15 +121,11 @@ namespace DudeResqueSquad
             {
                 _distanceToStop = _data.PatrollingDistanceToStop;
                 _follower.Agent.speed = _data.SpeedPatrollingMovement;
-
-                //_follower.ResumeMovement();
             }
             else if (_state == Enums.EnemyStates.CHASING)
             {
                 _distanceToStop = _data.ChasingDistanceToStop;
                 _follower.Agent.speed = _data.SpeedChasingMovement;
-
-                //_follower.ResumeMovement();
             }
 
             if (_state != Enums.EnemyStates.IDLE)
@@ -242,10 +237,12 @@ namespace DudeResqueSquad
             if (_follower == null)
                 return false;
 
-            if (_follower.Target == null)
+            var target = _fov.NearestTarget;
+
+            if (target == null)     //if (_follower.Target == null)
                 return false;
 
-            var remainingDistance = (_follower.Target.position - _follower.Agent.transform.position).magnitude;
+            var remainingDistance = (target.position - _follower.Agent.transform.position).magnitude;
 
             return (remainingDistance <= _data.ChasingDistanceToStop);
         }
