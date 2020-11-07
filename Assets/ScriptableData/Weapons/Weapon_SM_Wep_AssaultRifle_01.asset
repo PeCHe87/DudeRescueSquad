@@ -21,7 +21,7 @@ MonoBehaviour:
   AttackType: 5
   AnimationSpeed: 1
   AttackEffect: {fileID: 0}
-  Damage: 2
+  Damage: 4
   DetectionAreaRadius: 8
   AngleAttackArea: 360
   FireRate: 2
@@ -45,12 +45,12 @@ MonoBehaviour:
       type: 3}
     hasShells: 1
   InfiniteBullets: 1
-  CurrentBulletsAmount: 0
+  CurrentBulletsAmount: 250
   MaxBulletsAmount: 30
   AutoFire: 1
   DelayBetweenBullets: 0.15
   BulletsMagazine: 50
-  CurrentBulletsMagazine: 13
+  CurrentBulletsMagazine: 26
   BulletsToReload: 0
   ReloadTime: 2
   RemainingReloadTime: 0

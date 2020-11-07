@@ -14,6 +14,8 @@ namespace DudeResqueSquad
 
         bool IsDead { get; }
 
+        bool IsTakingDamage { get; }
+
         void TakeDamage(float damage);
 
         void Heal(float newHealth);

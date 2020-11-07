@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: EntityData
   m_EditorClassIdentifier: 
   UID: 
-  MaxHealth: 100
-  CurrentHealth: 80
+  MaxHealth: 30
+  CurrentHealth: 30
   MinIdleTime: 4
   MaxIdleTime: 8
   SpeedPatrollingMovement: 1.5
@@ -37,4 +37,4 @@ MonoBehaviour:
   MinDamage: 0
   MaxDamage: 0
   DistanceToStop: 2
-  TimeForRecoveringAfterDamage: 0
+  TimeForRecoveringAfterDamage: 1

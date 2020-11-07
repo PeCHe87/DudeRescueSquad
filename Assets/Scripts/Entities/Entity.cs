@@ -9,6 +9,7 @@ namespace DudeResqueSquad
         #region Inspector properties
 
         [SerializeField] private EntityData _data = null;
+        [SerializeField] private string _uid = string.Empty;
         [SerializeField] private Enums.EnemyStates _state;
         [SerializeField] private Transform[] _patrollingPoints = null;
 
@@ -23,11 +24,13 @@ namespace DudeResqueSquad
         private float _health = 0;
         private StateMachine _stateMachine = null;
         private float _distanceToStop = 0;
+        private IDamageable _damageable = null;
 
         #endregion
 
         #region Public Properties
 
+        public string UID { get => _uid; }
         public EntityData Data { get => _data; }
         public EntityFollower Follower { get => _follower; }
         public float DistanceToStop { get => _distanceToStop; }
@@ -40,6 +43,17 @@ namespace DudeResqueSquad
 
         private void Awake()
         {
+            // Damageable
+            _damageable = GetComponent<IDamageable>();
+
+            if (_damageable != null)
+            {
+                ((EntityDamageable)_damageable).Init(_data.CurrentHealth, _data.MaxHealth, _uid, _data.TimeForRecoveringAfterDamage);
+
+                _damageable.OnTakeDamage += TakingDamage;
+                _damageable.OnDied += Dying;
+            }
+
             // Animations
             _animations = GetComponent<EntityAnimations>();
 
@@ -63,6 +77,12 @@ namespace DudeResqueSquad
 
         private void OnDestroy()
         {
+            if (_damageable != null)
+            {
+                _damageable.OnTakeDamage -= TakingDamage;
+                _damageable.OnDied -= Dying;
+            }
+
             if (_fov != null)
             {
                 _fov.OnDetectNewTarget -= DetectNewTarget;
@@ -94,6 +114,38 @@ namespace DudeResqueSquad
             _follower.SetTarget(null);
         }
 
+        private void TakingDamage(object sender, CustomEventArgs.DamageEventArgs e)
+        {
+            Debug.Log($"Entity: <b>{e.entityUID}</b> <color=red>takes damage: {e.damage}</color>, current Health: {_damageable.Health}/{_damageable.MaxHealth}");
+
+            // TODO: make changes related with animations
+
+            // Stop visual following
+            _visuals.StopFollowing();
+
+            // Stop movement
+            _follower.StopSpeed();
+
+            // Re positionate the Agent and Obstacle in the same place where visual stops
+            var position = _visuals.transform.position;
+            _follower.Agent.transform.position = position;
+            _follower.Obstacle.transform.position = position;
+        }
+
+        private void Dying(object sender, CustomEventArgs.EntityDeadEventArgs e)
+        {
+            Debug.Log($"Entity: <b>{e.entityUID}</b> <color=red>has DEAD!</color>");
+
+            // Stop movement
+            _follower.enabled = false;
+
+            // Stop detection
+            _fov.enabled = false;
+
+            // Stop visual following
+            _visuals.StopFollowing();
+        }
+
         /// <summary>
         /// Each time State Machine is updated then it is notified
         /// </summary>
@@ -112,22 +164,42 @@ namespace DudeResqueSquad
 
             if (_state == Enums.EnemyStates.IDLE)
             {
-                _follower.Agent.speed = 0;
+                _follower.StopSpeed();
 
+                // If there is a target, then look at it
                 if (_follower.Target != null)
                     _visuals.StartLookAtTarget(_follower.Target);
             }
             else if (_state == Enums.EnemyStates.PATROLLING)
             {
+                //if (oldState == Enums.EnemyStates.TAKING_DAMAGE)
+                //    _follower.Agent.transform.position = _visuals.transform.position;
+
+                _visuals.ResumeFollowing();
+
                 _distanceToStop = _data.PatrollingDistanceToStop;
                 _follower.Agent.speed = _data.SpeedPatrollingMovement;
             }
             else if (_state == Enums.EnemyStates.CHASING)
             {
+                //if (oldState == Enums.EnemyStates.TAKING_DAMAGE)
+                //    _follower.Agent.transform.position = _visuals.transform.position;
+
+                _visuals.ResumeFollowing();
+
                 _distanceToStop = _data.ChasingDistanceToStop;
                 _follower.Agent.speed = _data.SpeedChasingMovement;
             }
+            else if (_state == Enums.EnemyStates.TAKING_DAMAGE)
+            {
+                _follower.StopSpeed();
+            }
+            else if (_state == Enums.EnemyStates.DEAD)
+            {
+                _follower.StopSpeed();
+            }
 
+            // No need to look at Target if it isn't in Idle state
             if (_state != Enums.EnemyStates.IDLE)
                 _visuals.StopLookAtTarget();
         }
@@ -142,9 +214,9 @@ namespace DudeResqueSquad
             var stateIdle = new EntityStateIdle(this);
             var statePatrolling = new EntityStatePatrolling(this, _patrollingPoints);
             var stateChasing = new EntityStateChasing(this);
+            var stateTakingDamage = new EntityStateTakingDamage(this);
+            var stateDead = new EntityStateDead(this);
             //var stateAttacking = new EntityStateAttacking(this);
-            //var stateTakingDamage = new EntityStateTakingDamage(this);
-            //var stateDead = new EntityStateDead(this);
 
             #region Create transitions from "IDLE" state
 
@@ -169,17 +241,39 @@ namespace DudeResqueSquad
 
             #endregion
 
-            #region Any transitions
+            #region Create transitions from "TAKING DAMAGE" state
 
-            // If there is a detected target and not in attacking range then start Chasing it
-            _stateMachine.AddAnyTransition(stateChasing, () => _fov.NearestTarget != null && _follower.Target != null && !IsOnChasingRange());
+            // Taking damage over -> Patrolling
+            //_stateMachine.AddTransition(stateTakingDamage, statePatrolling, () => !_damageable.IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget == null && !IsOnChasingRange());
 
-            //_stateMachine.AddAnyTransition(stateIdle, () => stateIdle.RemainingWaitingTime == 0 && IsOnChasingRange());
+            // Taking damage over -> Chasing
+            _stateMachine.AddTransition(stateTakingDamage, stateChasing, () => !_damageable.IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && IsOnChasingRange());
+
+            // Taking damage over -> Idle
+            _stateMachine.AddTransition(stateTakingDamage, stateIdle, () => !_damageable.IsDead && !stateTakingDamage.IsRecovering && !IsOnChasingRange());
+
+            // Taking damage over -> Attacking
+            //_stateMachine.AddTransition(stateTakingDamage, stateAttacking, () => !_damageable.IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && IsOnAttackingRange());
 
             #endregion
 
-            /*
+            #region Any transitions
 
+            // If there is a detected target and not in attacking range then start Chasing it
+            _stateMachine.AddAnyTransition(stateChasing, () => !_damageable.IsDead && !_damageable.IsTakingDamage && _fov.NearestTarget != null && _follower.Target != null && !IsOnChasingRange());
+
+            // If takes damage then move to this state
+            _stateMachine.AddAnyTransition(stateTakingDamage, () => !_damageable.IsDead && _damageable.IsTakingDamage);
+
+            // If it is dead
+            _stateMachine.AddAnyTransition(stateDead, () => _damageable.IsDead);
+
+            #endregion
+
+            // Set last state as "DEAD"
+            _stateMachine.SetLastState(stateDead);
+
+            /*
             #region Create transitions from "ATTACK" state
 
             // If is attacking but there isn't any target anymore
@@ -192,23 +286,7 @@ namespace DudeResqueSquad
 
             #endregion
 
-            #region Create transitions from "TAKING DAMAGE" state
-
-            // Taking damage over -> Patrolling
-            _stateMachine.AddTransition(stateTakingDamage, statePatrolling, () => !IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget == null);
-
-            // Taking damage over -> Chasing
-            _stateMachine.AddTransition(stateTakingDamage, stateChasing, () => !IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && !IsOnAttackingRange());
-
-            // Taking damage over -> Attacking
-            _stateMachine.AddTransition(stateTakingDamage, stateAttacking, () => !IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && IsOnAttackingRange());
-
-            #endregion
-
             #region Create transitions from ANY state
-
-            // If it is dead
-            _stateMachine.AddAnyTransition(stateDead, () => IsDead);
 
             // If there is a detected target and not in attacking range then start Chasing it
             _stateMachine.AddAnyTransition(stateChasing, () => !IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && !IsOnAttackingRange());
@@ -216,13 +294,7 @@ namespace DudeResqueSquad
             // If it is in range to Attack
             _stateMachine.AddAnyTransition(stateAttacking, () => !IsDead && !stateTakingDamage.IsRecovering && _fov.NearestTarget != null && IsOnAttackingRange());
 
-            // If takes damage then move to this state
-            _stateMachine.AddAnyTransition(stateTakingDamage, () => !IsDead && _isTakingDamage);
-
             #endregion
-
-            // Set last state as "DEAD"
-            _stateMachine.SetLastState(stateDead);
             */
 
             // Start State machine at "IDLE" state
@@ -239,7 +311,7 @@ namespace DudeResqueSquad
 
             var target = _fov.NearestTarget;
 
-            if (target == null)     //if (_follower.Target == null)
+            if (target == null)
                 return false;
 
             var remainingDistance = (target.position - _follower.Agent.transform.position).magnitude;

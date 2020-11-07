@@ -3,32 +3,41 @@ using UnityEngine;
 
 namespace DudeResqueSquad
 {
-    public class DamageableProp : MonoBehaviour, IDamageable
+    public class EntityDamageable : MonoBehaviour, IDamageable
     {
-        [SerializeField] private string _uid = string.Empty;
-        [SerializeField] private float _initialHealth = 0;
-        [SerializeField] private GameObject _art = null;
-        [SerializeField] private GameObject _hitEffect = null;
-        [SerializeField] private Transform _hitPivot = null;
+        #region Private properties
 
+        private string _uid = string.Empty;
+        private float _timeForRecoveringAfterDamage = 0;
         private Collider _collider = null;
+
+        #endregion
+
+        #region Private methods
 
         private void Awake()
         {
             _collider = GetComponent<Collider>();
-
-            Health = MaxHealth = _initialHealth;
         }
 
-        private void ShowHitEffect()
+        private void StopTakingDamage()
         {
-            if (_hitEffect == null)
-                return;
-
-            GameObject hit = Instantiate(_hitEffect, _hitPivot);
-            hit.transform.localPosition = Vector3.zero;
-            hit.transform.SetParent(transform.parent);
+            IsTakingDamage = false;
         }
+
+        #endregion
+
+        #region Public methods
+
+        public void Init(int health, int maxHealth, string uid, float timeForRecoveringAfterDamage)
+        {
+            Health = health;
+            MaxHealth = maxHealth;
+            _uid = uid;
+            _timeForRecoveringAfterDamage = timeForRecoveringAfterDamage;
+        }
+
+        #endregion
 
         #region IDamageable implementation
 
@@ -48,18 +57,20 @@ namespace DudeResqueSquad
         {
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
 
-            ShowHitEffect();
-
             if (Health == 0)
             {
-                _art.SetActive(false);
-
                 _collider.enabled = false;
 
                 OnDied?.Invoke(this, new CustomEventArgs.EntityDeadEventArgs(_uid));
             }
             else
+            {
+                IsTakingDamage = true;
+
                 OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));
+
+                Invoke("StopTakingDamage", _timeForRecoveringAfterDamage);
+            }
         }
 
         public void Heal(float value)

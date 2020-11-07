@@ -44,6 +44,11 @@ namespace DudeResqueSquad
             Target = target;
         }
 
+        public void StopSpeed()
+        {
+            _agent.speed = 0;
+        }
+
         #endregion
     }
 }

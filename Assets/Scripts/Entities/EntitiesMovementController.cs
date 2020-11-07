@@ -44,7 +44,7 @@ namespace DudeResqueSquad
             {
                 var entity = _entities[i];
 
-                if (entity.State == Enums.EnemyStates.IDLE)
+                if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.TAKING_DAMAGE || entity.State == Enums.EnemyStates.DEAD)
                 {
                     Stop(entity);
 
@@ -119,7 +119,7 @@ namespace DudeResqueSquad
             {
                 var entity = _entities[i];
 
-                if (entity.State == Enums.EnemyStates.IDLE)
+                if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.TAKING_DAMAGE || entity.State == Enums.EnemyStates.DEAD)
                     continue;
 
                 // Check if entity has a detected target

@@ -199,6 +199,8 @@ namespace DudeResqueSquad
 
         public bool IsDead => Health == 0;
 
+        public bool IsTakingDamage { get; private set; }
+
         public event EventHandler<CustomEventArgs.DamageEventArgs> OnTakeDamage;
         public event EventHandler<CustomEventArgs.EntityDeadEventArgs> OnDied;
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;

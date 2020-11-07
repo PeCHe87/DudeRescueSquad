@@ -33,6 +33,7 @@ namespace DudeResqueSquad
         private Transform _entityTarget = null;
         private bool _isMoving = false;
         private float _offsetToStopPow = 0;
+        private bool _canFollow = true;
 
         #endregion
 
@@ -53,6 +54,9 @@ namespace DudeResqueSquad
 
         private void Update()
         {
+            if (!_canFollow)
+                return;
+
             if (_lookAtTarget)
             {
                 LookAt();
@@ -63,12 +67,6 @@ namespace DudeResqueSquad
 
             if (_agent == null)
                 return;
-
-            //if (!_agent.enabled)
-            //    return;
-
-            //if (_agent.speed == 0)
-            //    return;
 
             // Test if the distance between the agent (which is now the proxy) and the entity is less than the offset distance to stop
             if ((_transform.position - _target.position).sqrMagnitude < _offsetToStopPow)    //if ((_transform.position - _target.position).sqrMagnitude < Mathf.Pow(_offsetToStop, 2))
@@ -132,6 +130,16 @@ namespace DudeResqueSquad
         {
             _lookAtTarget = false;
             _entityTarget = null;
+        }
+
+        public void StopFollowing()
+        {
+            _canFollow = false;
+        }
+
+        public void ResumeFollowing()
+        {
+            _canFollow = true;
         }
 
         #endregion

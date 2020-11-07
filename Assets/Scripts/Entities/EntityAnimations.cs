@@ -155,6 +155,10 @@ namespace DudeResqueSquad
                 Walk();
             else if (state == Enums.EnemyStates.CHASING)
                 Run();
+            else if (state == Enums.EnemyStates.TAKING_DAMAGE)
+                TakeDamage();
+            else if (state == Enums.EnemyStates.DEAD)
+                Die();
         }
 
         #endregion
