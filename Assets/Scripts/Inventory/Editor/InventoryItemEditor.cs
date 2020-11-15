@@ -1,8 +1,7 @@
 ﻿using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEngine;
 
-namespace DudeResqueSquad
+namespace DudeResqueSquad.Inventory
 {
     public class InventoryItemEditor : EditorWindow
     {
@@ -38,12 +37,16 @@ namespace DudeResqueSquad
 
             EditorGUILayout.HelpBox($"{_selected.name}/{_selected.GetDisplayName()}", MessageType.Info);
 
+            _selected.DrawCustomInspector();
+
+            /*
             _selected.SetItemID(EditorGUILayout.TextField("ItemID (clear to reset", _selected.GetItemID()));
             _selected.SetDisplayName(EditorGUILayout.TextField("Display name", _selected.GetDisplayName()));
             _selected.SetDescription(EditorGUILayout.TextField("Description", _selected.GetDescription()));
             _selected.SetIcon((Sprite)EditorGUILayout.ObjectField("Icon", _selected.GetIcon(), typeof(Sprite), false));
             //_selected.SetPickup((Pickup)EditorGUILayout.ObjectField("Pickup", selected.GetPickup(), typeof(Pickup), false));
             _selected.SetStackable(EditorGUILayout.Toggle("Stackable", _selected.IsStackable()));
+            */
         }
 
         #endregion

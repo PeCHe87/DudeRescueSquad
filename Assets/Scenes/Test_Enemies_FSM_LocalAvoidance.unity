@@ -671,6 +671,20 @@ PrefabInstance:
       propertyPath: _uid
       value: entity_2
       objectReference: {fileID: 0}
+    - target: {fileID: 34543494, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _fontSize
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
 --- !u!4 &471012390 stripped
@@ -940,43 +954,65 @@ PrefabInstance:
     - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 0
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4,
+        type: 2}
+    - target: {fileID: 2952023235176598787, guid: 32f9c7e325caace4880d8d119abb5845,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
     - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.characterCount
-      value: 0
+      value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.wordCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.lineCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_textInfo.pageCount
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
+        type: 3}
+      propertyPath: m_fontAsset
+      value: 
+      objectReference: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4,
+        type: 2}
+    - target: {fileID: 2952023234900465824, guid: 32f9c7e325caace4880d8d119abb5845,
+        type: 3}
+      propertyPath: m_sharedMaterial
+      value: 
+      objectReference: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
     - target: {fileID: 2952023233631016595, guid: 32f9c7e325caace4880d8d119abb5845,
         type: 3}
       propertyPath: m_Delegates.Array.data[0].callback.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -1510,6 +1546,20 @@ PrefabInstance:
         type: 3}
       propertyPath: _uid
       value: entity_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 34543494, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _fontSize
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
@@ -2971,6 +3021,20 @@ PrefabInstance:
       propertyPath: _uid
       value: entity_1
       objectReference: {fileID: 0}
+    - target: {fileID: 34543494, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _fontSize
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
 --- !u!4 &1997506960 stripped
@@ -3242,5 +3306,19 @@ PrefabInstance:
       propertyPath: _patrollingPoints.Array.data[9]
       value: 
       objectReference: {fileID: 1903746981}
+    - target: {fileID: 34543494, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _camera
+      value: 
+      objectReference: {fileID: 259913644}
+    - target: {fileID: 6162139475934711236, guid: e7af3ee97723b5144a5f3e1e94b464bc,
+        type: 3}
+      propertyPath: _fontSize
+      value: 6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7af3ee97723b5144a5f3e1e94b464bc, type: 3}

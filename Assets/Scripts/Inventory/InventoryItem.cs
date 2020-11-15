@@ -1,10 +1,22 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
-namespace DudeResqueSquad
+namespace DudeResqueSquad.Inventory
 {
-    public class InventoryItem : MonoBehaviour
+    /// <summary>
+    /// A ScriptableObject that represents any item that can be put in an inventory.
+    /// </summary>
+    /// <remarks>
+    /// In practice, you are likely to use a subclass such as `ActionItem` or `EquipableItem`.
+    /// </remarks>
+    public abstract class InventoryItem : ScriptableObject, ISerializationCallbackReceiver
     {
+        #region Public properties
+
+        public GUIStyle _foldoutStyle = null;
+
+        #endregion
+
         #region Private properties
 
         private string _itemID = string.Empty;
@@ -12,6 +24,7 @@ namespace DudeResqueSquad
         private Sprite _icon = null;
         private string _description = string.Empty;
         private bool _stackable = false;
+        private bool _drawInventoryItem = true;
 
         #endregion
 
@@ -63,7 +76,6 @@ namespace DudeResqueSquad
 
             Dirty();
         }
-
 
         public void SetDisplayName(string newDisplayName)
         {
@@ -119,6 +131,43 @@ namespace DudeResqueSquad
             _stackable = newStackable;
 
             Dirty();
+        }
+
+        public virtual void DrawCustomInspector()
+        {
+            _foldoutStyle = new GUIStyle(EditorStyles.foldout);
+            _foldoutStyle.fontStyle = FontStyle.Bold;
+
+            _drawInventoryItem = EditorGUILayout.Foldout(_drawInventoryItem, "InventoryItem Data", _foldoutStyle);
+
+            if (!_drawInventoryItem)
+                return;
+
+            SetItemID(EditorGUILayout.TextField("ItemID (clear to reset", GetItemID()));
+            SetDisplayName(EditorGUILayout.TextField("Display name", GetDisplayName()));
+            SetDescription(EditorGUILayout.TextField("Description", GetDescription()));
+            SetIcon((Sprite)EditorGUILayout.ObjectField("Icon", GetIcon(), typeof(Sprite), false));
+            //SetPickup((Pickup)EditorGUILayout.ObjectField("Pickup", GetPickup(), typeof(Pickup), false));
+            SetStackable(EditorGUILayout.Toggle("Stackable", IsStackable()));
+        }
+
+        #endregion
+
+        #region Implement ISerializationCallbackReceiver
+
+        void ISerializationCallbackReceiver.OnBeforeSerialize()
+        {
+            // Generate and save a new UUID if this is blank.
+            if (string.IsNullOrWhiteSpace(_itemID))
+            {
+                _itemID = System.Guid.NewGuid().ToString();
+            }
+        }
+
+        void ISerializationCallbackReceiver.OnAfterDeserialize()
+        {
+            // Require by the ISerializationCallbackReceiver but we don't need
+            // to do anything with it.
         }
 
         #endregion
