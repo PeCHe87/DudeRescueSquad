@@ -19,6 +19,7 @@ namespace DudeResqueSquad
         private bool _attack = false;
         private bool _dead = false;
         private bool _takeDamage = false;
+        private bool _isAiming = false;
 
         // Animator IDs
         private int _isWalkingId = 0;
@@ -27,6 +28,7 @@ namespace DudeResqueSquad
         private int _attackId = 0;
         private int _deadId = 0;
         private int _takeDamageId = 0;
+        private int _isAimingId = 0;
 
         #endregion
 
@@ -40,6 +42,7 @@ namespace DudeResqueSquad
             _attackId = Animator.StringToHash("attack");
             _deadId = Animator.StringToHash("dead");
             _takeDamageId = Animator.StringToHash("takeDamage");
+            _isAimingId = Animator.StringToHash("isAiming");
         }
 
         private void UpdateParams()
@@ -49,6 +52,7 @@ namespace DudeResqueSquad
             _animator.SetBool(_isWalkingId, _isWalking);
             _animator.SetBool(_isRunningId, _isRunning);
             _animator.SetBool(_isAttackingId, _isAttacking);
+            _animator.SetBool(_isAimingId, _isAiming);
 
             #endregion
 
@@ -82,8 +86,6 @@ namespace DudeResqueSquad
         {
             _isWalking = false;
             _isRunning = false;
-            _isAttacking = false;
-            _attack = false;
             _dead = false;
             _takeDamage = false;
         }
@@ -119,11 +121,18 @@ namespace DudeResqueSquad
 
         public void Attack(bool loop = false)
         {
-            ResetState();
-
             _isAttacking = loop;
 
             _attack = true;
+
+            UpdateParams();
+        }
+
+        public void StopAttack()
+        {
+            _isAttacking = false;
+
+            _attack = false;
 
             UpdateParams();
         }
@@ -134,6 +143,14 @@ namespace DudeResqueSquad
 
             _dead = true;
 
+            // Cancel aiming state
+            _isAiming = false;
+
+            // Cancel attacking
+            _isAttacking = false;
+            _attack = false;
+
+            // Update all params
             UpdateParams();
         }
 
@@ -144,6 +161,30 @@ namespace DudeResqueSquad
             _takeDamage = true;
 
             UpdateParams();
+        }
+
+        /// <summary>
+        /// Adds/Removes the state of aiming to the current animator
+        /// </summary>
+        /// <param name="isAiming"></param>
+        public void Aiming(bool isAiming)
+        {
+            _isAiming = isAiming;
+
+            UpdateParams();
+        }
+
+        /// <summary>
+        /// Starts or Stops the reloading state of animator
+        /// </summary>
+        /// <param name="show"></param>
+        public void Reloading(bool show)
+        {
+            // Stop attacking
+            _isAttacking = false;
+            _attack = false;
+
+            // TODO:
         }
 
         public void ProcessUpdate(Enums.EnemyStates state)

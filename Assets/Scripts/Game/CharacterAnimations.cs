@@ -32,6 +32,9 @@ namespace DudeResqueSquad
         private Enums.WeaponAttackType _currentWeaponAttackType = Enums.WeaponAttackType.NONE;
         private float _animationAttackSpeed = 1;
         private ItemWeaponData _currentWeapon = null;
+        private bool _isRunning = false;
+        private bool _isIdle = false;
+        public bool _isAutoFire = false;
 
         #endregion
 
@@ -68,6 +71,9 @@ namespace DudeResqueSquad
         private void Idle()
         {
             _anim.speed = 1;
+
+            _isRunning = false;
+
             _anim.SetBool(_runningKey, false);
             _anim.SetBool(_autoFireKey, false);
             _anim.ResetTrigger(_attackKey);
@@ -75,6 +81,8 @@ namespace DudeResqueSquad
 
         private void Run()
         {
+            _isRunning = true;
+
             _anim.speed = 1;
             _anim.SetBool(_runningKey, true);
             _anim.SetBool(_autoFireKey, false);
@@ -85,7 +93,10 @@ namespace DudeResqueSquad
         {
             _anim.speed = _animationAttackSpeed;
             _anim.SetTrigger(_attackKey);
-            _anim.SetBool(_autoFireKey, (_currentWeapon != null) ? _currentWeapon.AutoFire : false);
+
+            _isAutoFire = (_currentWeapon != null) ? _currentWeapon.AutoFire : false;
+
+            _anim.SetBool(_autoFireKey, _isAutoFire);
         }
 
         private void CollectItem(object sender, CustomEventArgs.CollectItemEventArgs e)
@@ -129,6 +140,15 @@ namespace DudeResqueSquad
                     _anim.runtimeAnimatorController = _animAssaultRifle;
                     break;
             }
+
+            ReplicateAnimatorParameters();
+        }
+
+        private void ReplicateAnimatorParameters()
+        {
+            _anim.SetBool(_runningKey, _isRunning);
+            _anim.SetBool(_autoFireKey, _isAutoFire);
+            _anim.ResetTrigger(_attackKey);
         }
 
         #endregion

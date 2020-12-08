@@ -20,7 +20,8 @@ namespace DudeResqueSquad
 
         private void Awake()
         {
-            _attackController = _character.GetComponent<PlayerAttackController>();
+            if (_character != null)
+                _attackController = _character.GetComponent<PlayerAttackController>();
         }
 
         #endregion
@@ -32,6 +33,13 @@ namespace DudeResqueSquad
         /// </summary>
         public void AttackHit()
         {
+            if (_character == null)
+            {
+                Debug.Log($"<b>AttackHit</b> - No Character");
+
+                return;
+            }
+
             ItemWeaponData currentWeapon = _character.Data.CurrentWeaponEquipped;
 
             Debug.Log($"<b>AttackHit</b> - Character: '{_character.Data.UID}', current weapon: <b>{((currentWeapon != null) ? currentWeapon.UID : "No Weapon")}</b>");

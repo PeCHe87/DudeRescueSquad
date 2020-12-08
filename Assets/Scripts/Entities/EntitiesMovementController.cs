@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AI;
@@ -13,6 +14,7 @@ namespace DudeResqueSquad
         [SerializeField] private EntityFollower _followerTemplate = null;
         [SerializeField] private float _timeToStartFollowing = 1;
         [SerializeField] private bool _canDebug = false;
+        [SerializeField] private Transform _followerObstaclesOutside = null;
 
         #endregion
 
@@ -22,6 +24,7 @@ namespace DudeResqueSquad
         private Transform[] _transforms = null;
         private NavMeshAgent[] _agents = null;
         private NavMeshObstacle[] _obstacles = null;
+        private Vector3 _positionOutsideWorld = Vector3.zero;
 
         #endregion
 
@@ -76,6 +79,8 @@ namespace DudeResqueSquad
 
         private void Init()
         {
+            _positionOutsideWorld = _followerObstaclesOutside.position;
+
             int amount = _entities.Length;
 
             _transforms = new Transform[amount];
@@ -155,9 +160,6 @@ namespace DudeResqueSquad
                 if (diff <= entity.DistanceToStop)
                     continue;
 
-                var obstacle = _obstacles[i];
-                var agent = _agents[i];
-
                 if (!Application.isPlaying)
                     break;
 
@@ -165,20 +167,37 @@ namespace DudeResqueSquad
             }
         }
 
+        /// <summary>
+        /// If entity state is PATROLLING or CHASING then its Agent component should be enabled and its Obstacle component should be disabled
+        /// </summary>
+        /// <param name="entity"></param>
+        private void CheckFollowerBehaviourBasedOnEntityState(Entity entity)
+        {
+            if (entity.State == Enums.EnemyStates.PATROLLING || entity.State == Enums.EnemyStates.CHASING)
+            {
+                if (!entity.Follower.Agent.enabled)
+                {
+                    entity.Follower.Agent.enabled = true;
+                    entity.Follower.Obstacle.enabled = false;
+                }
+            }
+        }
+
         private IEnumerator UpdateDestination(Entity entity)
         {
-            if (entity.State != Enums.EnemyStates.IDLE)
+            if (entity.State != Enums.EnemyStates.IDLE && entity.State != Enums.EnemyStates.TAKING_DAMAGE && entity.State != Enums.EnemyStates.DEAD)
             {
                 // Skip this logic if there isn't any target
                 if (entity.Follower.Target != null)
                 {
+                    entity.Follower.Obstacle.size = Vector3.zero;
                     entity.Follower.Obstacle.carving = false;
                     entity.Follower.Obstacle.enabled = false;
 
                     yield return new WaitForEndOfFrame();
                     yield return new WaitForEndOfFrame();
 
-                    // Check if current target exists
+                    // Check if current target exists to resume its movement
                     if (entity.Follower.Target != null)
                     {
                         Resume(entity);
@@ -195,17 +214,24 @@ namespace DudeResqueSquad
                 entity.Follower.Agent.enabled = false;
             }
 
-            entity.Follower.Obstacle.transform.position = entity.Follower.Agent.transform.position;  //entity.Visuals.transform.position;
-            entity.Follower.Obstacle.enabled = true;
-            entity.Follower.Obstacle.carving = true;
+            // Don't enable obstacle when entity is dead
+            if (entity.State != Enums.EnemyStates.DEAD)
+            {
+                entity.Follower.Obstacle.transform.position = entity.Follower.Agent.transform.position;
+                entity.Follower.Obstacle.enabled = true;
+                entity.Follower.Obstacle.carving = true;
+
+                entity.Follower.Obstacle.size = entity.Follower.ObstacleSize;
+            }
+            else
+            {
+                entity.Follower.Obstacle.carving = false;
+                entity.Follower.Obstacle.enabled = false;
+            }
         }
 
         private void Resume(Entity entity)
         {
-            // Move agent to visuals if agent was disabled
-            //if (!entity.Follower.Agent.enabled)
-            //    entity.Follower.Agent.transform.position = entity.transform.position;
-
             // Enables agent
             entity.Follower.Agent.enabled = true;
 
@@ -213,7 +239,21 @@ namespace DudeResqueSquad
             {
                 entity.Follower.Agent.SetDestination(entity.Follower.Target.position);
                 entity.Follower.Agent.isStopped = false;
+
+                ResumeSpeedBasedOnState(entity);
             }
+        }
+
+        /// <summary>
+        /// Resumes the agent speed based on entity's state
+        /// </summary>
+        /// <param name="entity"></param>
+        private void ResumeSpeedBasedOnState(Entity entity)
+        {
+            if (entity.State == Enums.EnemyStates.CHASING)
+                entity.Follower.Agent.speed = entity.Data.SpeedChasingMovement;
+            else if (entity.State == Enums.EnemyStates.PATROLLING)
+                entity.Follower.Agent.speed = entity.Data.SpeedPatrollingMovement;
         }
 
         #endregion

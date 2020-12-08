@@ -42,9 +42,9 @@ public class DamagePopup : MonoBehaviour {
     private static int sortingOrder;
 
     private const float DISAPPEAR_TIMER_MAX = 1f;
-    private const float SPEED_MOVEMENT = 10;
-    private const float MIN_FACTOR = 3;
-    private const float MAX_FACTOR = 6;
+    private const float SPEED_MOVEMENT = 15;
+    private const float MIN_FACTOR = 5;
+    private const float MAX_FACTOR = 10;
     private const string WHITE_COLOR = "FFFFFF";
 
     private TextMeshPro textMesh;

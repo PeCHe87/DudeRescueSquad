@@ -51,7 +51,7 @@ namespace DudeResqueSquad
             var damagePopup = DamagePopup.Create(position, Mathf.FloorToInt(e.damage), false);
 
             damagePopup.SetFontSize(_fontSize);
-            //damagePopup.SetCameraOrientation(_camera);
+            damagePopup.SetCameraOrientation(_camera);
         }
 
         #endregion

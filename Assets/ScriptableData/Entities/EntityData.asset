@@ -32,8 +32,8 @@ MonoBehaviour:
   RadiusDetection: 7
   AngleDetection: 200
   ChasingDistanceToStop: 2
-  RadiusAttack: 0
-  DelayBetweenAttacks: 0
+  RadiusAttack: 4
+  DelayBetweenAttacks: 1
   MinDamage: 0
   MaxDamage: 0
   DistanceToStop: 2

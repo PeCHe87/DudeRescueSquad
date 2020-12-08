@@ -10,6 +10,7 @@ namespace DudeResqueSquad
 
         private NavMeshAgent _agent = null;
         private NavMeshObstacle _obstacle = null;
+        private Vector3 _obstacleSize = Vector3.zero;
 
         #endregion
 
@@ -18,6 +19,7 @@ namespace DudeResqueSquad
         public Transform Target { get; private set; }
         public NavMeshAgent Agent { get => _agent; }
         public NavMeshObstacle Obstacle { get => _obstacle; }
+        public Vector3 ObstacleSize { get => _obstacleSize; }
 
         #endregion
 
@@ -35,6 +37,8 @@ namespace DudeResqueSquad
 
         public void Config(EntityData data)
         {
+            _obstacleSize = _obstacle.size;
+
             // TODO: config all attributes, like agent speed from entity's data
             _agent.speed = data.SpeedChasingMovement;
         }

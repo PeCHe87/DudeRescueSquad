@@ -6,12 +6,15 @@ namespace DudeResqueSquad
 {
     public class Entity : MonoBehaviour
     {
+        public Action OnInitialized; 
+
         #region Inspector properties
 
         [SerializeField] private EntityData _data = null;
         [SerializeField] private string _uid = string.Empty;
         [SerializeField] private Enums.EnemyStates _state;
         [SerializeField] private Transform[] _patrollingPoints = null;
+        [SerializeField] private ItemWeaponData _weapon = null;
 
         #endregion
 
@@ -25,6 +28,7 @@ namespace DudeResqueSquad
         private StateMachine _stateMachine = null;
         private float _distanceToStop = 0;
         private IDamageable _damageable = null;
+        private bool _checkWhenAgentEnabled = false;
 
         #endregion
 
@@ -36,6 +40,10 @@ namespace DudeResqueSquad
         public float DistanceToStop { get => _distanceToStop; }
         public Enums.EnemyStates State { get => _state; }
         public EntityVisual Visuals { get => _visuals; }
+        public StateMachine StateMachine { get => _stateMachine; }
+        public FieldOfView FieldOfView { get => _fov; }
+        public EntityAnimations Animations { get => _animations; }
+        public ItemWeaponData Weapon { get => _weapon; }
 
         #endregion
 
@@ -96,6 +104,16 @@ namespace DudeResqueSquad
                 return;
 
             _stateMachine.Tick();
+
+            // Check if it should detect when agent is enabled so it can process its current visual animation state
+            if (_checkWhenAgentEnabled)
+            {
+                if (_follower.Agent.enabled)
+                {
+                    _checkWhenAgentEnabled = false;
+                    _animations.ProcessUpdate(_state);
+                }
+            }
         }
 
         private void DetectNewTarget(Transform target)
@@ -117,8 +135,6 @@ namespace DudeResqueSquad
         private void TakingDamage(object sender, CustomEventArgs.DamageEventArgs e)
         {
             Debug.Log($"Entity: <b>{e.entityUID}</b> <color=red>takes damage: {e.damage}</color>, current Health: {_damageable.Health}/{_damageable.MaxHealth}");
-
-            // TODO: make changes related with animations
 
             // Stop visual following
             _visuals.StopFollowing();
@@ -157,7 +173,7 @@ namespace DudeResqueSquad
 
             _state = _stateMachine.GetCurrentState();
 
-            _animations.ProcessUpdate(_state);
+            _animations.Aiming(_state == Enums.EnemyStates.CHASING);
 
             if (_follower == null)
                 return;
@@ -172,9 +188,6 @@ namespace DudeResqueSquad
             }
             else if (_state == Enums.EnemyStates.PATROLLING)
             {
-                //if (oldState == Enums.EnemyStates.TAKING_DAMAGE)
-                //    _follower.Agent.transform.position = _visuals.transform.position;
-
                 _visuals.ResumeFollowing();
 
                 _distanceToStop = _data.PatrollingDistanceToStop;
@@ -182,9 +195,6 @@ namespace DudeResqueSquad
             }
             else if (_state == Enums.EnemyStates.CHASING)
             {
-                //if (oldState == Enums.EnemyStates.TAKING_DAMAGE)
-                //    _follower.Agent.transform.position = _visuals.transform.position;
-
                 _visuals.ResumeFollowing();
 
                 _distanceToStop = _data.ChasingDistanceToStop;
@@ -202,6 +212,28 @@ namespace DudeResqueSquad
             // No need to look at Target if it isn't in Idle state
             if (_state != Enums.EnemyStates.IDLE)
                 _visuals.StopLookAtTarget();
+
+            // Check if it is going from stand to moving state
+            CheckStateChangeFromStationaryToMoving(oldState);
+        }
+
+        /// <summary>
+        /// Checks if entity is changing from stationary state to a movable state, considering if Agent is enabled or not
+        /// </summary>
+        /// <param name="oldState"></param>
+        private void CheckStateChangeFromStationaryToMoving(Enums.EnemyStates oldState)
+        {
+            if ((oldState == Enums.EnemyStates.IDLE || oldState == Enums.EnemyStates.ATTACKING) && (_state == Enums.EnemyStates.CHASING || _state == Enums.EnemyStates.PATROLLING))
+            {
+                if (!_follower.Agent.enabled)
+                {
+                    _checkWhenAgentEnabled = true;
+                    return;
+                }
+            }
+
+            _checkWhenAgentEnabled = false;
+            _animations.ProcessUpdate(_state);
         }
 
         private void InitStateMachine()
@@ -336,6 +368,8 @@ namespace DudeResqueSquad
             }
 
             InitStateMachine();
+
+            OnInitialized?.Invoke();
         }
 
         public void InitMovement(EntityFollower followerTemplate)

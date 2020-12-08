@@ -75,15 +75,18 @@ namespace DudeResqueSquad
 
         public void OnEnter()
         {
-            _isWaiting = false;
-            _patrollingTime = Random.Range(_entity.Data.MinPatrollingTime, _entity.Data.MaxPatrollingTime);
+            if (_entity.Follower != null)
+            {
+                _isWaiting = false;
+                _patrollingTime = Random.Range(_entity.Data.MinPatrollingTime, _entity.Data.MaxPatrollingTime);
 
-            _currentPointIndex = Random.Range(0, _points.Length);
+                _currentPointIndex = Random.Range(0, _points.Length);
 
-            _distanceToStop = _entity.Data.PatrollingDistanceToStop + 0.25f;
-            
-            // Get current point and start nave mesh agent movement
-            _entity.Follower.SetTarget(_points[_currentPointIndex]);
+                _distanceToStop = _entity.Data.PatrollingDistanceToStop + 0.25f;
+
+                // Get current point and start nave mesh agent movement
+                _entity.Follower.SetTarget(_points[_currentPointIndex]);
+            }
 
             Debug.Log($"<b>PATROLLING</b> - <color=green>OnEnter</color> - current point: {_currentPointIndex}, patrolling time: {_patrollingTime}");
         }
