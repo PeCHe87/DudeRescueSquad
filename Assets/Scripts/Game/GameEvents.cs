@@ -23,5 +23,10 @@ namespace DudeResqueSquad
         /// Each time an entity is destroyed this event could be invoked from the entity whose is dead
         /// </summary>
         public static EventHandler<CustomEventArgs.EntityDeadEventArgs> OnEntityHasDied;
+        
+        // <summary>
+        /// Each time an entity fires this event is invoked
+        /// </summary>
+        public static EventHandler<CustomEventArgs.SpawnProjectileEventArgs> OnSpawnProjectile;
     }
 }

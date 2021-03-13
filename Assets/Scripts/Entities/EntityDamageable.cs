@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace DudeResqueSquad
@@ -52,6 +54,7 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.DamageEventArgs> OnTakeDamage;
         public event EventHandler<CustomEventArgs.EntityDeadEventArgs> OnDied;
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void TakeDamage(float value)
         {
@@ -78,6 +81,11 @@ namespace DudeResqueSquad
             Health = Mathf.Clamp(Health + value, 0, MaxHealth);
 
             OnHealed?.Invoke(this, new CustomEventArgs.HealEventArgs(_uid, value));
+        }
+        
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.AI;
 
 // Reference: https://www.gamedev.net/articles/programming/general-and-gameplay-programming/pathfinding-and-local-avoidance-for-rpgrts-games-using-unity-r3703/
@@ -7,6 +8,8 @@ namespace DudeResqueSquad
 {
     public class EntityVisual : MonoBehaviour
     {
+        public Action<float> OnFollowingStateChanged;
+        
         #region Inspector properties
 
         [SerializeField] private Transform _target = null;
@@ -22,6 +25,11 @@ namespace DudeResqueSquad
         public NavMeshAgent Agent { set => _agent = value; }
         public bool IsMoving { get => _isMoving; }
 
+        public float DeltaMovement
+        {
+            get => _deltaMovement;
+        }
+
         #endregion
 
         #region Private properties
@@ -32,8 +40,10 @@ namespace DudeResqueSquad
         private bool _lookAtTarget = false;
         private Transform _entityTarget = null;
         private bool _isMoving = false;
+        private bool _isMovingOld = false;
         private float _offsetToStopPow = 0;
         private bool _canFollow = true;
+        private float _deltaMovement = 0;
 
         #endregion
 
@@ -54,6 +64,8 @@ namespace DudeResqueSquad
 
         private void Update()
         {
+            _deltaMovement = 0;
+            
             if (!_canFollow)
                 return;
 
@@ -68,8 +80,10 @@ namespace DudeResqueSquad
             if (_agent == null)
                 return;
 
+            _isMovingOld = _isMoving;
+            
             // Test if the distance between the agent (which is now the proxy) and the entity is less than the offset distance to stop
-            if ((_transform.position - _target.position).sqrMagnitude < _offsetToStopPow)    //if ((_transform.position - _target.position).sqrMagnitude < Mathf.Pow(_offsetToStop, 2))
+            if ((_transform.position - _target.position).sqrMagnitude < _offsetToStopPow)
             {
                 _isMoving = false;
                 return;
@@ -77,14 +91,11 @@ namespace DudeResqueSquad
 
             _isMoving = true;
 
+            var oldPosition = _transform.position;
+
             // Follow the target proxy
-            //_transform.position = Vector3.Lerp(_transform.position, _target.position, Time.deltaTime * _speed);
             var direction = _target.position - transform.position;
             _transform.position += direction * Time.deltaTime * _speed;
-            //_transform.position = _target.position;
-
-            // Rotate towards target proxy
-            //_transform.rotation = _target.rotation;
 
             // Calculate the orientation based on the velocity of the agent 
             Vector3 orientation = _transform.position - _lastPosition;
@@ -104,8 +115,23 @@ namespace DudeResqueSquad
                 _transform.rotation = Quaternion.Lerp(_transform.rotation, Quaternion.LookRotation(_target.forward), Time.deltaTime * _rotationSpeed);
             }
 
+            _deltaMovement = (oldPosition - _transform.position).magnitude;
+            
             // This is needed to calculate the orientation in the next frame 
             _lastPosition = _transform.position;
+        }
+
+        private void LateUpdate()
+        {
+            CheckMovingStateUpdate();
+        }
+
+        private void CheckMovingStateUpdate()
+        {
+            //if (_isMoving != _isMovingOld)
+            {
+                OnFollowingStateChanged(_deltaMovement);
+            }
         }
 
         private void LookAt()

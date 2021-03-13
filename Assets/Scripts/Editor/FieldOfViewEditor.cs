@@ -12,7 +12,7 @@ namespace DudeResqueSquad
 
             Vector3 originPosition = fov.transform.position;
 
-            Handles.color = Color.white;
+            Handles.color = Color.magenta;
 
             // Draws area of detection
             Handles.DrawWireArc(originPosition, Vector3.up, Vector3.forward, 360, fov.Radius);

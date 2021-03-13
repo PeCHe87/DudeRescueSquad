@@ -29,7 +29,7 @@ MonoBehaviour:
     m_Bits: 8192
   SpeedChasingMovement: 3
   MinChasingDistance: 0
-  RadiusDetection: 7
+  RadiusDetection: 8
   AngleDetection: 200
   ChasingDistanceToStop: 2
   RadiusAttack: 4

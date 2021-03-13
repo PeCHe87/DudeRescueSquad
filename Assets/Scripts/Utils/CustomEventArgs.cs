@@ -84,5 +84,33 @@ namespace DudeResqueSquad
                 this.touchPosition = position;
             }
         }
+
+        public class SpawnProjectileEventArgs
+        {
+            public GameObject prefab;
+            public Vector3 positionInitial;
+            public Vector3 velocity;
+            public float dropSpeed;
+            public float lifeTime;
+            public float damage;
+            public string entityOwnerUID;
+            public GameObject prefabHitVFX;
+            public LayerMask layerMask;
+            public Quaternion initialRotation;
+            
+            public SpawnProjectileEventArgs(GameObject prefab, Vector3 positionInitial, Vector3 velocity, float dropSpeed, float lifeTime, float damage, string entityOwnerUid, GameObject hitVFX, LayerMask layerMask, Quaternion initialRotation)
+            {
+                this.prefab = prefab;
+                this.positionInitial = positionInitial;
+                this.velocity = velocity;
+                this.dropSpeed = dropSpeed;
+                this.lifeTime = lifeTime;
+                this.damage = damage;
+                this.entityOwnerUID = entityOwnerUid;
+                this.prefabHitVFX = hitVFX;
+                this.layerMask = layerMask;
+                this.initialRotation = initialRotation;
+            }
+        }
     }
 }

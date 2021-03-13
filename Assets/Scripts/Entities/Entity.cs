@@ -26,7 +26,7 @@ namespace DudeResqueSquad
         private FieldOfView _fov = null;
         private float _health = 0;
         private StateMachine _stateMachine = null;
-        private float _distanceToStop = 0;
+        //private float _distanceToStop = 0;
         private IDamageable _damageable = null;
         private bool _checkWhenAgentEnabled = false;
 
@@ -37,13 +37,13 @@ namespace DudeResqueSquad
         public string UID { get => _uid; }
         public EntityData Data { get => _data; }
         public EntityFollower Follower { get => _follower; }
-        public float DistanceToStop { get => _distanceToStop; }
         public Enums.EnemyStates State { get => _state; }
         public EntityVisual Visuals { get => _visuals; }
         public StateMachine StateMachine { get => _stateMachine; }
         public FieldOfView FieldOfView { get => _fov; }
         public EntityAnimations Animations { get => _animations; }
         public ItemWeaponData Weapon { get => _weapon; }
+        public bool IsDead { get => _damageable.IsDead; }
 
         #endregion
 
@@ -95,6 +95,16 @@ namespace DudeResqueSquad
             {
                 _fov.OnDetectNewTarget -= DetectNewTarget;
                 _fov.OnStopDetecting -= StopDetection;
+            }
+
+            if (_visuals != null)
+            {
+                _visuals.OnFollowingStateChanged -= VisualMovementStateChanged;
+            }
+
+            if (_follower != null)
+            {
+                _follower.OnAgentStateChanged -= FollowerMovementStateChanged;
             }
         }
 
@@ -189,15 +199,13 @@ namespace DudeResqueSquad
             else if (_state == Enums.EnemyStates.PATROLLING)
             {
                 _visuals.ResumeFollowing();
-
-                _distanceToStop = _data.PatrollingDistanceToStop;
+                
                 _follower.Agent.speed = _data.SpeedPatrollingMovement;
             }
             else if (_state == Enums.EnemyStates.CHASING)
             {
                 _visuals.ResumeFollowing();
-
-                _distanceToStop = _data.ChasingDistanceToStop;
+                
                 _follower.Agent.speed = _data.SpeedChasingMovement;
             }
             else if (_state == Enums.EnemyStates.TAKING_DAMAGE)
@@ -208,9 +216,15 @@ namespace DudeResqueSquad
             {
                 _follower.StopSpeed();
             }
+            else if (_state == Enums.EnemyStates.ATTACKING)
+            {
+                // If there is a target, then look at it
+                if (_follower.Target != null)
+                    _visuals.StartLookAtTarget(_follower.Target);
+            }
 
-            // No need to look at Target if it isn't in Idle state
-            if (_state != Enums.EnemyStates.IDLE)
+            // No need to look at Target if it isn't in Idle or Attacking state
+            if (_state != Enums.EnemyStates.IDLE && _state != Enums.EnemyStates.ATTACKING)
                 _visuals.StopLookAtTarget();
 
             // Check if it is going from stand to moving state
@@ -248,7 +262,7 @@ namespace DudeResqueSquad
             var stateChasing = new EntityStateChasing(this);
             var stateTakingDamage = new EntityStateTakingDamage(this);
             var stateDead = new EntityStateDead(this);
-            //var stateAttacking = new EntityStateAttacking(this);
+            var stateAttacking = new EntityStateAttacking(this);
 
             #region Create transitions from "IDLE" state
 
@@ -263,10 +277,7 @@ namespace DudeResqueSquad
             #endregion
 
             #region Create transitions from "CHASE TARGET" state
-
-            // If it isn't chasing and not in attack range or there isn't target any more
-            //_stateMachine.AddTransition(stateChasing, stateIdle, () => (!stateChasing.IsChasing && !stateAttacking.IsOnRange) || _fov.NearestTarget == null);
-
+            
             _stateMachine.AddTransition(stateChasing, statePatrolling, () => _fov.NearestTarget == null);
 
             _stateMachine.AddTransition(stateChasing, stateIdle, () => !stateChasing.IsChasing);
@@ -289,11 +300,24 @@ namespace DudeResqueSquad
 
             #endregion
 
+            #region Create transitions from "ATTACK" state
+
+            // If is attacking but there isn't any target anymore
+            _stateMachine.AddTransition(stateAttacking, stateIdle, () => (_fov.NearestTarget == null || (!IsOnAttackingRange() && !IsOnChasingRange())));
+
+            // If it is attacking but target is in detection area yet continue chasing it
+            _stateMachine.AddTransition(stateAttacking, stateChasing, () => _fov.NearestTarget != null && !IsOnAttackingRange() && IsOnChasingRange());
+
+            #endregion
+            
             #region Any transitions
 
             // If there is a detected target and not in attacking range then start Chasing it
-            _stateMachine.AddAnyTransition(stateChasing, () => !_damageable.IsDead && !_damageable.IsTakingDamage && _fov.NearestTarget != null && _follower.Target != null && !IsOnChasingRange());
+            _stateMachine.AddAnyTransition(stateChasing, () => !_damageable.IsDead && !_damageable.IsTakingDamage && _fov.NearestTarget != null && _follower.Target != null && !IsOnAttackingRange());
 
+            // If there is a detected target and it is in attacking range then start Attacking it
+            _stateMachine.AddAnyTransition(stateAttacking, () => !_damageable.IsDead && !_damageable.IsTakingDamage && _fov.NearestTarget != null  && IsOnAttackingRange());
+            
             // If takes damage then move to this state
             _stateMachine.AddAnyTransition(stateTakingDamage, () => !_damageable.IsDead && _damageable.IsTakingDamage);
 
@@ -304,20 +328,8 @@ namespace DudeResqueSquad
 
             // Set last state as "DEAD"
             _stateMachine.SetLastState(stateDead);
-
+            
             /*
-            #region Create transitions from "ATTACK" state
-
-            // If is attacking but there isn't any target anymore
-            _stateMachine.AddTransition(stateAttacking, stateIdle, () => _fov.NearestTarget == null);
-
-            _stateMachine.AddTransition(stateAttacking, statePatrolling, () => _fov.NearestTarget != null && !stateAttacking.IsOnRange && !IsOnChasingRange());
-
-            // If is attacking but target is in detection area yet
-            _stateMachine.AddTransition(stateAttacking, stateChasing, () => _fov.NearestTarget != null && (!stateAttacking.IsOnRange) && IsOnChasingRange());
-
-            #endregion
-
             #region Create transitions from ANY state
 
             // If there is a detected target and not in attacking range then start Chasing it
@@ -351,6 +363,59 @@ namespace DudeResqueSquad
             return (remainingDistance <= _data.ChasingDistanceToStop);
         }
 
+        /// <summary>
+        /// Check if entity is near enough to its target to attack it
+        /// </summary>
+        /// <returns></returns>
+        private bool IsOnAttackingRange()
+        {
+            if (_follower == null)
+                return false;
+
+            var target = _fov.NearestTarget;
+
+            if (target == null)
+                return false;
+
+            var remainingDistance = (target.position - _follower.Agent.transform.position).magnitude;
+
+            return (remainingDistance <= _weapon.AttackAreaRadius);
+        }
+
+        private void VisualMovementStateChanged(float deltaMovement)
+        {
+            if (deltaMovement == 0)
+            {
+                _animations.Idle();
+            }
+            else
+            {
+                if (_state == Enums.EnemyStates.CHASING)
+                {
+                    _animations.Run();
+                }
+                else if (_state == Enums.EnemyStates.PATROLLING)
+                {
+                    _animations.Walk();
+                }
+            }
+        }
+        
+        private void FollowerMovementStateChanged(bool isFollowing)
+        {
+            /*if (isFollowing)
+            {
+                if (_state == Enums.EnemyStates.CHASING)
+                {
+                    _animations.Run();
+                }
+                else if (_state == Enums.EnemyStates.PATROLLING)
+                {
+                    _animations.Walk();
+                }
+            }*/
+        }
+        
         #endregion
 
         #region Public Method
@@ -376,16 +441,20 @@ namespace DudeResqueSquad
         {
             _follower = Instantiate(followerTemplate);
             _follower.name = $"{this.name}_follower";
-            _follower.transform.SetParent(this.transform.parent);
-            _follower.transform.position = transform.position;
+
+            var followerTransform = _follower.transform;
+            followerTransform.SetParent(this.transform.parent);
+            followerTransform.position = transform.position;
+            
             _follower.Config(_data);
+            _follower.OnAgentStateChanged += FollowerMovementStateChanged;
 
-            var visualBehavior = GetComponent<EntityVisual>();
-
-            if (visualBehavior != null)
+            if (_visuals != null)
             {
-                visualBehavior.Target = _follower.transform;
-                visualBehavior.Agent = _follower.Agent;
+                _visuals.Target = _follower.transform;
+                _visuals.Agent = _follower.Agent;
+                
+                _visuals.OnFollowingStateChanged += VisualMovementStateChanged;
             }
         }
 

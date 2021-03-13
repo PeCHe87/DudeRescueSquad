@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace DudeResqueSquad
@@ -12,11 +14,15 @@ namespace DudeResqueSquad
         [SerializeField] private Transform _hitPivot = null;
 
         private Collider _collider = null;
+        private float _health = 0;
 
         private void Awake()
         {
             _collider = GetComponent<Collider>();
+        }
 
+        private void Start()
+        {
             Health = MaxHealth = _initialHealth;
         }
 
@@ -34,7 +40,11 @@ namespace DudeResqueSquad
 
         public float MaxHealth { get; set; }
 
-        public float Health { get; set; }
+        public float Health
+        {
+            get => _health;
+            set { _health = value; OnPropertyChanged(nameof(Health)); }
+        }
 
         public bool IsDead => Health == 0;
 
@@ -43,13 +53,19 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.DamageEventArgs> OnTakeDamage;
         public event EventHandler<CustomEventArgs.EntityDeadEventArgs> OnDied;
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public void TakeDamage(float value)
         {
-            Health = Mathf.Clamp(Health - value, 0, MaxHealth);
-
             ShowHitEffect();
-
+            
+            if (IsDead)
+            {
+                return;
+            }
+            
+            Health = Mathf.Clamp(Health - value, 0, MaxHealth);
+            
             if (Health == 0)
             {
                 _art.SetActive(false);
@@ -67,6 +83,11 @@ namespace DudeResqueSquad
             Health = Mathf.Clamp(Health + value, 0, MaxHealth);
 
             OnHealed?.Invoke(this, new CustomEventArgs.HealEventArgs(_uid, value));
+        }
+        
+        public void OnPropertyChanged([CallerMemberName] string name = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
         #endregion

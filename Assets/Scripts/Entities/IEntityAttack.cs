@@ -6,10 +6,19 @@ namespace DudeResqueSquad
     [RequireComponent(typeof(Entity))]
     public class IEntityAttack : MonoBehaviour
     {
+        #region Inspector properties
+        
+        [SerializeField] protected Transform _originPojectile = null;
+        [SerializeField] protected bool _canDebugReloading = false;
+        [SerializeField] protected LayerMask _targetLayerMask;
+
+        #endregion
+        
         #region Protected properties
 
         protected Entity _entity = null;
         protected bool _attackStarted = false;
+        protected ItemWeaponData _weapon = null;
 
         #endregion
 
@@ -38,6 +47,8 @@ namespace DudeResqueSquad
 
         protected virtual void Initialized()
         {
+            _weapon = _entity.Weapon;
+            
             _entity.StateMachine.PropertyChanged += StateMachineHasChanged;
         }
 
@@ -61,7 +72,8 @@ namespace DudeResqueSquad
 
             var distanceToTarget = (target.position - _entity.Follower.Agent.transform.position).magnitude;
 
-            return (distanceToTarget <= _entity.Data.RadiusAttack);
+            //return (distanceToTarget <= _entity.Data.RadiusAttack);
+            return (distanceToTarget <= _weapon.AttackAreaRadius);
         }
 
         #endregion

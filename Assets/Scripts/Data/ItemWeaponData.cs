@@ -11,12 +11,14 @@ namespace DudeResqueSquad
         public GameObject AttackEffect;
         public float Damage;
         public float DetectionAreaRadius;
+        public float AttackAreaRadius;
         public float AngleAttackArea;
         public float FireRate;
         public float AttackDelayTime;
         public float ComboDelayTime;
         public float DelayToApplyDamage;
         public float DelayFireEffect;
+        public GameObject HitVFX;
 
         [Header("Assault configuration")]
         public projectileActor.projectile ProjectileConfiguration;
@@ -37,6 +39,11 @@ namespace DudeResqueSquad
         public Vector3 PositionMuzzleSpawner;
         [Tooltip("Projectile lifetime duration, after this time it explodes")]
         public float projectileLifetime;
+        public float projectileSpeed;
+        public float projectileSpread;
+        public float projectileDropSpeed;
+        public GameObject projectileVisualPrefab;
+        public GameObject muzzleVFX;
 
         [Header("Melee configuration")]
         public bool InfiniteDurability;

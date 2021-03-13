@@ -1,4 +1,6 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DudeResqueSquad
 {
@@ -7,10 +9,15 @@ namespace DudeResqueSquad
         event EventHandler<CustomEventArgs.DamageEventArgs> OnTakeDamage;
         event EventHandler<CustomEventArgs.EntityDeadEventArgs> OnDied;
         event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
+        event PropertyChangedEventHandler PropertyChanged;
 
         float MaxHealth { get; set; }
 
-        float Health { get; set; }
+        float Health
+        {
+            get;
+            set;
+        }
 
         bool IsDead { get; }
 
@@ -19,5 +26,12 @@ namespace DudeResqueSquad
         void TakeDamage(float damage);
 
         void Heal(float newHealth);
+        
+        /// <summary>
+        ///Create the OnPropertyChanged method to raise the event
+        /// The calling member's name will be used as the parameter.
+        /// </summary>
+        /// <param name="name"></param>
+        void OnPropertyChanged([CallerMemberName] string name = null);
     }
 }

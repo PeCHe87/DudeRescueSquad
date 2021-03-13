@@ -1,17 +1,24 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using DudeResqueSquad.Weapons;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace DudeResqueSquad
 {
+    /*
+     * Source: https://www.youtube.com/watch?v=onpteKMsE84 
+     */
     public class EntityAttackAssault : IEntityAttack
     {
         #region Actions
 
-        public System.Action<int> OnInitialized;
-        public System.Action<int> OnAttack;
-        public System.Action OnStartReloading;
-        public System.Action<int> OnStopReloading;
+        private System.Action<int> OnInitialized;
+        private System.Action<int> OnAttack;
+        private System.Action OnStartReloading;
+        private System.Action<int> OnStopReloading;
 
         #endregion
 
@@ -20,6 +27,9 @@ namespace DudeResqueSquad
         private bool _isReloading = false;
         private float _remainingReloadTime = 0;
         private int _currentBullets = 0;
+        private Ray _ray;
+        private RaycastHit _hitInfo;
+        private readonly List<ProjectileRaycast> _projectiles = new List<ProjectileRaycast>();
 
         #endregion
 
@@ -27,42 +37,73 @@ namespace DudeResqueSquad
 
         private void Update()
         {
-            if (_entity.Weapon == null)
+            if (_entity.IsDead)
+            {
+                enabled = false;
+                return;
+            }
+            
+            if (_weapon == null)
                 return;
 
             if (_isReloading)
             {
-                _remainingReloadTime = Mathf.Clamp(_remainingReloadTime - Time.deltaTime, 0, _entity.Weapon.ReloadTime);
-
-                if (_remainingReloadTime <= 0)
-                    StopReloading();
+                ProcessReloading(Time.deltaTime);
 
                 return;
             }
 
-            // If it isn't chasing or attacking skip possible attack
-            if (_entity.State != Enums.EnemyStates.CHASING && _entity.State != Enums.EnemyStates.ATTACKING)
+            // If it isn't idle, chasing or attacking skip possible attack
+            if (!IsPossibleAttack())
                 return;
 
             if (IsOnAttackingRange())
                 Attack();
         }
 
+        private void ProcessReloading(float deltaTime)
+        {
+            _remainingReloadTime = Mathf.Clamp(_remainingReloadTime - deltaTime, 0, _weapon.ReloadTime);
+
+            if (_canDebugReloading)
+            {
+                Debug.Log($"<color=orange>RELOADING</color> - remaining time: {_remainingReloadTime}");
+            }
+
+            if (_remainingReloadTime <= 0)
+                StopReloading();
+        }
+
+        /// <summary>
+        /// Check if current state is allowing to continue attacking
+        /// </summary>
+        /// <returns></returns>
+        private bool IsPossibleAttack()
+        {
+            var state = _entity.State;
+            return state == Enums.EnemyStates.CHASING || state == Enums.EnemyStates.ATTACKING || state == Enums.EnemyStates.IDLE;
+        }
+        
         #endregion
 
         #region Private methods
 
         private void StartReloading()
         {
-            _remainingReloadTime = _entity.Weapon.ReloadTime;
+            _remainingReloadTime = _weapon.ReloadTime;
 
             _isReloading = true;
 
+            _entity.Animations.StopAttack();
+            
             _entity.Animations.Reloading(true);
 
             OnStartReloading?.Invoke();
 
-            Debug.Log($"Entity <b>{_entity.name}</b> <color=orange>RELOADING</color>, remaining time: {_remainingReloadTime}");
+            if (_canDebugReloading)
+            {
+                Debug.Log($"Entity <b>{_entity.name}</b> <color=orange>RELOADING</color>, remaining time: {_remainingReloadTime}");
+            }
         }
 
         private void StopReloading()
@@ -71,16 +112,50 @@ namespace DudeResqueSquad
 
             _entity.Animations.Reloading(false);
 
-            _currentBullets = _entity.Weapon.BulletsMagazine;
+            _currentBullets = _weapon.BulletsMagazine;
 
             OnStopReloading?.Invoke(_currentBullets);
 
-            Debug.Log($"Entity <b>{_entity.name}</b> <color=green>STOP RELOADING</color>");
+            if (_canDebugReloading)
+            {
+                Debug.Log($"Entity <b>{_entity.name}</b> <color=green>STOP RELOADING</color>");
+            }
         }
 
-        private void FireProjectile()
+        private async void FireProjectile()
         {
-            // TODO:
+            // TODO: use of cancellation token to avoid execution when the game was stopped or entity was destroyed
+            
+            // Wait until create the projectile
+            await Task.Delay(Mathf.FloorToInt(_weapon.DelayFireEffect * 1000));
+
+            // Check if unity is dead
+            if (_entity.IsDead)
+            {
+                return;
+            }
+
+            var direction = _entity.transform.forward;
+            
+            var target = _entity.FieldOfView.NearestTarget;
+
+            if (target != null)
+            {
+                var targetPosition = target.position + Random.insideUnitSphere * _weapon.projectileSpread;
+                direction = targetPosition - _entity.transform.position;
+            }
+
+            var positionInitial = _originPojectile.position;
+            var velocity = direction.normalized * _weapon.projectileSpeed;
+            
+            // Show Muzzle
+            var muzzle = Instantiate(_weapon.muzzleVFX);
+
+            muzzle.transform.position = positionInitial;
+            muzzle.transform.rotation *= transform.rotation;
+            
+            // Create projectile
+            GameEvents.OnSpawnProjectile?.Invoke(this, new CustomEventArgs.SpawnProjectileEventArgs(_weapon.projectileVisualPrefab, positionInitial, velocity, _weapon.projectileDropSpeed, _weapon.projectileLifetime, _weapon.Damage, _entity.UID, _weapon.HitVFX, _targetLayerMask, transform.rotation));
         }
 
         #endregion
@@ -91,10 +166,10 @@ namespace DudeResqueSquad
         {
             base.Initialized();
 
-            if (_entity.Weapon == null)
+            if (_weapon == null)
                 Debug.LogError($"Entity {_entity.name} doesn't have Weapon information");
             else
-                _currentBullets = _entity.Weapon.BulletsMagazine;
+                _currentBullets = _weapon.BulletsMagazine;
 
             OnInitialized?.Invoke(_currentBullets);
         }
@@ -114,14 +189,15 @@ namespace DudeResqueSquad
             _currentBullets--;
 
             // Trigger shooting entity's animation
-            _entity.Animations.Attack(_entity.Weapon.AutoFire);
+            _entity.Animations.Attack(_weapon.AutoFire);
 
             Debug.Log($"Entity <b>{_entity.name}</b> attacks to <color=magenta>{_entity.Follower.Target.name}</color>, remaining bullets: {_currentBullets}!");
 
             OnAttack?.Invoke(_currentBullets);
 
             // Stop current attack after weapon attack delay based on its fire rate
-            await Task.Delay(Mathf.CeilToInt(_entity.Data.DelayBetweenAttacks * 1000));
+            //await Task.Delay(Mathf.CeilToInt(_entity.Data.DelayBetweenAttacks * 1000));
+            await Task.Delay(Mathf.CeilToInt(_weapon.FireRate * 1000));
 
             _attackStarted = false;
 

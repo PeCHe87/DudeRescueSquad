@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -6,6 +7,15 @@ namespace DudeResqueSquad
 {
     public class EntityFollower : MonoBehaviour
     {
+        public Action<bool> OnAgentStateChanged;
+        
+        #region Inspector properties
+        
+        [SerializeField] private bool _skipObstacleLogic = false;
+        [SerializeField] private bool _skipAgentLogic = false;
+        
+        #endregion
+        
         #region Private properties
 
         private NavMeshAgent _agent = null;
@@ -33,13 +43,20 @@ namespace DudeResqueSquad
 
         #endregion
 
+        private IEnumerator CommunicatesAgentStateChanged(bool isEnabled)
+        {
+            yield return new WaitForEndOfFrame();
+            
+            OnAgentStateChanged?.Invoke(isEnabled);
+        }
+        
         #region Public methods
 
         public void Config(EntityData data)
         {
             _obstacleSize = _obstacle.size;
 
-            // TODO: config all attributes, like agent speed from entity's data
+            // Config agent speed from entity's data
             _agent.speed = data.SpeedChasingMovement;
         }
 
@@ -53,6 +70,45 @@ namespace DudeResqueSquad
             _agent.speed = 0;
         }
 
+        public void SetObstacleEnabledState(bool isEnabled)
+        {
+            if (_skipObstacleLogic)
+            {
+                _obstacle.carving = false;
+                _obstacle.enabled = false;
+            }
+            else
+            {
+                _obstacle.carving = isEnabled;
+                _obstacle.enabled = isEnabled;
+            }
+        }
+        
+        public void SetAgentEnabledState(bool isEnabled)
+        {
+            if (_skipAgentLogic)
+            {
+                _agent.enabled = true;
+            }
+            else
+            {
+                _agent.enabled = isEnabled;
+            }
+
+            StartCoroutine(CommunicatesAgentStateChanged(isEnabled));
+        }
+
+        public void RotatesTowardTarget()
+        {
+            if (Target == null)
+            {
+                return;
+            }
+
+            var direction = Target.position - transform.position;
+            transform.rotation = Quaternion.LookRotation(direction);
+        }
+        
         #endregion
     }
 }

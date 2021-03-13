@@ -93,6 +93,7 @@ namespace DudeResqueSquad
 
         public void OnExit()
         {
+            _patrollingTime = 0;
             Debug.Log("<b>PATROLLING</b> - <color=red>OnExit</color>");
         }
 

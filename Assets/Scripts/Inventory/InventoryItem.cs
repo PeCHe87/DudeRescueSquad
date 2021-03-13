@@ -5,6 +5,7 @@ namespace DudeResqueSquad.Inventory
 {
     /// <summary>
     /// A ScriptableObject that represents any item that can be put in an inventory.
+    /// Source: https://github.com/UnityRPGv2/RPG 
     /// </summary>
     /// <remarks>
     /// In practice, you are likely to use a subclass such as `ActionItem` or `EquipableItem`.
@@ -19,10 +20,18 @@ namespace DudeResqueSquad.Inventory
 
         #region Private properties
 
+        // CONFIG DATA
+        [Tooltip("Auto-generated UUID for saving/loading. Clear this field if you want to generate a new one.")]
         private string _itemID = string.Empty;
+        [Tooltip("Item name to be displayed in UI.")]
         private string _displayName = string.Empty;
+        [Tooltip("The UI icon to represent this item in the inventory.")]
         private Sprite _icon = null;
-        private string _description = string.Empty;
+        [Tooltip("Item description to be displayed in UI.")]
+        [SerializeField][TextArea] private string _description = string.Empty;
+        [Tooltip("The prefab that should be spawned when this item is dropped.")]
+        [SerializeField] Pickup pickup = null;
+        [Tooltip("If true, multiple items of this type can be stacked in the same inventory slot.")]
         private bool _stackable = false;
         private bool _drawInventoryItem = true;
 
@@ -50,6 +59,11 @@ namespace DudeResqueSquad.Inventory
             return _icon;
         }
 
+        public Pickup GetPickup()
+        {
+            return pickup;
+        }
+        
         public bool IsStackable()
         {
             return _stackable;
@@ -113,13 +127,13 @@ namespace DudeResqueSquad.Inventory
             Dirty();
         }
 
-        /*public void SetPickup(Pickup newPickup)
+        public void SetPickup(Pickup newPickup)
         {
             if (pickup == newPickup) return;
             SetUndo("Change Pickup");
             pickup = newPickup;
             Dirty();
-        }*/
+        }
 
         public void SetStackable(bool newStackable)
         {
@@ -147,7 +161,7 @@ namespace DudeResqueSquad.Inventory
             SetDisplayName(EditorGUILayout.TextField("Display name", GetDisplayName()));
             SetDescription(EditorGUILayout.TextField("Description", GetDescription()));
             SetIcon((Sprite)EditorGUILayout.ObjectField("Icon", GetIcon(), typeof(Sprite), false));
-            //SetPickup((Pickup)EditorGUILayout.ObjectField("Pickup", GetPickup(), typeof(Pickup), false));
+            SetPickup((Pickup)EditorGUILayout.ObjectField("Pickup", GetPickup(), typeof(Pickup), false));
             SetStackable(EditorGUILayout.Toggle("Stackable", IsStackable()));
         }
 

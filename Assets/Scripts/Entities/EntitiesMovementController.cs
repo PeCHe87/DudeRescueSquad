@@ -67,13 +67,30 @@ namespace DudeResqueSquad
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.DistanceToStop)
+                if (diff <= DistanceToStop(entity))
                 {
                     Stop(entity);
 
                     if (_canDebug)
                         Debug.Log($"Stop agent {entity.name}");
                 }
+            }
+        }
+
+        /// <summary>
+        /// It determines the distance to stop when entity is following a target based on its current state
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private float DistanceToStop(Entity entity)
+        {
+            if (entity.State == Enums.EnemyStates.PATROLLING)
+            {
+                return entity.Data.PatrollingDistanceToStop;
+            }
+            else
+            {
+                return entity.Weapon.AttackAreaRadius;
             }
         }
 
@@ -97,14 +114,13 @@ namespace DudeResqueSquad
                 _transforms[i] = entity.transform;
 
                 // Add Obstacle
-                entity.Follower.Obstacle.carving = false;
-                entity.Follower.Obstacle.enabled = false;
+                entity.Follower.SetObstacleEnabledState(false);
 
                 _obstacles[i] = entity.Follower.Obstacle;
 
                 // Add Agent
                 entity.Follower.Agent.isStopped = true;
-                entity.Follower.Agent.enabled = false;
+                entity.Follower.SetAgentEnabledState(false);
 
                 _agents[i] = entity.Follower.Agent;
             }
@@ -123,19 +139,31 @@ namespace DudeResqueSquad
             for (int i = 0; i < amount; i++)
             {
                 var entity = _entities[i];
+                var entityState = entity.State;
 
-                if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.TAKING_DAMAGE || entity.State == Enums.EnemyStates.DEAD)
+                var targetExists = entity.Follower.Target != null;
+                
+                if (entityState == Enums.EnemyStates.IDLE || entityState == Enums.EnemyStates.TAKING_DAMAGE ||
+                    entityState == Enums.EnemyStates.DEAD || entityState == Enums.EnemyStates.ATTACKING)
+                {
+                    // Rotates toward target if it exists
+                    if (targetExists && (entityState == Enums.EnemyStates.IDLE || entityState == Enums.EnemyStates.ATTACKING))
+                    {
+                        entity.Follower.RotatesTowardTarget();
+                    }
+                    
                     continue;
+                }
 
                 // Check if entity has a detected target
-                if (entity.Follower.Target == null)
+                if (!targetExists)
                     continue;
 
                 var agentTransform = _transforms[i];
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.DistanceToStop)
+                if (diff <= DistanceToStop(entity))
                     continue;
 
                 var obstacle = _obstacles[i];
@@ -157,7 +185,7 @@ namespace DudeResqueSquad
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
-                if (diff <= entity.DistanceToStop)
+                if (diff <= DistanceToStop(entity))
                     continue;
 
                 if (!Application.isPlaying)
@@ -177,8 +205,8 @@ namespace DudeResqueSquad
             {
                 if (!entity.Follower.Agent.enabled)
                 {
-                    entity.Follower.Agent.enabled = true;
-                    entity.Follower.Obstacle.enabled = false;
+                    entity.Follower.SetAgentEnabledState(true);
+                    entity.Follower.SetObstacleEnabledState(false);
                 }
             }
         }
@@ -191,8 +219,8 @@ namespace DudeResqueSquad
                 if (entity.Follower.Target != null)
                 {
                     entity.Follower.Obstacle.size = Vector3.zero;
-                    entity.Follower.Obstacle.carving = false;
-                    entity.Follower.Obstacle.enabled = false;
+ 
+                    entity.Follower.SetObstacleEnabledState(false);
 
                     yield return new WaitForEndOfFrame();
                     yield return new WaitForEndOfFrame();
@@ -211,29 +239,27 @@ namespace DudeResqueSquad
             if (entity.Follower.Agent.enabled)
             {
                 entity.Follower.Agent.isStopped = true;
-                entity.Follower.Agent.enabled = false;
+                entity.Follower.SetAgentEnabledState(false);
             }
 
             // Don't enable obstacle when entity is dead
             if (entity.State != Enums.EnemyStates.DEAD)
             {
                 entity.Follower.Obstacle.transform.position = entity.Follower.Agent.transform.position;
-                entity.Follower.Obstacle.enabled = true;
-                entity.Follower.Obstacle.carving = true;
+                entity.Follower.SetObstacleEnabledState(true);
 
                 entity.Follower.Obstacle.size = entity.Follower.ObstacleSize;
             }
             else
             {
-                entity.Follower.Obstacle.carving = false;
-                entity.Follower.Obstacle.enabled = false;
+                entity.Follower.SetObstacleEnabledState(false);
             }
         }
 
         private void Resume(Entity entity)
         {
             // Enables agent
-            entity.Follower.Agent.enabled = true;
+            entity.Follower.SetAgentEnabledState(true);
 
             if (entity.Follower.Agent.enabled)
             {

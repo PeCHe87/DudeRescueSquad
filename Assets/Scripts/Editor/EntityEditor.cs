@@ -12,14 +12,19 @@ namespace DudeResqueSquad
 
             Vector3 originPosition = entity.transform.position;
 
-            Handles.color = Color.red;
+            //Handles.color = Color.green;
 
+            // Draws area of detection
+            //Handles.DrawWireArc(originPosition, Vector3.up, Vector3.forward, 360, entity.Data.RadiusDetection);
+            
+            Handles.color = Color.red;
+            
             // Draws area of attack
-            Handles.DrawWireArc(originPosition, Vector3.up, Vector3.forward, 360, entity.Data.RadiusAttack);
+            Handles.DrawWireArc(originPosition, Vector3.up, Vector3.forward, 360, entity.Weapon.AttackAreaRadius);
 
             Handles.color = Color.yellow;
 
-            Handles.DrawLine(originPosition, originPosition + entity.transform.forward * entity.Data.RadiusAttack);
+            Handles.DrawLine(originPosition, originPosition + entity.transform.forward * entity.Weapon.AttackAreaRadius);
         }
     }
 }

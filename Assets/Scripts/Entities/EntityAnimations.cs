@@ -185,21 +185,24 @@ namespace DudeResqueSquad
             _attack = false;
 
             // TODO:
+            Debug.Log("<b>TODO:</b> <color=red>RELOADING ANIMATION</color>");
         }
 
         public void ProcessUpdate(Enums.EnemyStates state)
         {
             // Based on current state param update the animations
-            if (state == Enums.EnemyStates.IDLE)
+            /*if (state == Enums.EnemyStates.IDLE)
                 Idle();
             else if (state == Enums.EnemyStates.PATROLLING)
                 Walk();
             else if (state == Enums.EnemyStates.CHASING)
-                Run();
-            else if (state == Enums.EnemyStates.TAKING_DAMAGE)
+                Run();*/
+            if (state == Enums.EnemyStates.TAKING_DAMAGE)
                 TakeDamage();
             else if (state == Enums.EnemyStates.DEAD)
                 Die();
+            else if (state == Enums.EnemyStates.ATTACKING)
+                Idle();
         }
 
         #endregion
