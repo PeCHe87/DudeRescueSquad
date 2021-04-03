@@ -5,6 +5,8 @@ public class EntityData : ScriptableObject
 {
     public string UID;
 
+    public string DisplayName;
+    
     [Header("Health")]
     public int MaxHealth;
     public int CurrentHealth;

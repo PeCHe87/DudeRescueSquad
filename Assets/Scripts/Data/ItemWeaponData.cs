@@ -16,6 +16,7 @@ namespace DudeResqueSquad
         public float FireRate;
         public float AttackDelayTime;
         public float ComboDelayTime;
+        [Tooltip("Time to wait since animation starts to process damage")]
         public float DelayToApplyDamage;
         public float DelayFireEffect;
         public GameObject HitVFX;

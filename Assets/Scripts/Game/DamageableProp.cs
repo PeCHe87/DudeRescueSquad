@@ -68,7 +68,8 @@ namespace DudeResqueSquad
             
             if (Health == 0)
             {
-                _art.SetActive(false);
+                if (_art != null)
+                    _art.SetActive(false);
 
                 _collider.enabled = false;
 

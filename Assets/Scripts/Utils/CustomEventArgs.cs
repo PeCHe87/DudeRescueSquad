@@ -112,5 +112,15 @@ namespace DudeResqueSquad
                 this.initialRotation = initialRotation;
             }
         }
+
+        public class EnemyTargetedArgs
+        {
+            public Transform target;
+
+            public EnemyTargetedArgs(Transform target)
+            {
+                this.target = target;
+            }
+        }
     }
 }

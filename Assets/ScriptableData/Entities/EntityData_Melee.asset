@@ -10,11 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a1678e4e6ea333744a2ecfad452f03fa, type: 3}
-  m_Name: EntityData
+  m_Name: EntityData_Melee
   m_EditorClassIdentifier: 
   UID: 
-  MaxHealth: 30
-  CurrentHealth: 30
+  DisplayName: Entity Melee
+  MaxHealth: 60
+  CurrentHealth: 60
   MinIdleTime: 4
   MaxIdleTime: 8
   SpeedPatrollingMovement: 1.5

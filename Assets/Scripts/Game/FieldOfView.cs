@@ -22,6 +22,8 @@ namespace DudeResqueSquad
         [SerializeField] private float _delayBetweenDetections = 0;
         [SerializeField] private Transform _nearestTarget = null;
         [SerializeField] private bool _globalRotation = false;
+        [SerializeField] private Color _colorVisionConeDebug = Color.white;
+        [SerializeField] private bool _canRaiseEvents = true;
 
         #endregion
 
@@ -40,6 +42,7 @@ namespace DudeResqueSquad
         public Transform NearestTarget { get => _nearestTarget; }
         public LayerMask TargetMask { get => _targetMask; set => _targetMask = value; }
         public LayerMask ObstacleMask { get => _obstacleMask; set => _obstacleMask = value; }
+        public Color ColorVisionConeDebug { get => _colorVisionConeDebug; }
 
         #endregion
 
@@ -95,13 +98,15 @@ namespace DudeResqueSquad
             // Notifies that there is a new target and it is different to the current detected
             if (currentTarget != null)
             {
-                if (OnDetectNewTarget != null)
-                    OnDetectNewTarget(currentTarget);
+                if (_canRaiseEvents)
+                {
+                    OnDetectNewTarget?.Invoke(currentTarget);
+                }
             }
             else if (_nearestTarget != null && currentTarget == null)
             {
-                if (OnStopDetecting != null)
-                    OnStopDetecting();
+                if (_canRaiseEvents)
+                    OnStopDetecting?.Invoke();
             }
 
             // Updates the nearest target

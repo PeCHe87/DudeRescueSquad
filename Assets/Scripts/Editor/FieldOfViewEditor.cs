@@ -21,6 +21,8 @@ namespace DudeResqueSquad
             Vector3 viewAngleA = fov.DirectionFromAngle(-fov.ViewAngle / 2);
             Vector3 viewAngleB = fov.DirectionFromAngle(fov.ViewAngle / 2);
 
+            Handles.color = fov.ColorVisionConeDebug;
+            
             Handles.DrawLine(originPosition, originPosition + viewAngleA * fov.Radius);
             Handles.DrawLine(originPosition, originPosition + viewAngleB * fov.Radius);
 

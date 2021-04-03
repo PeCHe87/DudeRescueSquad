@@ -11,6 +11,7 @@ namespace DudeResqueSquad
         [SerializeField] protected Transform _originPojectile = null;
         [SerializeField] protected bool _canDebugReloading = false;
         [SerializeField] protected LayerMask _targetLayerMask;
+        [SerializeField] protected bool _canDebug = false;
 
         #endregion
         
@@ -30,7 +31,7 @@ namespace DudeResqueSquad
             _entity.OnInitialized += Initialized;
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             _entity.OnInitialized -= Initialized;
 
@@ -71,8 +72,7 @@ namespace DudeResqueSquad
                 return false;
 
             var distanceToTarget = (target.position - _entity.Follower.Agent.transform.position).magnitude;
-
-            //return (distanceToTarget <= _entity.Data.RadiusAttack);
+            
             return (distanceToTarget <= _weapon.AttackAreaRadius);
         }
 

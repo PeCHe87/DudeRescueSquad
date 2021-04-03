@@ -22,13 +22,15 @@ MonoBehaviour:
   AnimationSpeed: 5
   AttackEffect: {fileID: 0}
   Damage: 4
-  DetectionAreaRadius: 2
+  DetectionAreaRadius: 4
+  AttackAreaRadius: 2
   AngleAttackArea: 360
-  FireRate: 0
+  FireRate: 1
   AttackDelayTime: 0.5
   ComboDelayTime: 0.4
   DelayToApplyDamage: 0.3
   DelayFireEffect: 0
+  HitVFX: {fileID: 0}
   ProjectileConfiguration:
     name: 
     bombPrefab: {fileID: 0}
@@ -41,8 +43,29 @@ MonoBehaviour:
     shotgunPellets: 0
     shellPrefab: {fileID: 0}
     hasShells: 0
+  InfiniteBullets: 0
   CurrentBulletsAmount: 0
   MaxBulletsAmount: 0
+  AutoFire: 0
+  DelayBetweenBullets: 0
+  BulletsMagazine: 0
+  CurrentBulletsMagazine: 0
+  BulletsToReload: 0
+  ReloadTime: 0
+  RemainingReloadTime: 0
+  IsReloading: 0
+  PositionProjectileSpawner: {x: 0, y: 0, z: 0}
+  PositionMuzzleSpawner: {x: 0, y: 0, z: 0}
+  projectileLifetime: 0
+  projectileSpeed: 0
+  projectileSpread: 0
+  projectileDropSpeed: 0
+  projectileVisualPrefab: {fileID: 0}
+  muzzleVFX: {fileID: 0}
+  InfiniteDurability: 0
   CurrentDurability: 0
   MaxDurability: 100
   DurabilityAmountConsumptionByUse: 0.1
+  DurabilityRecoveryTime: 0
+  RemainingDurabilityRecoveryTime: 0
+  IsRecoveringDurability: 0

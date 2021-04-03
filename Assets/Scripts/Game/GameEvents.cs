@@ -28,5 +28,10 @@ namespace DudeResqueSquad
         /// Each time an entity fires this event is invoked
         /// </summary>
         public static EventHandler<CustomEventArgs.SpawnProjectileEventArgs> OnSpawnProjectile;
+
+        /// <summary>
+        /// Invoked each time the player's enemy target detection changes
+        /// </summary>
+        public static EventHandler<CustomEventArgs.EnemyTargetedArgs> OnEnemyTargetChanged;
     }
 }
