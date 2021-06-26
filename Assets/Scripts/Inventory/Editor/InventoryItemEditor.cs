@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace DudeResqueSquad.Inventory
 {
-    public class InventoryItemEditor : EditorWindow
-    {
+    public class InventoryItemEditor //: EditorWindow
+    {/*
         #region Private properties
 
         private InventoryItem _selected = null;
@@ -83,5 +83,6 @@ namespace DudeResqueSquad.Inventory
         }
 
         #endregion
+        */
     }
 }

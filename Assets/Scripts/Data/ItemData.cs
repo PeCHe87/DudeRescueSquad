@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace DudeResqueSquad
 {
@@ -11,5 +12,7 @@ namespace DudeResqueSquad
 
         [Header("Equip properties")]
         public GameObject PrefabEquipable;
+
+        public AssetReference AssetReference;
     }
 }

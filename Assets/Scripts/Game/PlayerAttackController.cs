@@ -21,7 +21,10 @@ namespace DudeResqueSquad
 
         #region Inspector properties
 
+        [Tooltip("Main cone of vision")]
         [SerializeField] private FieldOfView _fov = null;
+        [Tooltip("Secondary cone of vision")]
+        [SerializeField] private FieldOfView _fovSecondary = null;
         [SerializeField] private ParticleSystem _meleeTrailEffect = null;
         [SerializeField] private float _delayToStartReloading = 1;
         [SerializeField] private bool _canDebug = false;
@@ -40,6 +43,7 @@ namespace DudeResqueSquad
         private List<IDamageable> _cacheTargets = null;
         private bool _isReloading = false;
         private bool _autoFireActive = false;
+        private bool _usingMainFieldOfView = true;
 
         #endregion
 
@@ -215,9 +219,9 @@ namespace DudeResqueSquad
                 return;
             }
 
-            _fov.Radius = _currentItemEquipped.DetectionAreaRadius;
-            _fov.ViewAngle = _currentItemEquipped.AngleAttackArea;
-            _fov.enabled = true;
+            _fovSecondary.Radius = _currentItemEquipped.DetectionAreaRadius;
+            _fovSecondary.ViewAngle = _currentItemEquipped.AngleAttackArea;
+            _fovSecondary.enabled = true;
         }
 
         private void Attack(object sender, CustomEventArgs.TouchEventArgs e)
@@ -341,13 +345,44 @@ namespace DudeResqueSquad
             OnStartReloading?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
         }
 
+        /// <summary>
+        /// Rotates character towards the target from main field of view
+        /// </summary>
         private void RotateTowardsNearestTarget()
         {
+            _usingMainFieldOfView = true;
+            
             var nearestTarget = _fov.NearestTarget;
+
+            if (nearestTarget == null)
+            {
+                _usingMainFieldOfView = false;
+                
+                RotateTowardsSecondaryNearestTarget();
+                
+                return;
+            }
+
+            Debug.Log($"Rotate towards <b>Main</b> target: {nearestTarget.name}");
+            
+            Vector3 direction = nearestTarget.position - transform.position;
+            direction.Normalize();
+            Vector3 attackTargetDirection = new Vector3(direction.x, 0, direction.z).normalized;
+            _character.Rotator.Rotate(attackTargetDirection);
+        }
+        
+        /// <summary>
+        /// Rotates character towards the target from secondary field of view
+        /// </summary>
+        private void RotateTowardsSecondaryNearestTarget()
+        {
+            var nearestTarget = _fovSecondary.NearestTarget;
 
             if (nearestTarget == null)
                 return;
 
+            Debug.Log($"Rotate towards <b>Secondary</b> target: {nearestTarget.name}");
+            
             Vector3 direction = nearestTarget.position - transform.position;
             direction.Normalize();
             Vector3 attackTargetDirection = new Vector3(direction.x, 0, direction.z).normalized;
@@ -401,8 +436,8 @@ namespace DudeResqueSquad
         {
             float damage = _currentItemEquipped.Damage;
 
-            // Get all target visibles by weapon configuration and apply damage to all of them in the attack area detection
-            Transform[] targets = _fov.VisibleTargets.ToArray();
+            // Get all visible targets by weapon configuration and apply damage to all of them in the attack area detection
+            Transform[] targets = (_usingMainFieldOfView) ? _fov.VisibleTargets.ToArray() : _fovSecondary.VisibleTargets.ToArray();
 
             _cacheTargets.Clear();
 
@@ -481,8 +516,8 @@ namespace DudeResqueSquad
 
             float damage = _currentItemEquipped.Damage;
 
-            // Get all target visibles by weapon configuration and apply damage to all of them in the attack area detection
-            Transform[] targets = _fov.VisibleTargets.ToArray();
+            // Get all visible targets by weapon configuration and apply damage to all of them in the attack area detection
+            Transform[] targets = (_usingMainFieldOfView) ? _fov.VisibleTargets.ToArray() : _fovSecondary.VisibleTargets.ToArray();
 
             _cacheTargets.Clear();
 

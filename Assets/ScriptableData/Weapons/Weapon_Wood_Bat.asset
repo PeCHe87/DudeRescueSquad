@@ -17,18 +17,23 @@ MonoBehaviour:
   Type: 1
   PrefabEquipable: {fileID: 5279276859514850368, guid: 693787305f0ef01409c5d3ea0f632858,
     type: 3}
+  AssetReference:
+    m_AssetGUID: 693787305f0ef01409c5d3ea0f632858
+    m_SubObjectName: 
   PreviewPic: {fileID: 21300000, guid: 7acd89982aba5f8479c86ce17007b9c0, type: 3}
   AttackType: 1
   AnimationSpeed: 5
   AttackEffect: {fileID: 0}
   Damage: 2
   DetectionAreaRadius: 2
+  AttackAreaRadius: 0
   AngleAttackArea: 360
   FireRate: 0
   AttackDelayTime: 0.5
   ComboDelayTime: 0.5
   DelayToApplyDamage: 0.3
   DelayFireEffect: 0
+  HitVFX: {fileID: 0}
   ProjectileConfiguration:
     name: 
     bombPrefab: {fileID: 0}
@@ -41,8 +46,29 @@ MonoBehaviour:
     shotgunPellets: 0
     shellPrefab: {fileID: 0}
     hasShells: 0
+  InfiniteBullets: 0
   CurrentBulletsAmount: 0
   MaxBulletsAmount: 0
+  AutoFire: 0
+  DelayBetweenBullets: 0
+  BulletsMagazine: 0
+  CurrentBulletsMagazine: 0
+  BulletsToReload: 0
+  ReloadTime: 0
+  RemainingReloadTime: 0
+  IsReloading: 0
+  PositionProjectileSpawner: {x: 0, y: 0, z: 0}
+  PositionMuzzleSpawner: {x: 0, y: 0, z: 0}
+  projectileLifetime: 0
+  projectileSpeed: 0
+  projectileSpread: 0
+  projectileDropSpeed: 0
+  projectileVisualPrefab: {fileID: 0}
+  muzzleVFX: {fileID: 0}
+  InfiniteDurability: 0
   CurrentDurability: 0
   MaxDurability: 100
   DurabilityAmountConsumptionByUse: 0.25
+  DurabilityRecoveryTime: 0
+  RemainingDurabilityRecoveryTime: 0
+  IsRecoveringDurability: 0

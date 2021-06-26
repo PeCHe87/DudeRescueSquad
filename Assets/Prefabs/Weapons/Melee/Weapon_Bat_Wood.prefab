@@ -75,7 +75,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2001a0391d118254a8b7685bf6813608, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _trailEffect: {fileID: 6031356459825006860}
+  _leftHandHandle: {fileID: 0}
+  _rightHandHandle: {fileID: 0}
 --- !u!1001 &5840165007546923732
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -143,17 +144,17 @@ PrefabInstance:
       propertyPath: m_LocalScale.z
       value: 0.50000066
       objectReference: {fileID: 0}
-    - target: {fileID: 198089798968194008, guid: ce29dafc1f791b34bab733ad82e14f93,
-        type: 3}
-      propertyPath: playOnAwake
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 114488212251121482, guid: ce29dafc1f791b34bab733ad82e14f93,
         type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 198014585834766638, guid: ce29dafc1f791b34bab733ad82e14f93,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198089798968194008, guid: ce29dafc1f791b34bab733ad82e14f93,
         type: 3}
       propertyPath: playOnAwake
       value: 0
@@ -165,12 +166,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ce29dafc1f791b34bab733ad82e14f93, type: 3}
---- !u!198 &6031356459825006860 stripped
-ParticleSystem:
-  m_CorrespondingSourceObject: {fileID: 198089798968194008, guid: ce29dafc1f791b34bab733ad82e14f93,
-    type: 3}
-  m_PrefabInstance: {fileID: 5840165007546923732}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9182980115807971642
 PrefabInstance:
   m_ObjectHideFlags: 0

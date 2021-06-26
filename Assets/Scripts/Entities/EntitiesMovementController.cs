@@ -47,7 +47,7 @@ namespace DudeResqueSquad
             {
                 var entity = _entities[i];
 
-                if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.TAKING_DAMAGE || entity.State == Enums.EnemyStates.DEAD)
+                if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.DEAD)
                 {
                     Stop(entity);
 
@@ -143,8 +143,7 @@ namespace DudeResqueSquad
 
                 var targetExists = entity.Follower.Target != null;
                 
-                if (entityState == Enums.EnemyStates.IDLE || entityState == Enums.EnemyStates.TAKING_DAMAGE ||
-                    entityState == Enums.EnemyStates.DEAD || entityState == Enums.EnemyStates.ATTACKING)
+                if (entityState == Enums.EnemyStates.IDLE || entityState == Enums.EnemyStates.DEAD || entityState == Enums.EnemyStates.ATTACKING)
                 {
                     // Rotates toward target if it exists
                     if (targetExists && (entityState == Enums.EnemyStates.IDLE || entityState == Enums.EnemyStates.ATTACKING))

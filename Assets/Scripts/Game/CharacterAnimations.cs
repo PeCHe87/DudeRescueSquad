@@ -10,6 +10,7 @@ namespace DudeResqueSquad
         private const string _attackKey = "attack";
         private const string _runningKey = "running";
         private const string _autoFireKey = "autoFire";
+        private const string _rollingKey = "rolling";
 
         #endregion
 
@@ -61,11 +62,21 @@ namespace DudeResqueSquad
         private void CharacterStateChanged(Enums.CharacterStates state)
         {
             if (state == Enums.CharacterStates.IDLE)
+            {
                 Idle();
+            }
             else if (state == Enums.CharacterStates.RUNNING)
+            {
                 Run();
+            }
             else if (state == Enums.CharacterStates.ATTACKING)
+            {
                 Attack();
+            }
+            else if (state == Enums.CharacterStates.ROLLING)
+            {
+                Rolling();
+            }
         }
 
         private void Idle()
@@ -151,6 +162,17 @@ namespace DudeResqueSquad
             _anim.ResetTrigger(_attackKey);
         }
 
+        private void Rolling()
+        {
+            _isRunning = false;
+
+            _anim.speed = 1;
+            _anim.SetBool(_runningKey, false);
+            _anim.SetBool(_autoFireKey, false);
+            _anim.ResetTrigger(_attackKey);
+            _anim.SetTrigger(_rollingKey);
+        }
+        
         #endregion
 
         public void Init(PlayerData data)

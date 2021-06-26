@@ -6,8 +6,8 @@ using UnityEngine;
 namespace DudeResqueSquad.Inventory
 {
     [CreateAssetMenu(fileName = "EquipableWeapon", menuName = "Data/Inventory/Weapon", order = 0)]
-    public class EquipableItemWeapon : EquipableItem, IModifierProvider
-    {
+    public class EquipableItemWeapon //: EquipableItem, IModifierProvider
+    {/*
         #region Public properties
 
         public AnimatorOverrideController AnimatorOverride = null;
@@ -141,5 +141,6 @@ namespace DudeResqueSquad.Inventory
         }
 
         #endregion
+        */
     }
 }

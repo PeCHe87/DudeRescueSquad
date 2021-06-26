@@ -197,9 +197,9 @@ namespace DudeResqueSquad
                 Walk();
             else if (state == Enums.EnemyStates.CHASING)
                 Run();*/
-            if (state == Enums.EnemyStates.TAKING_DAMAGE)
-                TakeDamage();
-            else if (state == Enums.EnemyStates.DEAD)
+            //if (state == Enums.EnemyStates.TAKING_DAMAGE)
+            //    TakeDamage();
+            if (state == Enums.EnemyStates.DEAD)
                 Die();
             else if (state == Enums.EnemyStates.ATTACKING)
                 Idle();

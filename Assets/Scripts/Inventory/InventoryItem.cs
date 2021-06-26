@@ -11,7 +11,7 @@ namespace DudeResqueSquad.Inventory
     /// In practice, you are likely to use a subclass such as `ActionItem` or `EquipableItem`.
     /// </remarks>
     public abstract class InventoryItem : ScriptableObject, ISerializationCallbackReceiver
-    {
+    {/*
         #region Public properties
 
         public GUIStyle _foldoutStyle = null;
@@ -166,16 +166,16 @@ namespace DudeResqueSquad.Inventory
         }
 
         #endregion
-
+*/
         #region Implement ISerializationCallbackReceiver
 
         void ISerializationCallbackReceiver.OnBeforeSerialize()
-        {
+        {/*
             // Generate and save a new UUID if this is blank.
             if (string.IsNullOrWhiteSpace(_itemID))
             {
                 _itemID = System.Guid.NewGuid().ToString();
-            }
+            }*/
         }
 
         void ISerializationCallbackReceiver.OnAfterDeserialize()

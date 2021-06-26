@@ -13,6 +13,7 @@ namespace DudeResqueSquad.Inventory
     /// </summary>
     public class Inventory : MonoBehaviour//, ISaveable, IPredicateEvaluator
     {
+        /*
         // CONFIG DATA
         [Tooltip("Allowed size")]
         [SerializeField] int inventorySize = 16;
@@ -226,7 +227,7 @@ namespace DudeResqueSquad.Inventory
             public string itemID;
             public int number;
         }
-    
+    */
         /*object ISaveable.CaptureState()
         {
             var slotStrings = new InventorySlotRecord[inventorySize];

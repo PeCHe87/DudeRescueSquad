@@ -164,8 +164,12 @@ namespace DudeResqueSquad
             // Trigger melee attack entity's animation
             _entity.Animations.Attack(false);
 
-            Debug.Log($"Entity <b>{_entity.name}</b> attacks to <color=magenta>{_entity.Follower.Target.name}</color>");
-
+            if (_canDebug)
+            {
+                Debug.Log(
+                    $"Entity <b>{_entity.name}</b> attacks to <color=magenta>{_entity.Follower.Target.name}</color>");
+            }
+            
             OnStartAttack?.Invoke();
 
             // Stop current attack after weapon attack delay based on its fire rate

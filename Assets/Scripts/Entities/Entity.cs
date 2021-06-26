@@ -15,6 +15,7 @@ namespace DudeResqueSquad
         [SerializeField] private Enums.EnemyStates _state;
         [SerializeField] private Transform[] _patrollingPoints = null;
         [SerializeField] private ItemWeaponData _weapon = null;
+        [SerializeField] private bool _stopMovementTakingDaamge = false;
 
         #endregion
 
@@ -146,16 +147,19 @@ namespace DudeResqueSquad
         {
             Debug.Log($"Entity: <b>{e.entityUID}</b> <color=red>takes damage: {e.damage}</color>, current Health: {_damageable.Health}/{_damageable.MaxHealth}");
 
-            // Stop visual following
-            _visuals.StopFollowing();
+            if (_stopMovementTakingDaamge)
+            {
+                // Stop visual following
+                _visuals.StopFollowing();
 
-            // Stop movement
-            _follower.StopSpeed();
+                // Stop movement
+                _follower.StopSpeed();
 
-            // Re positionate the Agent and Obstacle in the same place where visual stops
-            var position = _visuals.transform.position;
-            _follower.Agent.transform.position = position;
-            _follower.Obstacle.transform.position = position;
+                // Re positionate the Agent and Obstacle in the same place where visual stops
+                var position = _visuals.transform.position;
+                _follower.Agent.transform.position = position;
+                _follower.Obstacle.transform.position = position;
+            }
         }
 
         private void Dying(object sender, CustomEventArgs.EntityDeadEventArgs e)
@@ -208,10 +212,10 @@ namespace DudeResqueSquad
                 
                 _follower.Agent.speed = _data.SpeedChasingMovement;
             }
-            else if (_state == Enums.EnemyStates.TAKING_DAMAGE)
+            /*else if (_state == Enums.EnemyStates.TAKING_DAMAGE)
             {
                 _follower.StopSpeed();
-            }
+            }*/
             else if (_state == Enums.EnemyStates.DEAD)
             {
                 _follower.StopSpeed();

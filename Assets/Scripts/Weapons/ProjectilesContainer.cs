@@ -65,10 +65,12 @@ namespace DudeResqueSquad.Weapons
             
             _ray.origin = start;
             _ray.direction = end - start;
-            
+
             if (_canDebugProjectile)
+            {
                 Debug.DrawLine(start, end, Color.blue, 1.0f);
-            
+            }
+
             // Detect target hit
             if (Physics.Raycast(_ray, out _hitInfo, distance, projectile.TargetLayerMask))
             {
@@ -81,8 +83,12 @@ namespace DudeResqueSquad.Weapons
                 // Mark this projectile as ready to be destroyed
                 projectile.CurrentTime = projectile.LifeTime;
 
-                Debug.Log($"<color=orange>Projectile</color> from {projectile.EntityUID} impacts {_hitInfo.collider.name}");
+                if (_canDebugProjectile)
+                {
+                    Debug.Log($"<color=orange>Projectile</color> from {projectile.EntityUID} impacts {_hitInfo.collider.name}");
+                }
                 
+
                 // Generate damage
                 GenerateDamage(projectile.Damage);
             }

@@ -17,6 +17,9 @@ MonoBehaviour:
   Type: 1
   PrefabEquipable: {fileID: 1092074819094010, guid: 412516f9c9f45e24da346463ff73744c,
     type: 3}
+  AssetReference:
+    m_AssetGUID: 412516f9c9f45e24da346463ff73744c
+    m_SubObjectName: 
   PreviewPic: {fileID: 21300000, guid: f145cf512a42c484e995310f3e5675fc, type: 3}
   AttackType: 2
   AnimationSpeed: 1

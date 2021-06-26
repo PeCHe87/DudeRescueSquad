@@ -17,18 +17,23 @@ MonoBehaviour:
   Type: 1
   PrefabEquipable: {fileID: 1900586067242068, guid: f0ecff21a5b65cc47bcbe3326afc94a7,
     type: 3}
+  AssetReference:
+    m_AssetGUID: f0ecff21a5b65cc47bcbe3326afc94a7
+    m_SubObjectName: 
   PreviewPic: {fileID: 21300000, guid: 3d2605d82d669ae4cb89d37030806dda, type: 3}
   AttackType: 5
   AnimationSpeed: 1
   AttackEffect: {fileID: 0}
   Damage: 4
   DetectionAreaRadius: 8
+  AttackAreaRadius: 0
   AngleAttackArea: 360
   FireRate: 2
   AttackDelayTime: 0.8
   ComboDelayTime: 0.5
   DelayToApplyDamage: 0.9
   DelayFireEffect: 0.45
+  HitVFX: {fileID: 0}
   ProjectileConfiguration:
     name: Goldfire Bullet Small Machine gun
     bombPrefab: {fileID: 54453457801900860, guid: edc555170136714468e06ae43a7e0c86,
@@ -58,6 +63,11 @@ MonoBehaviour:
   PositionProjectileSpawner: {x: 0.25, y: 0.9, z: 0.81}
   PositionMuzzleSpawner: {x: 0.24, y: 1, z: 0.8}
   projectileLifetime: 5
+  projectileSpeed: 0
+  projectileSpread: 0
+  projectileDropSpeed: 0
+  projectileVisualPrefab: {fileID: 0}
+  muzzleVFX: {fileID: 0}
   InfiniteDurability: 0
   CurrentDurability: 0
   MaxDurability: 0

@@ -33,5 +33,20 @@ namespace DudeResqueSquad
         /// Invoked each time the player's enemy target detection changes
         /// </summary>
         public static EventHandler<CustomEventArgs.EnemyTargetedArgs> OnEnemyTargetChanged;
+        
+        /// <summary>
+        /// Invoked when player wants to process a rolling
+        /// </summary>
+        public static EventHandler OnStartPlayerRolling;
+
+        /// <summary>
+        /// Invoked when player starts rolling animation on floor from animation event
+        /// </summary>
+        public static EventHandler OnStartPlayerRollingAnimation;
+        
+        /// <summary>
+        /// Invoked when player stops rolling and starts standing during animation from animation event
+        /// </summary>
+        public static EventHandler OnStopPlayerRollingAnimation;
     }
 }

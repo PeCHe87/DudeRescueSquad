@@ -8,6 +8,7 @@ namespace DudeResqueSquad.Inventory
     /// </summary>
     public class Pickup : MonoBehaviour
     {
+        /*
         // STATE
         InventoryItem item;
         int number = 1;
@@ -63,5 +64,7 @@ namespace DudeResqueSquad.Inventory
         {
             return inventory.HasSpaceFor(item);
         }
+        
+        */
     }
 }

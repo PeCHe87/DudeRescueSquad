@@ -74,7 +74,7 @@ namespace DudeResqueSquad
             
             _entityId = entity.UID;
 
-            _txtName.text = entity.Data.DisplayName;
+            _txtName.text = $"{entity.Data.DisplayName} - {entity.name}";
             
             // Unsubscribe previous damageable target if there was one
             if (_damageable != null)

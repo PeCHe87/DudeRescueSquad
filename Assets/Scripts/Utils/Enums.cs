@@ -2,7 +2,7 @@
 {
     public static class Enums
     {
-        public enum CharacterStates { NONE, IDLE, RUNNING, ATTACKING }
+        public enum CharacterStates { NONE, IDLE, RUNNING, ATTACKING, ROLLING }
 
         public enum ItemType { NONE, WEAPON, COLLECTABLE, KEY }
 

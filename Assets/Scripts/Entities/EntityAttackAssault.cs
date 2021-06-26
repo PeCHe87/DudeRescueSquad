@@ -191,7 +191,10 @@ namespace DudeResqueSquad
             // Trigger shooting entity's animation
             _entity.Animations.Attack(_weapon.AutoFire);
 
-            Debug.Log($"Entity <b>{_entity.name}</b> attacks to <color=magenta>{_entity.Follower.Target.name}</color>, remaining bullets: {_currentBullets}!");
+            if (_canDebug)
+            {
+                Debug.Log($"Entity <b>{_entity.name}</b> attacks to <color=magenta>{_entity.Follower.Target.name}</color>, remaining bullets: {_currentBullets}!");
+            }
 
             OnAttack?.Invoke(_currentBullets);
 

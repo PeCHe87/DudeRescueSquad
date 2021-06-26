@@ -5,8 +5,9 @@ using UnityEngine;
 namespace DudeResqueSquad.Inventory
 {
     [CreateAssetMenu(menuName = ("RPG/Inventory/Equipable Item"))]
-    public class StatsEquipableItem : EquipableItem, IModifierProvider
+    public class StatsEquipableItem //: EquipableItem, IModifierProvider
     {
+        /*
         [SerializeField] private List<Modifier> additiveModifiers = new List<Modifier>();
         [SerializeField] private List<Modifier> percentageModifiers = new List<Modifier>();
 
@@ -66,5 +67,6 @@ namespace DudeResqueSquad.Inventory
         }
         
 #endif
+*/
     }
 }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace DudeResqueSquad
 {
@@ -59,6 +60,18 @@ namespace DudeResqueSquad
             }
         }
 
+        public void StartRolling()
+        {
+            // TODO: character isn't damageable during this animation
+            GameEvents.OnStartPlayerRollingAnimation?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void EndRolling()
+        {
+            // TODO: character is damageable again after performing this animation
+            GameEvents.OnStopPlayerRollingAnimation?.Invoke(this, EventArgs.Empty);
+        }
+        
         #endregion
     }
 }
