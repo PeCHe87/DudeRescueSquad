@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace DudeResqueSquad.Inventory
 {
-    [CreateAssetMenu(fileName = "EquipableWeapon", menuName = "Data/Inventory/Weapon", order = 0)]
+    //[CreateAssetMenu(fileName = "EquipableWeapon", menuName = "Data/Inventory/Weapon", order = 0)]
     public class EquipableItemWeapon //: EquipableItem, IModifierProvider
     {/*
         #region Public properties

@@ -170,6 +170,17 @@ namespace DudeResqueSquad
             }
         }
 
+        /// <summary>
+        /// Setups the angle and radius view detection fields to modifiy how it behaves when tries to detect targets around
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <param name="radius"></param>
+        public void Setup(float angle, float radius)
+        {
+            _viewAngle = angle;
+            _viewRadius = radius;
+        }
+
         #endregion
     }
 }

@@ -149,7 +149,7 @@ namespace DudeRescueSquad.InventoryEngine
                 {
                     foreach (Inventory inventory in UnityEngine.Object.FindObjectsOfType<Inventory>())
                     {
-                        if (inventory.name == TargetEquipmentInventoryName)
+                        if (inventory.name.Equals(TargetEquipmentInventoryName))
                         {
                             _targetEquipmentInventory = inventory;
                         }

@@ -23,6 +23,13 @@ namespace DudeRescueSquad.Core.Characters
             // Abilities
             _abilities = this.GetComponents<ICharacterAbility>();
 
+            foreach (var ability in _abilities)
+            {
+                if (!ability.IsEnabled()) continue;
+
+                ability.Initialization();
+            }
+
             Debug.Log($"<color=yellow>Character abilities</color>: {_abilities.Length}");
         }
 

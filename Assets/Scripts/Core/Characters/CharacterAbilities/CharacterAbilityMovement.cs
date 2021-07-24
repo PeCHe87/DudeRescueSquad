@@ -51,11 +51,6 @@ namespace DudeRescueSquad.Core.Characters
             this._transform = transform;
         }
 
-        private void Start()
-        {
-            Initialization();
-        }
-
         private void GetMovementDirection()
         {
             if (_controller.Horizontal() == 0 && _controller.Vertical() == 0)

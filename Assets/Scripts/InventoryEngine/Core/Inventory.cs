@@ -321,7 +321,7 @@ namespace DudeRescueSquad.InventoryEngine
                 // if a target equipment inventory is not set, we do nothing and exit
                 if (item.TargetEquipmentInventory == null)
                 {
-                    Debug.LogWarning("InventoryEngine Warning : " + Content[index].ItemName + "'s target equipment inventory couldn't be found.");
+                    Debug.LogError("[InventoryEngine] Warning : " + Content[index].ItemName + "'s target equipment inventory couldn't be found.");
                     return;
                 }
                 
@@ -331,8 +331,8 @@ namespace DudeRescueSquad.InventoryEngine
                     InventoryEvent.Trigger(InventoryEventType.Error, slot, this.name, null, 0, index);
                     return;
                 }
-                // call the equip method of the item
 
+                // call the equip method of the item
                 if (!item.Equip()) return;
                 
                 // if this is a mono slot inventory, we prepare to swap

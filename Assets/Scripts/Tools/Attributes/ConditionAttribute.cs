@@ -1,0 +1,28 @@
+﻿using System;
+using UnityEngine;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+namespace DudeRescueSquad.Tools
+{
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Struct, Inherited = true)]
+    public class ConditionAttribute : PropertyAttribute
+    {
+        public string ConditionBoolean = "";
+        public bool Hidden = false;
+
+        public ConditionAttribute(string conditionBoolean)
+        {
+            this.ConditionBoolean = conditionBoolean;
+            this.Hidden = false;
+        }
+
+        public ConditionAttribute(string conditionBoolean, bool hideInInspector)
+        {
+            this.ConditionBoolean = conditionBoolean;
+            this.Hidden = hideInInspector;
+        }
+
+    }
+}

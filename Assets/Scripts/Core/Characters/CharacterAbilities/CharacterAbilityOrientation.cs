@@ -1,5 +1,6 @@
 ﻿using DudeRescueSquad.Core.Inventory;
 using DudeRescueSquad.Core.Inventory.Items.Weapons;
+using DudeRescueSquad.Core.Weapons;
 using UnityEngine;
 
 namespace DudeRescueSquad.Core.Characters
@@ -25,6 +26,7 @@ namespace DudeRescueSquad.Core.Characters
 
         private ICharacterController _controller = null;
         private Character _character = null;
+        private CharacterAbilityHandleWeapon _characterAbilityHandleWeapon = null;
         private bool _wasInitialized = false;
         private float _targetAngle = 0;
         private float _turnSmoothVelocity = 0;
@@ -38,6 +40,8 @@ namespace DudeRescueSquad.Core.Characters
             this._controller = GetComponent<ICharacterController>();
 
             this._character = GetComponent<Character>();
+
+            this._characterAbilityHandleWeapon = GetComponent<CharacterAbilityHandleWeapon>();
 
             this._wasInitialized = true;
         }
@@ -67,25 +71,18 @@ namespace DudeRescueSquad.Core.Characters
             this._controller = GetComponent<ICharacterController>();
         }
 
-        private void Start()
-        {
-            Initialization();
-        }
-
         /// <summary>
         /// Check the orientation based on the current equipped item (if corresponds) or the input direction
         /// </summary>
         private void CheckOrientation()
         {
             // Check if there is a weapon equipped that can override the orientation based on its target
-            if (_character.HasWeaponEquipped())
+            if (_characterAbilityHandleWeapon.IsEquipped)
             {
-                WeaponItem weapon = _character.GetWeaponEquipped();
-
                 // Check if current weapon type is assault and has target detected
-                if (weapon.Type == Enums.ItemTypes.WEAPON_ASSAULT && weapon.HasDetectedTarget())
+                if (_characterAbilityHandleWeapon.CurrentWeapon.WeaponType == Enums.ItemTypes.WEAPON_ASSAULT && _characterAbilityHandleWeapon.HasDetectedTarget)
                 {
-                    CheckOrientationBasedOnWeapon(weapon);
+                    CheckOrientationBasedOnWeapon();
                     return;
                 }
             }
@@ -96,10 +93,10 @@ namespace DudeRescueSquad.Core.Characters
         /// <summary>
         /// Gets the orientation based on the current item and its target detection
         /// </summary>
-        /// <param name="item"></param>
-        private void CheckOrientationBasedOnWeapon(WeaponItem item)
+        /// <param name="weapon"></param>
+        private void CheckOrientationBasedOnWeapon()
         {
-            var targetPosition = item.GetTargetPosition();
+            var targetPosition = _characterAbilityHandleWeapon.CurrentTarget.position;
 
             targetPosition.y = transform.position.y;
 

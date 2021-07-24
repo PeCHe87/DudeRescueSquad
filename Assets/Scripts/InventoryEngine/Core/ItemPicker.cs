@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 using DudeRescueSquad.Tools;
 
 namespace DudeRescueSquad.InventoryEngine
@@ -12,7 +11,7 @@ namespace DudeRescueSquad.InventoryEngine
         #region Inspector properties
 
         /// the item that should be picked 
-        [Information("Add this component to a Trigger box collider 2D and it'll make it pickable, and will add the specified item to its target inventory. Just drag a previously created item into the slot below. For more about how to create items, have a look at the documentation. Here you can also specify how many of that item should be picked when picking the object.", InformationAttribute.InformationType.Info, false)]
+        [Information("Add this component to a Trigger box collider 3D and it'll make it pickable, and will add the specified item to its target inventory. Just drag a previously created item into the slot below. For more about how to create items, have a look at the documentation. Here you can also specify how many of that item should be picked when picking the object.", InformationAttribute.InformationType.Info, false)]
         public InventoryItem Item;
         [Header("Pick Quantity")]
         /// the quantity of that item that should be added to the inventory when picked
@@ -22,7 +21,8 @@ namespace DudeRescueSquad.InventoryEngine
         public bool PickableIfInventoryIsFull = false;
         /// if you set this to true, a character will pick as much from this picker as possible, leaving the rest for later
         public bool PickAsMuchQuantityAsPossible = false;
-        /// if you set this to true, the object will be disabled when picked
+
+        [Information("If you set this to true, the object will be disabled when picked.", InformationAttribute.InformationType.Info, false)]
         public bool DisableObjectWhenDepleted = false;
 
         #endregion
@@ -59,25 +59,7 @@ namespace DudeRescueSquad.InventoryEngine
         public virtual void OnTriggerEnter(Collider collider)
         {
             // if what's colliding with the picker ain't a characterBehavior, we do nothing and exit
-            if (!collider.CompareTag("Player"))
-            {
-                return;
-            }
-
-            Pick(Item.TargetInventoryName);
-        }
-
-        /// <summary>
-        /// Triggered when something collides with the picker
-        /// </summary>
-        /// <param name="collider">Other.</param>
-        public virtual void OnTriggerEnter2D(Collider2D collider)
-        {
-            // if what's colliding with the picker ain't a characterBehavior, we do nothing and exit
-            if (!collider.CompareTag("Player"))
-            {
-                return;
-            }
+            if (!collider.CompareTag("Player")) return;
 
             Pick(Item.TargetInventoryName);
         }
@@ -97,10 +79,10 @@ namespace DudeRescueSquad.InventoryEngine
         public virtual void Pick(string targetInventoryName)
         {
             FindTargetInventory(targetInventoryName);
-            if (_targetInventory == null)
-            {
-                return;
-            }
+
+            Debug.Log($"<color=green>Pick item:</color> {Item.ItemID}, target Inventory: {targetInventoryName}");
+
+            if (_targetInventory == null) return;
 
             if (!Pickable())
             {
@@ -186,16 +168,17 @@ namespace DudeRescueSquad.InventoryEngine
         /// <param name="targetInventoryName">Target inventory name.</param>
         public virtual void FindTargetInventory(string targetInventoryName)
         {
-            _targetInventory = null;
-            if (targetInventoryName == null)
-            {
-                return;
-            }
+            if (_targetInventory != null) return;
+            //_targetInventory = null;
+
+            if (targetInventoryName == null)  return;
+
             foreach (Inventory inventory in UnityEngine.Object.FindObjectsOfType<Inventory>())
             {
-                if (inventory.name == targetInventoryName)
+                if (inventory.name.Equals(targetInventoryName))
                 {
                     _targetInventory = inventory;
+                    break;
                 }
             }
         }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace DudeResqueSquad.Inventory
 {
-    [CreateAssetMenu(menuName = ("RPG/Inventory/Equipable Item"))]
+    //[CreateAssetMenu(menuName = ("RPG/Inventory/Equipable Item"))]
     public class StatsEquipableItem //: EquipableItem, IModifierProvider
     {
         /*
