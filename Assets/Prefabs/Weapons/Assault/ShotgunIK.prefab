@@ -62,6 +62,7 @@ Transform:
   - {fileID: 287072434694233036}
   - {fileID: 7422182377778912091}
   - {fileID: 2307322913701753199}
+  - {fileID: 4063180129514741939}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -80,11 +81,23 @@ MonoBehaviour:
   WeaponName: ShotgunIK
   _type: 1
   WeaponAttachmentOffset: {x: 0, y: 0, z: 0}
-  LeftHand: 1
   _leftHandHandle: {fileID: 7422182377778912091}
   _rightHandHandle: {fileID: 2307322913701753199}
+  LeftHand: 1
   _radiusView: 8
   _angleView: 350
+  _projectileData:
+    prefab: {fileID: 3719838795672329670, guid: bedf7c128cc8efe499d7311183821f9f,
+      type: 3}
+    speed: 8
+    lifetime: 3
+    damage: 10
+    hitVfx: {fileID: 0}
+    layerMask:
+      serializedVersion: 2
+      m_Bits: 512
+    spread: 0.25
+  _originProjectile: {fileID: 4063180129514741939}
 --- !u!1 &3851214600275047179
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,6 +1007,36 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!1 &5910173010780941212
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4063180129514741939}
+  m_Layer: 0
+  m_Name: OriginProjectile
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4063180129514741939
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5910173010780941212}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.03, z: 0.548}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 8186103541265787415}
+  m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8278191004012103399
 GameObject:
   m_ObjectHideFlags: 0

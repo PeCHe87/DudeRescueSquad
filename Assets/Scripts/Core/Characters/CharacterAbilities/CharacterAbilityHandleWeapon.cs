@@ -18,9 +18,14 @@ namespace DudeRescueSquad.Core.Characters
         #region Inspector properties
 
         /// This method is only used to display a helpbox text at the beginning of the ability's inspector
-        public string HelpBoxText()
+        public override string HelpBoxText()
         {
-            return "This component will allow your character to pickup and use weapons. What the weapon will do is defined in the Weapon classes. This just describes the behaviour of the 'hand' holding the weapon, not the weapon itself. Here you can set an initial weapon for your character to start with, allow weapon pickup, and specify a weapon attachment (a transform inside of your character, could be just an empty child gameobject, or a subpart of your model.";
+            return "This component will allow your character to pickup and use weapons. " +
+                   "What the weapon will do is defined in the Weapon classes. " +
+                   "This just describes the behaviour of the 'hand' holding the weapon, not the weapon itself. " +
+                   "Here you can set an initial weapon for your character to start with, allow weapon pickup, " +
+                   "and specify a weapon attachment (a transform inside of your character, could be just an empty child gameobject, or a subpart of your model. " +
+                   "When the player wants to shoot then it checks the current input and if it corresponds it tells the weapon to start shooting.";
         }
 
         [Header("Weapon")]
@@ -376,6 +381,11 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
         protected override void HandleInput()
         {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                ShootStart();
+            }
+
             /*
             if (!AbilityPermitted
                 || (_condition.CurrentState != CharacterStates.CharacterConditions.Normal))

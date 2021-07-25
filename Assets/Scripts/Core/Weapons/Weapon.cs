@@ -12,6 +12,20 @@ namespace DudeRescueSquad.Core.Weapons
     [SelectionBase]
     public class Weapon : MonoBehaviour
     {
+        // TODO: this should be moved outside and give it more fields to move out all projectile configuration outside from Weapon
+        [System.Serializable]
+        public struct SimpleProjectileData
+        {
+            public GameObject prefab;
+            public float speed;
+            public float lifetime;
+            public float damage;
+            public GameObject hitVfx;
+            public LayerMask layerMask;
+            public float spread;
+
+        }
+
         #region Inspector properties
 
         [Tooltip("The name of the weapon, only used for debugging")]
@@ -24,10 +38,6 @@ namespace DudeRescueSquad.Core.Weapons
         [Tooltip("an offset that will be applied to the weapon once attached to the center of the WeaponAttachment transform.")]
         public Vector3 WeaponAttachmentOffset = Vector3.zero;
 
-        [Header("Use")]
-        [Information("Indicates in which hand this item will be attached when equipped.", InformationAttribute.InformationType.Info, false)]
-        public bool LeftHand = true;
-
         [Header("IK")]
         [Information("This transform properties will be use if weapons implement IK.", InformationAttribute.InformationType.None, false)]
         [Tooltip("the transform to which the character's left hand should be attached to")]
@@ -35,8 +45,15 @@ namespace DudeRescueSquad.Core.Weapons
         [Tooltip("the transform to which the character's right hand should be attached to")]
         [SerializeField] private Transform _rightHandHandle = null;
 
+        [Header("Weapon Data")]
+        [Information("Indicates in which hand this item will be attached when equipped.", InformationAttribute.InformationType.Info, false)]
+        public bool LeftHand = true;
         [SerializeField] private float _radiusView = 2;
         [SerializeField] private float _angleView = 2;
+
+        [Header("Projectile Data")]
+        [SerializeField] private SimpleProjectileData _projectileData;
+        [SerializeField] private Transform _originProjectile = null;
 
         #endregion
 
@@ -53,6 +70,30 @@ namespace DudeRescueSquad.Core.Weapons
         #region Private properties
 
         private Character _characterOwner = null;
+        private CharacterAbilityHandleWeapon _characterHandleWeapon = null;
+
+        #endregion
+
+        #region Private methods
+
+        private void FireProjectile(Transform target = null)
+        {
+            var direction = transform.forward;
+
+            if (target != null)
+            {
+                var targetPosition = target.position + Random.insideUnitSphere * _projectileData.spread;
+                direction = (targetPosition - _characterOwner.transform.position).normalized;
+            }
+
+            var positionInitial = _originProjectile.position;
+            var velocity = direction.normalized * _projectileData.speed;
+
+            // TODO: Show Muzzle
+
+            // Create projectile
+            DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_projectileData, positionInitial, velocity, transform.rotation);
+        }
 
         #endregion
 
@@ -81,7 +122,8 @@ namespace DudeRescueSquad.Core.Weapons
             InitializeFeedbacks();
             */
 
-            this._characterOwner = characterOwner;
+            _characterOwner = characterOwner;
+            _characterHandleWeapon = _characterOwner.GetComponent<CharacterAbilityHandleWeapon>();
         }
 
         /// <summary>
@@ -152,6 +194,8 @@ namespace DudeRescueSquad.Core.Weapons
             }*/
 
             Debug.Log($"<color=green>Shoot weapon</color> '{WeaponName}'");
+
+            FireProjectile(_characterHandleWeapon.CurrentTarget);
         }
 
         /// <summary>

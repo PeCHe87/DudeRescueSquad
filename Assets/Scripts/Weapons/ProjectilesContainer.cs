@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+using static DudeRescueSquad.Core.Weapons.Weapon;
 
 namespace DudeResqueSquad.Weapons
 {
@@ -18,13 +18,18 @@ namespace DudeResqueSquad.Weapons
         private readonly List<ProjectileRaycast> _projectiles = new List<ProjectileRaycast>();
         private Ray _ray;
         private RaycastHit _hitInfo;
-        
+        private static ProjectilesContainer _instance = null;
+
         #endregion
-        
+
+        public static ProjectilesContainer Instance { get => _instance; private set => _instance = value; }
+
         #region Private methods
 
         private void Awake()
         {
+            if (_instance == null) _instance = this;
+
             GameEvents.OnSpawnProjectile += SpawnProjectile;
         }
         
@@ -75,10 +80,12 @@ namespace DudeResqueSquad.Weapons
             if (Physics.Raycast(_ray, out _hitInfo, distance, projectile.TargetLayerMask))
             {
                 DestroyBulletVisualRepresentation(projectile);
-                
+
                 // Show hit VFX
-                var hitVFX = Instantiate(projectile.HitVFX);
-                ShowHitVFX(_hitInfo, hitVFX.transform);
+                if (projectile.HitVFX != null)
+                {
+                    ShowHitVFX(_hitInfo, projectile.HitVFX);
+                }
 
                 // Mark this projectile as ready to be destroyed
                 projectile.CurrentTime = projectile.LifeTime;
@@ -112,6 +119,8 @@ namespace DudeResqueSquad.Weapons
         {
             var damageable = _hitInfo.collider.GetComponent<IDamageable>();
 
+            Debug.Log($"[ProjectilesContainer] GenerateDamage to {damageable}, damage: {damage}");
+
             damageable?.TakeDamage(damage);
         }
 
@@ -119,8 +128,12 @@ namespace DudeResqueSquad.Weapons
         /// Create a new hit VFX based on hit point
         /// </summary>
         /// <param name="hitInfo"></param>
-        private void ShowHitVFX(RaycastHit hitInfo, Transform hitVFX)
+        private void ShowHitVFX(RaycastHit hitInfo, GameObject hitVFXPrefab)
         {
+            if (hitVFXPrefab == null) return;
+
+            var hitVFX = Instantiate(hitVFXPrefab).transform;
+
             hitVFX.position = hitInfo.point;
             hitVFX.forward = hitInfo.normal;
         }
@@ -168,7 +181,28 @@ namespace DudeResqueSquad.Weapons
                 Debug.DrawLine(e.positionInitial, projectile.GetPositionAtTime(e.lifeTime), Color.magenta, 1);
             }
         }
-        
+
+        public void SpawnSimpleProjectile(SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation)
+        {
+            GameObject bulletRepresentation = Instantiate(data.prefab, _container);
+
+            bulletRepresentation.transform.position = position;
+            bulletRepresentation.transform.rotation = rotation;
+            var projectile = new ProjectileRaycast(bulletRepresentation, position, velocity, 0, data.lifetime, null);
+            projectile.Damage = data.damage;
+            projectile.EntityUID = string.Empty;
+            projectile.HitVFX = data.hitVfx;
+            projectile.TargetLayerMask = data.layerMask;
+
+            // Add projectile
+            _projectiles.Add(projectile);
+
+            if (_canDebugProjectile)
+            {
+                Debug.DrawLine(position, projectile.GetPositionAtTime(data.lifetime), Color.magenta, 1);
+            }
+        }
+
         #endregion
     }
 }

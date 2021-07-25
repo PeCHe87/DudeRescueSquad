@@ -4,6 +4,7 @@
     {
         bool WasInitialized();
         bool IsEnabled();
+        void EarlyProcessAbility();
         void Process();
         void Initialization();
     }

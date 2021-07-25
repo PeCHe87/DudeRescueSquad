@@ -23,6 +23,8 @@ namespace DudeRescueSquad.Core.Characters
             return _isEnabled;
         }
 
+        public void EarlyProcessAbility(){}
+
         public void Process()
         {
             GetMovementDirection();
