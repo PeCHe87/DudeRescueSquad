@@ -10,7 +10,7 @@ namespace DudeRescueSquad.Core.Weapons
     /// This base class, meant to be extended (see ProjectileWeapon.cs for an example of that) handles rate of fire (rate of use actually), and ammo reloading
     /// </summary>
     [SelectionBase]
-    public class Weapon : MonoBehaviour
+    public class Weapon : BaseWeapon
     {
         // TODO: this should be moved outside and give it more fields to move out all projectile configuration outside from Weapon
         [System.Serializable]
@@ -28,28 +28,12 @@ namespace DudeRescueSquad.Core.Weapons
 
         #region Inspector properties
 
-        [Tooltip("The name of the weapon, only used for debugging")]
-        public string WeaponName;
-
-        [Tooltip("Type of weapon: Assault, Melee, throwable, etc")]
-        [SerializeField] private Enums.ItemTypes _type = Enums.ItemTypes.NONE;
-
-        [Header("Position")]
-        [Tooltip("an offset that will be applied to the weapon once attached to the center of the WeaponAttachment transform.")]
-        public Vector3 WeaponAttachmentOffset = Vector3.zero;
-
         [Header("IK")]
         [Information("This transform properties will be use if weapons implement IK.", InformationAttribute.InformationType.None, false)]
         [Tooltip("the transform to which the character's left hand should be attached to")]
         [SerializeField] private Transform _leftHandHandle = null;
         [Tooltip("the transform to which the character's right hand should be attached to")]
         [SerializeField] private Transform _rightHandHandle = null;
-
-        [Header("Weapon Data")]
-        [Information("Indicates in which hand this item will be attached when equipped.", InformationAttribute.InformationType.Info, false)]
-        public bool LeftHand = true;
-        [SerializeField] private float _radiusView = 2;
-        [SerializeField] private float _angleView = 2;
 
         [Header("Projectile Data")]
         [SerializeField] private SimpleProjectileData _projectileData;
@@ -59,18 +43,12 @@ namespace DudeRescueSquad.Core.Weapons
 
         #region Public properties
 
-        /// The name of the inventory item corresponding to this weapon. Automatically set (if needed) by InventoryEngineWeapon
-        public string WeaponID { get; set; }
-        public Enums.ItemTypes WeaponType { get => _type; }
-        public float AngleView { get => _angleView; }
-        public float RadiusView { get => _radiusView; }
+        
 
         #endregion
 
         #region Private properties
 
-        private Character _characterOwner = null;
-        private CharacterAbilityHandleWeapon _characterHandleWeapon = null;
 
         #endregion
 
@@ -102,7 +80,7 @@ namespace DudeRescueSquad.Core.Weapons
         /// <summary>
         /// Initialize this weapon.
         /// </summary>
-        public virtual void Initialization(Character characterOwner)
+        public override void Initialization(Character characterOwner)
         {
             /*
             Flipped = false;
@@ -156,7 +134,7 @@ namespace DudeRescueSquad.Core.Weapons
         /// <summary>
         /// Turns the weapon off.
         /// </summary>
-        public virtual void TurnWeaponOff()
+        public override void TurnWeaponOff()
         {
            /* if ((WeaponState.CurrentState == WeaponStates.WeaponIdle || WeaponState.CurrentState == WeaponStates.WeaponStop))
             {
@@ -175,27 +153,6 @@ namespace DudeRescueSquad.Core.Weapons
             {
                 _characterMovement.MovementForbidden = false;
             }*/
-        }
-
-        /// <summary>
-        /// Called by input, turns the weapon on
-        /// </summary>
-        public virtual void WeaponInputStart()
-        {
-            /*if (_reloading)
-            {
-                return;
-            }
-
-            if (WeaponState.CurrentState == WeaponStates.WeaponIdle)
-            {
-                _triggerReleased = false;
-                TurnWeaponOn();
-            }*/
-
-            Debug.Log($"<color=green>Shoot weapon</color> '{WeaponName}'");
-
-            FireProjectile(_characterHandleWeapon.CurrentTarget);
         }
 
         /// <summary>
@@ -301,6 +258,31 @@ namespace DudeRescueSquad.Core.Weapons
             }
             TriggerWeaponUsedFeedback();
             */
+        }
+
+        #endregion
+
+        #region IWeapon implementations
+
+        /// <summary>
+        /// Called by input, turns the weapon on
+        /// </summary>
+        public override void WeaponInputStart()
+        {
+            /*if (_reloading)
+            {
+                return;
+            }
+
+            if (WeaponState.CurrentState == WeaponStates.WeaponIdle)
+            {
+                _triggerReleased = false;
+                TurnWeaponOn();
+            }*/
+
+            Debug.Log($"<color=green>Shoot weapon</color> '{DisplayName}'");
+
+            FireProjectile(_characterHandleWeapon.CurrentTarget);
         }
 
         #endregion

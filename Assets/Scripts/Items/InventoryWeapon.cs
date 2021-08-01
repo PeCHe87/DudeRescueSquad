@@ -25,7 +25,7 @@ namespace DudeRescueSquad.Core
 
         [Header("Weapon")]
         [Information("Here you need to bind the weapon you want to equip when picking that item.", InformationAttribute.InformationType.Info, false)]
-        public Weapon EquippableWeapon;
+        public BaseWeapon EquippableWeapon;
 
         [Tooltip("how to equip this weapon when picked : not equip it, automatically equip it, or only equip it if no weapon is currently equipped")]
         public AutoEquipModes AutoEquipMode = AutoEquipModes.NoAutoEquip;
@@ -67,7 +67,7 @@ namespace DudeRescueSquad.Core
         /// Grabs the CharacterHandleWeapon component and sets the weapon
         /// </summary>
         /// <param name="newWeapon">New weapon.</param>
-        protected virtual void EquipWeapon(Weapon newWeapon)
+        protected virtual void EquipWeapon(BaseWeapon newWeapon)
         {
             if (EquippableWeapon == null) return;
 

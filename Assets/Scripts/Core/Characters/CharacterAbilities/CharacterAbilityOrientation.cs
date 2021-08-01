@@ -147,5 +147,19 @@ namespace DudeRescueSquad.Core.Characters
         }
 
         #endregion
+
+        #region Public methods
+
+        public void Disable()
+        {
+            _isEnabled = false;
+        }
+
+        public void Enable()
+        {
+            _isEnabled = true;
+        }
+
+        #endregion
     }
 }

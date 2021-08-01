@@ -78,14 +78,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 509a76392a614d54181e62904df9368a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  WeaponName: ShotgunIK
+  _displayName: ShotgunIK
   _type: 1
+  _radiusView: 8
+  _angleView: 350
+  WeaponName: ShotgunIK
   WeaponAttachmentOffset: {x: 0, y: 0, z: 0}
   _leftHandHandle: {fileID: 7422182377778912091}
   _rightHandHandle: {fileID: 2307322913701753199}
   LeftHand: 1
-  _radiusView: 8
-  _angleView: 350
   _projectileData:
     prefab: {fileID: 3719838795672329670, guid: bedf7c128cc8efe499d7311183821f9f,
       type: 3}

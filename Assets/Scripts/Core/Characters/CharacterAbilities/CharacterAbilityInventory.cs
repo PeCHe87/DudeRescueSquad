@@ -2,6 +2,7 @@
 using DudeRescueSquad.Tools;
 using DudeRescueSquad.InventoryEngine;
 using System.Collections.Generic;
+using DudeRescueSquad.Core.Weapons;
 
 namespace DudeRescueSquad.Core.Characters
 {

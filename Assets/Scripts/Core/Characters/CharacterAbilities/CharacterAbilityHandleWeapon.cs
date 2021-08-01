@@ -32,7 +32,7 @@ namespace DudeRescueSquad.Core.Characters
 
         /// the initial weapon owned by the character
         [Tooltip("the initial weapon owned by the character")]
-        public Weapon InitialWeapon;
+        public BaseWeapon InitialWeapon;
         /// if this is set to true, the character can pick up PickableWeapons
         [Tooltip("if this is set to true, the character can pick up PickableWeapons")]
         public bool CanPickupWeapons = true;
@@ -89,7 +89,7 @@ namespace DudeRescueSquad.Core.Characters
         [Header("Debug")]
         [ReadOnly]
         [Tooltip("the weapon currently equipped by the Character")]
-        public Weapon CurrentWeapon;
+        public BaseWeapon CurrentWeapon;
 
         /// an animator to update when the weapon is used
         public Animator CharacterAnimator { get; set; }
@@ -133,6 +133,7 @@ namespace DudeRescueSquad.Core.Characters
 
         public bool HasDetectedTarget { get => _isTargetDetected; }
         public Transform CurrentTarget { get => _fieldOfView.NearestTarget; }
+        public Transform[] VisibleTargets { get => _fieldOfView.VisibleTargets.ToArray(); }
 
         #endregion
 
@@ -165,14 +166,14 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Protected methods
 
-        protected virtual void InstantiateWeapon(Weapon newWeapon, string weaponID, bool combo = false)
+        protected virtual void InstantiateWeapon(BaseWeapon newWeapon, string weaponID, bool combo = false)
         {
-            var position = (newWeapon.LeftHand) ? WeaponAttachmentLeftHand.transform.position + newWeapon.WeaponAttachmentOffset : WeaponAttachmentRightHand.transform.position + newWeapon.WeaponAttachmentOffset;
-            var rotation = (newWeapon.LeftHand) ? WeaponAttachmentLeftHand.transform.rotation : WeaponAttachmentRightHand.transform.rotation;
+            var position = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand.transform.position + newWeapon.WeaponAttachmentOffset : WeaponAttachmentRightHand.transform.position + newWeapon.WeaponAttachmentOffset;
+            var rotation = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand.transform.rotation : WeaponAttachmentRightHand.transform.rotation;
 
             CurrentWeapon = Instantiate(newWeapon, position, rotation);
 
-            CurrentWeapon.transform.parent = (newWeapon.LeftHand) ? WeaponAttachmentLeftHand : WeaponAttachmentRightHand;
+            CurrentWeapon.transform.parent = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand : WeaponAttachmentRightHand;
             CurrentWeapon.transform.localPosition = newWeapon.WeaponAttachmentOffset;
             CurrentWeapon.WeaponID = weaponID;
 
@@ -263,7 +264,7 @@ namespace DudeRescueSquad.Core.Characters
             // Set the initial weapon if not null
             if (InitialWeapon != null)
             {
-                ChangeWeapon(InitialWeapon, InitialWeapon.WeaponName, false);
+                ChangeWeapon(InitialWeapon, InitialWeapon.DisplayName, false);
             }
         }
 
@@ -271,7 +272,7 @@ namespace DudeRescueSquad.Core.Characters
         /// Changes the character's current weapon to the one passed as a parameter
         /// </summary>
         /// <param name="newWeapon">The new weapon.</param>
-        public virtual void ChangeWeapon(Weapon newWeapon, string weaponID, bool combo = false)
+        public virtual void ChangeWeapon(BaseWeapon newWeapon, string weaponID, bool combo = false)
         {
             // if the character already has a weapon, we make it stop shooting
             if (CurrentWeapon != null)
@@ -336,7 +337,7 @@ namespace DudeRescueSquad.Core.Characters
         /// <summary>
         /// Causes the character to start shooting
         /// </summary>
-        public virtual void ShootStart()
+        public virtual void UseWeapon()
         {
             // if the Shoot action is enabled in the permissions, we continue, if not we do nothing.  If the player is dead we do nothing.
             /*if (!AbilityPermitted
@@ -383,7 +384,7 @@ namespace DudeRescueSquad.Core.Characters
         {
             if (Input.GetKeyDown(KeyCode.A))
             {
-                ShootStart();
+                UseWeapon();
             }
 
             /*

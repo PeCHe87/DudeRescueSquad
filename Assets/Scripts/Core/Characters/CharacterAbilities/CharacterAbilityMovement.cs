@@ -45,6 +45,28 @@ namespace DudeRescueSquad.Core.Characters
 
         #endregion
 
+        #region Public methods
+
+        public void Disable()
+        {
+            _isEnabled = false;
+
+            _currentDirection = Vector3.zero;
+
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+
+            _rigidBody.isKinematic = true;
+        }
+
+        public void Enable()
+        {
+            _rigidBody.isKinematic = false;
+            _isEnabled = true;
+        }
+
+        #endregion
+
         #region Private methods
 
         private void Awake()
