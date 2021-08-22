@@ -2,6 +2,7 @@
 using DudeRescueSquad.Tools;
 using DudeRescueSquad.Core.Weapons;
 using System;
+using DudeResqueSquad;
 //using MoreMountains.Feedbacks;
 
 namespace DudeRescueSquad.Core.Characters
@@ -126,6 +127,8 @@ namespace DudeRescueSquad.Core.Characters
         private Character _character = null;
         private DudeResqueSquad.FieldOfView _fieldOfView = null;
         private bool _isTargetDetected = false;
+        private bool _attackIsPressing = false;
+        private bool _attackPressed = false;
 
         #endregion
 
@@ -139,8 +142,17 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Unity methods
 
+        private void Awake()
+        {
+            ButtonActionManager.OnStartAction += StartAttacking;
+            ButtonActionManager.OnStopAction += StopAttacking;
+        }
+
         private void OnDestroy()
         {
+            ButtonActionManager.OnStartAction -= StartAttacking;
+            ButtonActionManager.OnStopAction -= StopAttacking;
+
             if (_fieldOfView != null)
             {
                 _fieldOfView.OnDetectNewTarget -= TargetDetected;
@@ -162,18 +174,33 @@ namespace DudeRescueSquad.Core.Characters
             _isTargetDetected = true;
         }
 
+        private void StopAttacking(CustomEventArgs.StopActionEventArgs evtArgs)
+        {
+            // TODO: check button type
+
+            _attackPressed = false;
+            _attackIsPressing = false;
+        }
+
+        private void StartAttacking(CustomEventArgs.StartActionEventArgs evtArgs)
+        {
+            // TODO: check button type
+
+            _attackPressed = true;
+        }
+
         #endregion
 
         #region Protected methods
 
         protected virtual void InstantiateWeapon(BaseWeapon newWeapon, string weaponID, bool combo = false)
         {
-            var position = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand.transform.position + newWeapon.WeaponAttachmentOffset : WeaponAttachmentRightHand.transform.position + newWeapon.WeaponAttachmentOffset;
-            var rotation = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand.transform.rotation : WeaponAttachmentRightHand.transform.rotation;
+            var position = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand.transform.position + newWeapon.WeaponAttachmentOffset : WeaponAttachmentRightHand.transform.position + newWeapon.WeaponAttachmentOffset;
+            var rotation = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand.transform.rotation : WeaponAttachmentRightHand.transform.rotation;
 
             CurrentWeapon = Instantiate(newWeapon, position, rotation);
 
-            CurrentWeapon.transform.parent = (newWeapon.IsLeftHand) ? WeaponAttachmentLeftHand : WeaponAttachmentRightHand;
+            CurrentWeapon.transform.parent = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand : WeaponAttachmentRightHand;
             CurrentWeapon.transform.localPosition = newWeapon.WeaponAttachmentOffset;
             CurrentWeapon.WeaponID = weaponID;
 
@@ -181,7 +208,7 @@ namespace DudeRescueSquad.Core.Characters
             CurrentWeapon.Initialization(_character);
 
             // Setup field of view to detect enemy targets based on current weapon stats
-            _fieldOfView.Setup(CurrentWeapon.AngleView, CurrentWeapon.RadiusView);
+            _fieldOfView.Setup(CurrentWeapon.WeaponData.AngleView, CurrentWeapon.WeaponData.RadiusDetection);
         }
 
         /*
@@ -339,36 +366,8 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
         public virtual void UseWeapon()
         {
-            // if the Shoot action is enabled in the permissions, we continue, if not we do nothing.  If the player is dead we do nothing.
-            /*if (!AbilityPermitted
-                || (CurrentWeapon == null)
-                || (_condition.CurrentState != CharacterStates.CharacterConditions.Normal))
-            {
-                return;
-            }*/
-
-            //  if we've decided to buffer input, and if the weapon is in use right now
-            /*if (BufferInput && (CurrentWeapon.WeaponState.CurrentState != Weapon.WeaponStates.WeaponIdle))
-            {
-                // if we're not already buffering, or if each new input extends the buffer, we turn our buffering state to true
-                ExtendBuffer();
-            }
-
-            if (BufferInput && RequiresPerfectTile && (_characterGridMovement != null))
-            {
-                if (!_characterGridMovement.PerfectTile)
-                {
-                    ExtendBuffer();
-                    return;
-                }
-                else
-                {
-                    _buffering = false;
-                }
-            }
-
-            PlayAbilityStartFeedbacks();
-            */
+            // Check if it is available to be used
+            if (!CurrentWeapon.CanBeUsed()) return;
 
             CurrentWeapon.WeaponInputStart();
         }
@@ -382,9 +381,34 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
         protected override void HandleInput()
         {
+            if (CurrentWeapon == null) return;
+
+            // For testing purposes
             if (Input.GetKeyDown(KeyCode.A))
             {
                 UseWeapon();
+            }
+
+            // Check first attack by pressing attack button
+            if (_attackPressed)
+            {
+                _attackPressed = false;
+                _attackIsPressing = true;
+                UseWeapon();
+            }
+
+            // Check assault weapon autofire
+            if (_attackIsPressing)
+            {
+                if (IsAssaultWeapon(CurrentWeapon.WeaponData))
+                {
+                    var assaultWeaponData = CurrentWeapon.WeaponData as WeaponAssaultData;
+
+                    if (assaultWeaponData.IsAutoFire)
+                    {
+                        UseWeapon();
+                    }
+                }
             }
 
             /*
@@ -429,6 +453,12 @@ namespace DudeRescueSquad.Core.Characters
                 }
             }
             */
+        }
+
+        private bool IsAssaultWeapon(IWeaponDefinition data)
+        {
+            return data.Type == WeaponType.ASSAULT_ONE_HAND ||
+                data.Type == WeaponType.ASSAULT_TWO_HANDS;
         }
 
         public override void Initialization()

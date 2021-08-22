@@ -68,6 +68,7 @@ namespace DudeRescueSquad.InventoryEngine
             e.EventItem = eventItem;
             e.Quantity = quantity;
             e.Index = index;
+
             GameEventManager.TriggerEvent(e);
         }
     }

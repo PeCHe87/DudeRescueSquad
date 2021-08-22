@@ -40,7 +40,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5053147283218464553}
-  - component: {fileID: 1860746414717637633}
   - component: {fileID: 5343502769102875154}
   m_Layer: 0
   m_Name: Weapon_Bat_Wood
@@ -64,20 +63,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 74.5, y: -7.8, z: -6.7}
---- !u!114 &1860746414717637633
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5279276859514850368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2001a0391d118254a8b7685bf6813608, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _leftHandHandle: {fileID: 0}
-  _rightHandHandle: {fileID: 0}
 --- !u!114 &5343502769102875154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -92,10 +77,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _displayName: BatWood
   _type: 2
-  _radiusView: 8
-  _angleView: 180
-  _leftHand: 1
   _attachmentOffset: {x: 0, y: 0, z: 0}
+  _weaponData: {fileID: 11400000, guid: e4e15f146c9c16341a545b2921703d00, type: 2}
   _canDebug: 1
   _damage: 20
   _attackRange: 5

@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f26be9c6be85764f86e2bf1e6e811a4, type: 3}
+  m_Name: ShotgunIK
+  m_EditorClassIdentifier: 
+  _id: ShotgunIK
+  _type: 4
+  _radiusDetection: 8
+  _angleView: 350
+  _isLeftHand: 1
+  _canMoveWhileAttacking: 1
+  _projectileData: {fileID: 11400000, guid: af0fa7445140c3141b15f2df1b3716a5, type: 2}
+  _initialAmmo: 10
+  _maxAmmo: 15
+  _ammoConsumptionPerShot: 1
+  _reloadingTime: 2
+  _isAutoFire: 1
+  _fireRate: 0.5

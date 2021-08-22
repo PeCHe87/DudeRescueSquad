@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
 using DudeRescueSquad.Tools;
-using DudeRescueSquad.InventoryEngine;
 using System.Collections.Generic;
-using DudeRescueSquad.Core.Weapons;
+using DudeRescueSquad.Core.Inventory;
+using DudeRescueSquad.Core.Events;
+using System;
 
 namespace DudeRescueSquad.Core.Characters
 {
@@ -11,24 +12,22 @@ namespace DudeRescueSquad.Core.Characters
     /// </summary>
     [HiddenProperties("AbilityStopFeedbacks")]
     [AddComponentMenu("Dude Rescue Squad/Character/Abilities/Character Ability Inventory")]
-    public class CharacterAbilityInventory : CharacterAbility, GameEventListener<InventoryEvent>
+    public class CharacterAbilityInventory : CharacterAbility, IGameEventListener<InventoryEvent>
     {
         #region Inspector properties
 
         public enum WeaponRotationModes { Normal, AddEmptySlot, AddInitialWeapon }
 
-        /// the name of the main inventory for this character
-        [Tooltip("the name of the main inventory for this character")]
-        public string MainInventoryName;
-        /// the name of the inventory where this character stores weapons
-        [Tooltip("the name of the inventory where this character stores weapons")]
-        public string WeaponInventoryName;
-        /// the name of the hotbar inventory for this character
-        [Tooltip("the name of the hotbar inventory for this character")]
-        public string HotbarInventoryName;
-        /// the rotation mode for weapons : Normal will cycle through all weapons, AddEmptySlot will return to empty hands, AddOriginalWeapon will cycle back to the original weapon
-		[Tooltip("if this is true, will add an empty slot to the weapon rotation")]
-        public WeaponRotationModes WeaponRotationMode = WeaponRotationModes.Normal;
+        [Serializable]
+        public struct ItemData
+        {
+            public string id;
+            public Enums.ItemTypes type;
+            public GameObject prefab;
+        }
+
+        [SerializeField] private ItemData[] _items = null;      // TODO: this should be moved outside and be more informative
+        [SerializeField] private bool _canEquipPickedItemWhenUnequip = false;
 
         #endregion
 
@@ -40,6 +39,8 @@ namespace DudeRescueSquad.Core.Characters
 
         #endregion
 
+        private Dictionary<string, ItemData> _dictionaryItems = null;
+
         #region Protected properties
 
         protected List<int> _availableWeapons;
@@ -50,6 +51,7 @@ namespace DudeRescueSquad.Core.Characters
         protected string _nextFrameWeaponName;
         protected const string _emptySlotWeaponName = "_EmptySlotWeaponName";
         protected const string _initialSlotWeaponName = "_InitialSlotWeaponName";
+        private InventoryEntry _inventory = null;
 
         #endregion
 
@@ -80,39 +82,9 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
 		protected virtual void Setup()
         {
-            GrabInventories();
-
             _characterHandleWeapon = GetComponent<CharacterAbilityHandleWeapon>();
 
             FillAvailableWeaponsLists();
-        }
-
-        /// <summary>
-        /// Grabs any inventory it can find that matches the names set in the inspector
-        /// </summary>
-		protected virtual void GrabInventories()
-        {
-            if (MainInventory == null)
-            {
-                GameObject mainInventoryTmp = GameObject.Find(MainInventoryName);
-                if (mainInventoryTmp != null) { MainInventory = mainInventoryTmp.GetComponent<InventoryEngine.Inventory>(); }
-            }
-
-            if (WeaponInventory == null)
-            {
-                GameObject weaponInventoryTmp = GameObject.Find(WeaponInventoryName);
-                if (weaponInventoryTmp != null) { WeaponInventory = weaponInventoryTmp.GetComponent<InventoryEngine.Inventory>(); }
-            }
-
-            if (HotbarInventory == null)
-            {
-                GameObject hotbarInventoryTmp = GameObject.Find(HotbarInventoryName);
-                if (hotbarInventoryTmp != null) { HotbarInventory = hotbarInventoryTmp.GetComponent<InventoryEngine.Inventory>(); }
-            }
-
-            if (MainInventory != null) { MainInventory.SetOwner(this.gameObject); MainInventory.TargetTransform = this.transform; }
-            if (WeaponInventory != null) { WeaponInventory.SetOwner(this.gameObject); WeaponInventory.TargetTransform = this.transform; }
-            if (HotbarInventory != null) { HotbarInventory.SetOwner(this.gameObject); HotbarInventory.TargetTransform = this.transform; }
         }
 
         /// <summary>
@@ -120,23 +92,11 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
 		protected virtual void FillAvailableWeaponsLists()
         {
-            _availableWeaponsIDs = new List<string>();
-
-            if ((_characterHandleWeapon == null) || (WeaponInventory == null)) return;
-
-            _availableWeapons = MainInventory.InventoryContains(ItemClasses.Weapon);
-
-            foreach (int index in _availableWeapons)
+            _dictionaryItems = new Dictionary<string, ItemData>(_items.Length);
+            foreach (var item in _items)
             {
-                _availableWeaponsIDs.Add(MainInventory.Content[index].ItemID);
+                _dictionaryItems.Add(item.id, item);
             }
-
-            if (!InventoryItem.IsNull(WeaponInventory.Content[0]))
-            {
-                _availableWeaponsIDs.Add(WeaponInventory.Content[0].ItemID);
-            }
-
-            _availableWeaponsIDs.Sort();
         }
 
         /// <summary>
@@ -145,7 +105,7 @@ namespace DudeRescueSquad.Core.Characters
         /// <param name="weaponID"></param>
 		protected virtual void EquipWeapon(string weaponID)
         {
-            if ((weaponID.Equals(_emptySlotWeaponName)) && (_characterHandleWeapon != null))
+            /*if ((weaponID.Equals(_emptySlotWeaponName)) && (_characterHandleWeapon != null))
             {
                 InventoryEvent.Trigger(InventoryEventType.UnEquipRequest, null, WeaponInventoryName, WeaponInventory.Content[0], 0, 0);
                 _characterHandleWeapon.ChangeWeapon(null, _emptySlotWeaponName, false);
@@ -170,7 +130,53 @@ namespace DudeRescueSquad.Core.Characters
                     InventoryEvent.Trigger(InventoryEventType.EquipRequest, null, MainInventory.name, MainInventory.Content[i], 0, i);
                     break;
                 }
+            }*/
+        }
+
+        #endregion
+
+        #region Private methods
+
+        private void EquipPickedItem(string itemId, InventorySlotItem slot)
+        {
+            if (_canEquipPickedItemWhenUnequip)
+            {
+                if (_characterHandleWeapon.CurrentWeapon == null)
+                {
+                    var itemData = GetItemDataById(itemId);
+
+                    // Check if current item is a weapon, else skip
+                    if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
+
+                    _inventory.Equip(itemId, slot);
+
+                    var weapon = GetItemPrefabById<Weapons.BaseWeapon>(itemId);
+
+                    _characterHandleWeapon.ChangeWeapon(weapon, itemId);
+                }
             }
+        }
+
+        private ItemData GetItemDataById(string id)
+        {
+            _dictionaryItems.TryGetValue(id, out var item);
+
+            return item;
+        }
+
+        private T GetItemPrefabById<T>(string id)
+        {
+            for (int i = 0; i < _items.Length; i++)
+            {
+                var item = _items[i];
+
+                if (item.id.Equals(id))
+                {
+                    return item.prefab.GetComponent<T>();
+                }
+            }
+
+            return default(T);
         }
 
         #endregion
@@ -181,7 +187,7 @@ namespace DudeRescueSquad.Core.Characters
         {
             base.Initialization();
 
-            this.Setup();
+            Setup();
         }
 
         /// <summary>
@@ -204,53 +210,23 @@ namespace DudeRescueSquad.Core.Characters
         /// Watches for InventoryLoaded events
         /// When an inventory gets loaded, if it's our WeaponInventory, we check if there's already a weapon equipped, and if yes, we equip it
         /// </summary>
-        /// <param name="inventoryEvent">Inventory event.</param>
-        public virtual void OnGameEvent(InventoryEvent inventoryEvent)
+        /// <param name="eventData">Inventory event.</param>
+        public virtual void OnGameEvent(InventoryEvent eventData)
         {
-            if (inventoryEvent.InventoryEventType == InventoryEventType.InventoryLoaded)
+            switch (eventData.EventType)
             {
-                if (inventoryEvent.TargetInventoryName == WeaponInventoryName)
-                {
-                    this.Setup();
+                case InventoryEventType.InventoryLoaded:
+                    _inventory = eventData.Inventory;
+                    break;
 
-                    if (WeaponInventory != null)
-                    {
-                        if (!InventoryItem.IsNull(WeaponInventory.Content[0]))
-                        {
-                            _characterHandleWeapon.Setup();
-                            WeaponInventory.Content[0].Equip();
-                        }
-                    }
-                }
-            }
+                case InventoryEventType.Pick:
+                    _inventory?.Pick(eventData.ItemId, eventData.Quantity);
+                    break;
 
-            if (inventoryEvent.InventoryEventType == InventoryEventType.Pick)
-            {
-                bool isSubclass = (inventoryEvent.EventItem.GetType().IsSubclassOf(typeof(InventoryWeapon)));
-                bool isClass = (inventoryEvent.EventItem.GetType() == typeof(InventoryWeapon));
-                if (isClass || isSubclass)
-                {
-                    InventoryWeapon inventoryWeapon = (InventoryWeapon)inventoryEvent.EventItem;
-                    switch (inventoryWeapon.AutoEquipMode)
-                    {
-                        case InventoryWeapon.AutoEquipModes.NoAutoEquip:
-                            // we do nothing
-                            break;
+                case InventoryEventType.PickSuccess:
+                    EquipPickedItem(eventData.ItemId, eventData.Slot);
 
-                        case InventoryWeapon.AutoEquipModes.AutoEquip:
-                            _nextFrameWeapon = true;
-                            _nextFrameWeaponName = inventoryEvent.EventItem.ItemID;
-                            break;
-
-                        case InventoryWeapon.AutoEquipModes.AutoEquipIfEmptyHanded:
-                            if (_characterHandleWeapon.CurrentWeapon == null)
-                            {
-                                _nextFrameWeapon = true;
-                                _nextFrameWeaponName = inventoryEvent.EventItem.ItemID;
-                            }
-                            break;
-                    }
-                }
+                    break;
             }
         }
 

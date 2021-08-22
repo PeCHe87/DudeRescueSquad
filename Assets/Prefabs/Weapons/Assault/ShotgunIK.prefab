@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8186103541265787415}
-  - component: {fileID: -8219352872262950057}
+  - component: {fileID: 20024147478777249}
   m_Layer: 0
   m_Name: ShotgunIK
   m_TagString: Untagged
@@ -66,7 +66,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-8219352872262950057
+--- !u!114 &20024147478777249
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -75,29 +75,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 101128020612831693}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 509a76392a614d54181e62904df9368a, type: 3}
+  m_Script: {fileID: 11500000, guid: 26cd9f44cbcff6245aac313c6386d479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _displayName: ShotgunIK
   _type: 1
-  _radiusView: 8
-  _angleView: 350
-  WeaponName: ShotgunIK
-  WeaponAttachmentOffset: {x: 0, y: 0, z: 0}
+  _attachmentOffset: {x: 0, y: 0, z: 0}
+  _weaponData: {fileID: 11400000, guid: 2f193a0c7a0e0424fb0c0036ffa6086f, type: 2}
   _leftHandHandle: {fileID: 7422182377778912091}
   _rightHandHandle: {fileID: 2307322913701753199}
-  LeftHand: 1
-  _projectileData:
-    prefab: {fileID: 3719838795672329670, guid: bedf7c128cc8efe499d7311183821f9f,
-      type: 3}
-    speed: 8
-    lifetime: 3
-    damage: 10
-    hitVfx: {fileID: 0}
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 512
-    spread: 0.25
   _originProjectile: {fileID: 4063180129514741939}
 --- !u!1 &3851214600275047179
 GameObject:

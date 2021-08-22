@@ -12,6 +12,8 @@ namespace DudeRescueSquad.Core.Weapons
     {
         #region Inspector properties
 
+        [Header("Weapon Data")]
+        [SerializeField] private WeaponMeleeData _weaponData = null;
         [SerializeField] private bool _canDebug = true;
         [SerializeField] private float _damage = 0;
         [SerializeField] private float _attackRange = 0;
@@ -42,6 +44,8 @@ namespace DudeRescueSquad.Core.Weapons
         #endregion
 
         #region BaseWeapon Implementation
+
+        public override IWeaponDefinition WeaponData { get => _weaponData; }
 
         public override void WeaponInputStart()
         {
@@ -77,6 +81,11 @@ namespace DudeRescueSquad.Core.Weapons
 
         public override void TurnWeaponOff() { }
 
+        public override bool CanBeUsed()
+        {
+            return true;
+        }
+
         #endregion
 
         #region Private methods
@@ -108,10 +117,10 @@ namespace DudeRescueSquad.Core.Weapons
                     if (!InAttackRange(characterPosition, targetPosition, out var distance)) continue;
 
                     if (_canDebug)
-                        Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {_damage}, distance: {distance}");
+                        Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {_weaponData.AttackDamage}, distance: {distance}");
 
                     // Apply damage
-                    target.TakeDamage(_damage);
+                    target.TakeDamage(_weaponData.AttackDamage);
                 }
             }
         }
@@ -122,14 +131,14 @@ namespace DudeRescueSquad.Core.Weapons
 
             distance = dirTarget.magnitude;
 
-            Debug.DrawRay(characterPosition, dirTarget.normalized * _attackRange, Color.blue, _attackDuration);
+            Debug.DrawRay(characterPosition, dirTarget.normalized * _weaponData.AttackRange, Color.blue, _weaponData.AttackDuration);
 
-            return (distance <= _attackRange);
+            return (distance <= _weaponData.AttackRange);
         }
 
         private async void ResumeCharacterAfterAttack()
         {
-            await Task.Delay(Mathf.FloorToInt(1000 * _attackDuration));
+            await Task.Delay(Mathf.FloorToInt(1000 * _weaponData.AttackDuration));
 
             if (_token.Token.IsCancellationRequested) return;
 
@@ -148,7 +157,7 @@ namespace DudeRescueSquad.Core.Weapons
             if (_characterTransform == null) return;
 
             Gizmos.color = Color.blue;
-            Gizmos.DrawWireSphere(_characterTransform.position + Vector3.up * 0.5f, _attackRange);
+            Gizmos.DrawWireSphere(_characterTransform.position + Vector3.up * 0.5f, _weaponData.AttackRange);
         }
     }
 }

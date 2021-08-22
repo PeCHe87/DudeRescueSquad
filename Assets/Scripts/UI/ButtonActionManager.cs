@@ -1,11 +1,20 @@
-﻿using TMPro;
+﻿using System;
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace DudeResqueSquad
 {
     public class ButtonActionManager : MonoBehaviour
     {
+        #region Events
+
+        public static Action<CustomEventArgs.StartActionEventArgs> OnStartAction;
+        public static Action<CustomEventArgs.StopActionEventArgs> OnStopAction;
+
+        #endregion
+
         #region Inspector properties
 
         [SerializeField] private Character _playerCharacter = null;
@@ -33,6 +42,9 @@ namespace DudeResqueSquad
         /// </summary>
         private bool _refilling = false;
         private Button _btn = null;
+        private EventTrigger trigger;
+        private EventTrigger.Entry entryPointerDown;
+        private EventTrigger.Entry entryPointerUp;
 
         #endregion
 
@@ -61,6 +73,18 @@ namespace DudeResqueSquad
             _content.SetActive(false);
 
             _progressBarReloading.SetActive(false);
+
+            // Add Event Triggers
+            trigger = _btn.GetComponent<EventTrigger>();
+            entryPointerDown = new EventTrigger.Entry();
+            entryPointerDown.eventID = EventTriggerType.PointerDown;
+            entryPointerDown.callback.AddListener((data) => { OnPointerDown((PointerEventData)data); });
+            trigger.triggers.Add(entryPointerDown);
+
+            entryPointerUp = new EventTrigger.Entry();
+            entryPointerUp.eventID = EventTriggerType.PointerUp;
+            entryPointerUp.callback.AddListener((data) => { OnPointerUp((PointerEventData)data); });
+            trigger.triggers.Add(entryPointerUp);
         }
 
         private void Start()
@@ -83,6 +107,13 @@ namespace DudeResqueSquad
                 _attackController.OnStartReloading -= StartReloading;
                 _attackController.OnFinishReloading -= FinishReloading;
             }
+
+            // Remove Event Triggers
+            entryPointerDown.callback.RemoveListener((data) => { OnPointerDown((PointerEventData)data); });
+            trigger.triggers.Remove(entryPointerDown);
+
+            entryPointerUp.callback.RemoveListener((data) => { OnPointerUp((PointerEventData)data); });
+            trigger.triggers.Remove(entryPointerUp);
         }
 
         private void Update()
@@ -202,7 +233,7 @@ namespace DudeResqueSquad
 
         #endregion
 
-        #region Events
+        #region Event callbacks
 
         private void DoAction(CustomEventArgs.PlayerAttackEventArgs e)
         {
@@ -252,6 +283,26 @@ namespace DudeResqueSquad
         public void ProcessAction()
         {
             GameEvents.OnProcessAction?.Invoke(this, System.EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region EventTrigger implementation
+
+        public void OnPointerDown(PointerEventData data)
+        {
+            Debug.Log("<color=green>OnPointerDown</color> called.");
+
+            var evtArgs = new CustomEventArgs.StartActionEventArgs();
+            OnStartAction?.Invoke(evtArgs);
+        }
+
+        public void OnPointerUp(PointerEventData data)
+        {
+            Debug.Log("<color=red>OnPointerUp</color> called.");
+
+            var evtArgs = new CustomEventArgs.StopActionEventArgs();
+            OnStopAction?.Invoke(evtArgs);
         }
 
         #endregion

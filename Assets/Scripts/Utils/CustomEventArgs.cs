@@ -122,5 +122,44 @@ namespace DudeResqueSquad
                 this.target = target;
             }
         }
+
+        #region Input event triggers to start and stop action
+
+        public class StartActionEventArgs
+        {
+            public StartActionEventArgs()
+            {
+            }
+        }
+
+        public class StopActionEventArgs
+        {
+            public StopActionEventArgs()
+            {
+            }
+        }
+
+        #endregion
+
+        #region Weapon events
+
+        public class WeaponStartReloadingEventArgs
+        {
+            public float time;
+
+            public WeaponStartReloadingEventArgs(float time)
+            {
+                this.time = time;
+            }
+        }
+
+        public class WeaponStopReloadingEventArgs
+        {
+            public WeaponStopReloadingEventArgs()
+            {
+            }
+        }
+
+        #endregion
     }
 }

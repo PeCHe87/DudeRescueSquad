@@ -182,7 +182,7 @@ namespace DudeResqueSquad.Weapons
             }
         }
 
-        public void SpawnSimpleProjectile(SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation)
+        public void SpawnSimpleProjectile(DudeRescueSquad.Core.Weapons.SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation)
         {
             GameObject bulletRepresentation = Instantiate(data.prefab, _container);
 
