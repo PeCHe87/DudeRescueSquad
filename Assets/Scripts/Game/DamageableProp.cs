@@ -74,6 +74,8 @@ namespace DudeResqueSquad
                 _collider.enabled = false;
 
                 OnDied?.Invoke(this, new CustomEventArgs.EntityDeadEventArgs(_uid));
+
+                DudeRescueSquad.Core.InteractableEvent.Trigger(DudeRescueSquad.Core.InteractableEventType.EnemyDead, transform);
             }
             else
                 OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));

@@ -1,11 +1,12 @@
-﻿
-using System.Linq;
+﻿using System.Linq;
 
 namespace DudeRescueSquad.Core.Inventory
 {
     [System.Serializable]
     public class InventoryEntry
     {
+        #region Private properties
+
         /// <summary>
         /// List of all slots on Inventory
         /// </summary>
@@ -16,10 +17,28 @@ namespace DudeRescueSquad.Core.Inventory
         /// </summary>
         private InventorySlotItem[] _quickSlots = null;
 
-        /// <summary>
-        /// Represents the current equipped slot from the quick ones
-        /// </summary>
-        private int _equippedQuickSlot = -1;
+        #endregion
+
+        #region Private methods
+
+        private InventorySlotItem GetEmptyQuickSlot()
+        {
+            return _quickSlots.FirstOrDefault(x => string.IsNullOrEmpty(x.ItemId));
+        }
+
+        private InventorySlotItem GetEmptyRegularSlot()
+        {
+            return _slots.FirstOrDefault(x => string.IsNullOrEmpty(x.ItemId));
+        }
+
+        private InventorySlotItem GetQuickSlotBasedOnItemId(string itemId)
+        {
+            return _quickSlots.FirstOrDefault(x => x.ItemId.Equals(itemId));
+        }
+
+        #endregion
+
+        #region Public methods
 
         public InventoryEntry(int slotsAmount, int quickSlotsAmount)
         {
@@ -28,7 +47,7 @@ namespace DudeRescueSquad.Core.Inventory
 
             for (int i = 0; i < slotsAmount; i++)
             {
-                _slots[i] = new InventorySlotItem();
+                _slots[i] = new InventorySlotItem(i);
             }
 
             // Create quick slots
@@ -36,7 +55,7 @@ namespace DudeRescueSquad.Core.Inventory
 
             for (int i = 0; i < quickSlotsAmount; i++)
             {
-                _quickSlots[i] = new InventorySlotItem();
+                _quickSlots[i] = new InventorySlotItem(i);
             }
         }
 
@@ -49,7 +68,7 @@ namespace DudeRescueSquad.Core.Inventory
 
         public void Pick(string itemId, int amount)
         {
-            var emptySlot = _slots.FirstOrDefault(x => string.IsNullOrEmpty(x.ItemId));
+            var emptySlot = GetEmptyRegularSlot();
 
             emptySlot?.Setup(itemId, amount);
 
@@ -62,16 +81,36 @@ namespace DudeRescueSquad.Core.Inventory
             slot.Clean();
 
             // Move the current item to the quick slots, the first empty slot it finds
-            var emptySlot = _quickSlots.FirstOrDefault(x => string.IsNullOrEmpty(x.ItemId));
+            var emptySlot = GetEmptyQuickSlot();
 
             if (emptySlot != null)
             {
                 emptySlot.Setup(itemId, 0);
-                InventoryEvent.Trigger(InventoryEventType.MoveToQuickSlot, itemId, emptySlot, 0);
+
+                InventoryEvent.Trigger(InventoryEventType.EquipOnQuickSlot, itemId, emptySlot, 0);
             }
 
             // Communicates about the success of the action
             InventoryEvent.Trigger(InventoryEventType.ItemEquipped, itemId, slot, 0);
         }
+
+        public void Unequip(string itemId)
+        {
+            // Move the current item to the first empty regular slot
+            var emptySlot = GetEmptyRegularSlot();
+
+            if (emptySlot != null)
+            {
+                emptySlot.Setup(itemId, 0);
+                InventoryEvent.Trigger(InventoryEventType.ItemUnEquipped, itemId, emptySlot, 0);
+            }
+
+            // Remove it from quick slots if it is there
+           var quickSlot = GetQuickSlotBasedOnItemId(itemId);
+
+            quickSlot?.Clean();
+        }
+
+        #endregion
     }
 }

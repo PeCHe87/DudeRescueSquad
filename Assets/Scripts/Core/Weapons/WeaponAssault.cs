@@ -172,8 +172,6 @@ namespace DudeRescueSquad.Core.Weapons
         /// </summary>
         public override void WeaponInputStart()
         {
-            Debug.Log($"<color=green>Shoot weapon</color> '{DisplayName}'");
-
             FireProjectile(_characterHandleWeapon.CurrentTarget);
         }
 

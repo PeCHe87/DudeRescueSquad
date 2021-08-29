@@ -1,6 +1,4 @@
 ﻿using DudeRescueSquad.Core.Inventory;
-using DudeRescueSquad.Core.Inventory.Items.Weapons;
-using DudeRescueSquad.Core.Weapons;
 using UnityEngine;
 
 namespace DudeRescueSquad.Core.Characters
@@ -19,6 +17,7 @@ namespace DudeRescueSquad.Core.Characters
         [SerializeField] private Transform _model = null;
         [SerializeField] private bool _instantRotation = false;
         [SerializeField] private float _turnSmoothTime = 0.1f;
+        [SerializeField] private float _turnFollowingWeaponTargetSmoothTime = 0.05f;
 
         #endregion
 
@@ -106,7 +105,7 @@ namespace DudeRescueSquad.Core.Characters
 
             var angleGoal = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
 
-            _targetAngle = Mathf.SmoothDampAngle(_model.eulerAngles.y, angleGoal, ref _turnSmoothVelocity, _turnSmoothTime);
+            _targetAngle = Mathf.SmoothDampAngle(_model.eulerAngles.y, angleGoal, ref _turnSmoothVelocity, _turnFollowingWeaponTargetSmoothTime);
 
             Debug.DrawRay(transform.position, dir * 4, Color.green);
         }

@@ -13,5 +13,12 @@
         public enum WeaponAttackType { NONE, MELEE_2_HANDS, ASSAULT_2_HANDS, MELEE_1_HAND, ASSAULT_1_HAND, ASSAULT_RIFLE }
 
         public enum EnemyStates { NONE, IDLE, PATROLLING, CHASING, ATTACKING, TAKING_DAMAGE, DEAD }
+
+        public enum InteractablePriorities {
+            NONE = 0,
+            PICKABLE_ITEM = 10,
+            INTERACTABLE_ELEMENT = 20,
+            ENEMY = 100,
+        }
     }
 }

@@ -4,17 +4,27 @@ namespace DudeRescueSquad.Core.Inventory.View
 {
     public class ViewItemPicker : MonoBehaviour
     {
+        public event System.Action OnPicked;
+
         [SerializeField] private string _itemId = string.Empty;
         [SerializeField] private int _amount = 0;
         [SerializeField] private GameObject _art = null;
 
         private ItemPicker _picker = null;
+        private bool _wasPicked = false;
+
+        public string ItemId => _itemId;
+        public bool WasPicked => _wasPicked;
+
+        #region Public methods
 
         public void Setup(InventoryEntry inventory)
         {
             _picker = new ItemPicker(_itemId, _amount, inventory);
             Debug.Log($"Setup item picker: {name}");
         }
+
+        #endregion
 
         #region Unity methods
 
@@ -36,6 +46,10 @@ namespace DudeRescueSquad.Core.Inventory.View
 
         private void PickSuccess()
         {
+            _wasPicked = true;
+
+            OnPicked?.Invoke();
+
             Debug.Log($"<color=green>Pick item:</color> {_itemId}");
 
             // TODO: show VFX
@@ -45,7 +59,7 @@ namespace DudeRescueSquad.Core.Inventory.View
             // TODO: hide and destroy object
             _art.SetActive(false);
 
-            Destroy(gameObject, 1);
+            Destroy(gameObject, 2);
         }
 
         private void PickFail(string error)

@@ -103,8 +103,18 @@ namespace DudeRescueSquad.Core.Characters
         /// Equips the weapon with the name passed in parameters
         /// </summary>
         /// <param name="weaponID"></param>
-		protected virtual void EquipWeapon(string weaponID)
+		protected virtual void EquipWeapon(string itemId)
         {
+            var previousWeapon = _characterHandleWeapon.CurrentWeapon;
+
+            var weapon = GetItemPrefabById<Weapons.BaseWeapon>(itemId);
+
+            _characterHandleWeapon.ChangeWeapon(weapon, itemId);
+
+            if (previousWeapon == null) return;
+
+            _inventory.Unequip(previousWeapon.WeaponData.Id);
+
             /*if ((weaponID.Equals(_emptySlotWeaponName)) && (_characterHandleWeapon != null))
             {
                 InventoryEvent.Trigger(InventoryEventType.UnEquipRequest, null, WeaponInventoryName, WeaponInventory.Content[0], 0, 0);
@@ -141,19 +151,14 @@ namespace DudeRescueSquad.Core.Characters
         {
             if (_canEquipPickedItemWhenUnequip)
             {
-                if (_characterHandleWeapon.CurrentWeapon == null)
-                {
-                    var itemData = GetItemDataById(itemId);
+                var itemData = GetItemDataById(itemId);
 
-                    // Check if current item is a weapon, else skip
-                    if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
+                // Check if current item is a weapon, else skip
+                if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
 
-                    _inventory.Equip(itemId, slot);
+                _inventory.Equip(itemId, slot);
 
-                    var weapon = GetItemPrefabById<Weapons.BaseWeapon>(itemId);
-
-                    _characterHandleWeapon.ChangeWeapon(weapon, itemId);
-                }
+                EquipWeapon(itemId);
             }
         }
 

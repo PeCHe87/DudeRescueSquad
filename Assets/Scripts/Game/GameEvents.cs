@@ -48,5 +48,18 @@ namespace DudeResqueSquad
         /// Invoked when player stops rolling and starts standing during animation from animation event
         /// </summary>
         public static EventHandler OnStopPlayerRollingAnimation;
+
+        #region Interactable events
+
+        public static EventHandler<CustomEventArgs.InteractableArgs> OnDetectInteractable;
+        public static EventHandler<CustomEventArgs.InteractableArgs> OnStopDetectingIteractable;
+
+        #endregion
+
+        #region Game Level events
+
+        public static EventHandler OnGameLevelLoaded;
+
+        #endregion
     }
 }

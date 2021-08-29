@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DudeRescueSquad.Core;
+using System;
 using UnityEngine;
 
 namespace DudeResqueSquad
@@ -157,6 +158,22 @@ namespace DudeResqueSquad
         {
             public WeaponStopReloadingEventArgs()
             {
+            }
+        }
+
+        #endregion
+
+        #region Interactable events
+
+        public class InteractableArgs
+        {
+            public Transform interactableTransform;
+            public IInteractable interactable;
+
+            public InteractableArgs(Transform transform, IInteractable interactable)
+            {
+                this.interactableTransform = transform;
+                this.interactable = interactable;
             }
         }
 
