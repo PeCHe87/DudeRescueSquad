@@ -28,6 +28,7 @@ namespace DudeRescueSquad.Core.Weapons
 
         [Header("Projectile Data")]
         [SerializeField] private Transform _originProjectile = null;
+        [SerializeField] private Transform[] _projectileOrigins = null;
 
         #endregion
 
@@ -43,26 +44,14 @@ namespace DudeRescueSquad.Core.Weapons
 
         private void FireProjectile(Transform target = null)
         {
-            var direction = transform.forward;
+            int amountOfBullets = UnityEngine.Random.Range(_weaponData.MinAmountBulletsPerShot, _weaponData.MaxAmountBulletsPerShot);
 
-            if (target != null)
+            for (int i = 0; i < amountOfBullets; i++)
             {
-                var targetPosition = target.position + Random.insideUnitSphere * _weaponData.ProjectileData.spread;
-                direction = (targetPosition - _characterOwner.transform.position).normalized;
+                SpawnBullet(i);
             }
-
-            var positionInitial = _originProjectile.position;
-            var velocity = direction.normalized * _weaponData.ProjectileData.speed;
 
             // TODO: Show Muzzle
-
-            // Create projectile based on ammo consumption per shot
-            for (int i = 0; i < _weaponData.AmmoConsumptionPerShot; i++)
-            {
-                // TODO: check if origin/direction should be affected here before creation
-
-                DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_weaponData.ProjectileData, positionInitial, velocity, transform.rotation);
-            }
 
             // Update time to be able to shoot again
             _expirationTimeLastShot = Time.time + _weaponData.FireRate;
@@ -70,6 +59,26 @@ namespace DudeRescueSquad.Core.Weapons
             _currentAmmo = Mathf.Max(_currentAmmo - _weaponData.AmmoConsumptionPerShot, 0);
 
             CheckAmmoForAutoReloading();
+        }
+
+        private void SpawnBullet(int index)
+        {
+            if (index >= _projectileOrigins.Length)
+            {
+                Debug.LogError($"Not enough amount of bullet origins for index: {index}");
+                return;
+            }
+
+            var origin = _projectileOrigins[index];
+
+            var direction = origin.forward * 10;
+
+            var positionInitial = origin.position;
+            var velocity = direction.normalized * _weaponData.ProjectileData.speed;
+
+            // TODO: use pool inside the spawn projectile method for better performance
+
+            DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_weaponData.ProjectileData, positionInitial, velocity, transform.rotation);
         }
 
         private void CheckAmmoForAutoReloading()

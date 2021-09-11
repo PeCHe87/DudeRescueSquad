@@ -20,4 +20,4 @@ MonoBehaviour:
   _radiusDetection: 8
   _angleView: 180
   _isLeftHand: 1
-  _canMoveWhileAttacking: 0
+  _canMoveWhileAttacking: 1

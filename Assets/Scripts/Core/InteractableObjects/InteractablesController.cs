@@ -1,5 +1,4 @@
-﻿using DudeRescueSquad.Core.Events;
-using DudeRescueSquad.Core.Inventory.View;
+﻿using DudeRescueSquad.Core.Inventory.View;
 using DudeResqueSquad;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,10 @@ namespace DudeRescueSquad.Core
 {
     public class InteractablesController : MonoBehaviour
     {
-        [SerializeField] private Transform _playerCharacter = default;  // TODO: should be injected by game level initialization
+        public static System.Action<BaseInteractable> OnDetect;
+        public static System.Action OnStopDetection;
+
+        [SerializeField] private Transform _playerCharacter = default;  // TODO: should be injected by game level initialization  when level initialization was created
         [SerializeField] private bool _canDebug = false;
 
         private List<BaseInteractable> _interactables = default;
@@ -42,17 +44,23 @@ namespace DudeRescueSquad.Core
         private void CheckProximity()
         {
             var playerCharacterPosition = _playerCharacter.position;
+            float playerY = playerCharacterPosition.y;
 
             if (_canDebug)
                 Debug.Log("<b> ---------- </b>");
 
             float minDistance = float.MaxValue;
 
+            // IMPROVEMENT: could be great have a list of elements separated by priority and ordered by distance. After each checking only mark as detected the nearest from the max priority.
+
             foreach (var element in _interactables)
             {
                 if (element == null) continue;
 
-                var distance = (element.transform.position - playerCharacterPosition).magnitude;
+                var targetPosition = element.transform.position;
+                targetPosition.y = playerY;
+
+                var distance = (targetPosition - playerCharacterPosition).magnitude;
 
                 if (_canDebug)
                     Debug.Log($"Distance to element {element.name} is {distance} and area detection is {element.AreaRadiusDetection}");
@@ -61,6 +69,7 @@ namespace DudeRescueSquad.Core
                 {
                     minDistance = distance;
                     element.Detect();
+                    //nearest = element;
                 }
                 else
                 {

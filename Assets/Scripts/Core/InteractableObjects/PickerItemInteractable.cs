@@ -11,6 +11,8 @@ namespace DudeRescueSquad.Core
         private bool _wasDetected = false;
         private ViewItemPicker _picker = default;
 
+        public override float DistanceToBeDetected => _distanceToBeDetected;
+
         private void Awake()
         {
             _picker = GetComponent<ViewItemPicker>();

@@ -25,3 +25,5 @@ MonoBehaviour:
   _reloadingTime: 2
   _isAutoFire: 1
   _fireRate: 0.5
+  _minAmountBulletsPerShot: 3
+  _maxAmountBulletsPerShot: 3

@@ -16,6 +16,8 @@ namespace DudeResqueSquad
         private Collider _collider = null;
         private float _health = 0;
 
+        public string UID => _uid;
+
         private void Awake()
         {
             _collider = GetComponent<Collider>();
@@ -75,7 +77,7 @@ namespace DudeResqueSquad
 
                 OnDied?.Invoke(this, new CustomEventArgs.EntityDeadEventArgs(_uid));
 
-                DudeRescueSquad.Core.InteractableEvent.Trigger(DudeRescueSquad.Core.InteractableEventType.EnemyDead, transform);
+                //DudeRescueSquad.Core.InteractableEvent.Trigger(DudeRescueSquad.Core.InteractableEventType.EnemyDead, transform);
             }
             else
                 OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));

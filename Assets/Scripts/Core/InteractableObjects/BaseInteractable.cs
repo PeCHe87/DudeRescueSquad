@@ -9,6 +9,8 @@ namespace DudeRescueSquad.Core
 
         public virtual float AreaRadiusDetection => throw new System.NotImplementedException();
 
+        public virtual float DistanceToBeDetected { get; }
+
         public virtual void Detect()
         {
         }

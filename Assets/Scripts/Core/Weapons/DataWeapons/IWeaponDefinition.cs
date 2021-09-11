@@ -7,6 +7,6 @@
         float RadiusDetection { get; set; }
         float AngleView { get; set; }
         bool IsLeftHand { get; set; }
-        bool CanMoveWhileAttacking { get; set; }
+        bool CanMoveWhileAttacking { get; }
     }
 }

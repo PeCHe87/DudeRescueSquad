@@ -9,5 +9,7 @@
         float ReloadingTime { get; set; }
         bool IsAutoFire { get; set; }
         float FireRate { get; set; }
+        int MinAmountBulletsPerShot { get; }
+        int MaxAmountBulletsPerShot { get; }
     }
 }

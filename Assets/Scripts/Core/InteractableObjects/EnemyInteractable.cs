@@ -10,6 +10,8 @@ namespace DudeRescueSquad.Core
         private bool _wasDetected = false;
         private IDamageable _damageable = default;
 
+        public override float DistanceToBeDetected => _distanceToBeDetected;
+
         #region Unity events
 
         private void Awake()
@@ -46,7 +48,7 @@ namespace DudeRescueSquad.Core
         {
             if (_damageable.IsDead) return;
 
-            if (_wasDetected) return;
+            //if (_wasDetected) return;
 
             base.Detect();
 

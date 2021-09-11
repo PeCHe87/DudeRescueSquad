@@ -14,6 +14,7 @@ namespace DudeRescueSquad.Core
         public static void Trigger(InteractableEventType eventType, Transform element)
         {
             e.Element = element;
+            e.EventType = eventType;
 
             GameEventsManager.TriggerEvent(e);
         }
@@ -21,6 +22,7 @@ namespace DudeRescueSquad.Core
         public static void Trigger(InteractableEventType eventType, string itemId)
         {
             e.ItemId = itemId;
+            e.EventType = eventType;
 
             GameEventsManager.TriggerEvent(e);
         }

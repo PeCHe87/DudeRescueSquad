@@ -56,9 +56,12 @@ namespace DudeRescueSquad.Core.Weapons
 
             _isUsing = true;
 
-            // Cancel movement and rotation when melee attack is applied
-            _characterMovement.Disable();
-            _characterOrientation.Disable();
+            if (!_weaponData.CanMoveWhileAttacking)
+            {
+                // Cancel movement and rotation when melee attack is applied
+                _characterMovement.Disable();
+                _characterOrientation.Disable();
+            }
 
             // Apply damage to all targets in the angle detection area
             ApplyDamage();

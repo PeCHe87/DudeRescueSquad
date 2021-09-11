@@ -27,7 +27,7 @@ namespace DudeRescueSquad.Core.Weapons
         public float RadiusDetection { get => _radiusDetection; set => _radiusDetection = value; }
         public float AngleView { get => _angleView; set => _angleView = value; }
         public bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
-        public bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; set => _canMoveWhileAttacking = value; }
+        public bool CanMoveWhileAttacking => _canMoveWhileAttacking;
 
         #endregion
 

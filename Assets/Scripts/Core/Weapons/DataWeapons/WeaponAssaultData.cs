@@ -21,6 +21,8 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private float _reloadingTime;
         [SerializeField] private bool _isAutoFire = false;
         [SerializeField] private float _fireRate = 0;
+        [SerializeField] private int _minAmountBulletsPerShot = 0;
+        [SerializeField] private int _maxAmountBulletsPerShot = 0;
 
         #endregion
 
@@ -31,7 +33,7 @@ namespace DudeRescueSquad.Core.Weapons
         public float RadiusDetection { get => _radiusDetection; set => _radiusDetection = value; }
         public float AngleView { get => _angleView; set => _angleView = value; }
         public bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
-        public bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; set => _canMoveWhileAttacking = value; }
+        public bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; }
 
         #endregion
 
@@ -44,6 +46,8 @@ namespace DudeRescueSquad.Core.Weapons
         public float FireRate { get => _fireRate; set => _fireRate = value; }
         public float ReloadingTime { get => _reloadingTime; set => _reloadingTime = value; }
         public int AmmoConsumptionPerShot { get => _ammoConsumptionPerShot; }
+        public int MinAmountBulletsPerShot => _minAmountBulletsPerShot; 
+        public int MaxAmountBulletsPerShot => _maxAmountBulletsPerShot;
 
         #endregion
     }

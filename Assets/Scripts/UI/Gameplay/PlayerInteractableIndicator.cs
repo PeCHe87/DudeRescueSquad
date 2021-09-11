@@ -4,15 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using DudeRescueSquad.Core.Events;
-using DudeRescueSquad.Core.Inventory;
-using DudeRescueSquad.Core.Inventory.View;
 using DudeRescueSquad.Core;
+using DudeRescueSquad.Core.Inventory.View;
 
 namespace DudeResqueSquad.UI
 {
     public class PlayerInteractableIndicator : MonoBehaviour, IGameEventListener<InteractableEvent>
     {
-        // TODO: this struct should be in another file (scriptable object woul be better) 
+        // TODO: this struct should be in another file (scriptable object would be better) 
         // related with game colors configuration
         [Serializable]
         public struct InteractablePriorityColor
@@ -34,6 +33,7 @@ namespace DudeResqueSquad.UI
         private Transform _originalParent;
         private Canvas _canvas = null;
         private Transform _cacheTransform = default;
+        private Transform _currentTarget = default;
         private Enums.InteractablePriorities _currentPriority = Enums.InteractablePriorities.NONE;
         private Transform _currentInteractable = default;
         private Dictionary<Enums.InteractablePriorities, List<Transform>> _interactablesByPriority = default;
@@ -45,6 +45,8 @@ namespace DudeResqueSquad.UI
 
         private void Awake()
         {
+            this.EventStartListening<InteractableEvent>();
+
             InitializePriorityValues();
 
             _canvas = GetComponent<Canvas>();
@@ -55,16 +57,26 @@ namespace DudeResqueSquad.UI
 
             Hide();
 
-            _interactablesByPriority = new Dictionary<Enums.InteractablePriorities, List<Transform>>();
+            LoadAllInteractables();
 
             GameEvents.OnDetectInteractable += InteractableDetected;
             GameEvents.OnStopDetectingIteractable += InteractableLost;
         }
 
+        private void Update()
+        {
+            if (_cacheTransform != null && _currentTarget != null)
+            {
+                _cacheTransform.position = new Vector3(_currentTarget.position.x, 0.4f, _currentTarget.position.z);
+            }
+        }
+
         private void OnDestroy()
         {
-            GameEvents.OnDetectInteractable += InteractableDetected;
-            GameEvents.OnStopDetectingIteractable += InteractableLost;
+            this.EventStopListening<InteractableEvent>();
+
+            GameEvents.OnDetectInteractable -= InteractableDetected;
+            GameEvents.OnStopDetectingIteractable -= InteractableLost;
         }
 
         #endregion
@@ -96,6 +108,25 @@ namespace DudeResqueSquad.UI
             }
         }
 
+        private void LoadAllInteractables()
+        {
+            _interactablesByPriority = new Dictionary<Enums.InteractablePriorities, List<Transform>>();
+
+            var interactablesOnLevel = FindObjectsOfType<BaseInteractable>();
+
+            foreach (var item in interactablesOnLevel)
+            {
+                var priority = item.Priority;
+
+                if (!_interactablesByPriority.ContainsKey(priority))
+                {
+                    _interactablesByPriority.Add(priority, new List<Transform>());
+                }
+
+                _interactablesByPriority[priority].Add(item.transform);
+            }
+        }
+
         private void InteractableDetected(object sender, CustomEventArgs.InteractableArgs e)
         {
             var interactable = e.interactable;
@@ -103,7 +134,7 @@ namespace DudeResqueSquad.UI
             var priority = interactable.Priority;
 
             // Add to interactable list
-            AddToList(priority, e.interactableTransform);
+            //AddToList(priority, e.interactableTransform);
 
             if (priority < _currentPriority) return;
 
@@ -123,31 +154,13 @@ namespace DudeResqueSquad.UI
             Show(nearest);
         }
 
-        private void AddToList(Enums.InteractablePriorities priority, Transform transform)
-        {
-            if (_interactablesByPriority.ContainsKey(priority))
-            {
-                if (_interactablesByPriority[priority].Contains(transform)) return;
-
-                _interactablesByPriority[priority].Add(transform);
-            }
-            else
-            {
-                var list = new List<Transform>();
-                list.Add(transform);
-                _interactablesByPriority.Add(priority, list);
-            }
-        }
-
         private void InteractableLost(object sender, CustomEventArgs.InteractableArgs e)
         {
-            // Remove it from the list
-            RemoveFromList(e.interactable.Priority, e.interactableTransform);
-
             // Check if there isn't any interactable in the list then hide the indicator
             if (!RemainingInteractables())
             {
                 Hide();
+
                 return;
             }
 
@@ -169,6 +182,8 @@ namespace DudeResqueSquad.UI
                     return true;
             }
 
+            InteractablesController.OnStopDetection?.Invoke();
+
             return false;
         }
 
@@ -189,6 +204,12 @@ namespace DudeResqueSquad.UI
 
             // Check proximity from all elements in the list
             var nearest = GetNearest(list);
+
+            if (nearest == null)
+            {
+                Hide();
+                return;
+            }
 
             _currentPriority = priority;
 
@@ -251,7 +272,9 @@ namespace DudeResqueSquad.UI
         {
             float currentDist = float.MaxValue;
             Vector3 playerPosition = _playerTarget.position;
-            Transform currentTarget = null;
+            float playerY = playerPosition.y;
+
+            Transform target = null;
 
             int amountOfTargets = elements.Count;
 
@@ -261,11 +284,17 @@ namespace DudeResqueSquad.UI
 
                 if (possibleTarget == null) continue;
 
-                float dist = (possibleTarget.position - playerPosition).magnitude;
+                var targetPosition = possibleTarget.position;
+                targetPosition.y = playerY;
 
-                if (dist < currentDist)
+                float dist = (targetPosition - playerPosition).magnitude;
+
+                // TODO: cache the BaseInteractable component
+                float minDistance = possibleTarget.GetComponent<BaseInteractable>().DistanceToBeDetected;
+
+                if (dist <= minDistance && dist < currentDist)
                 {
-                    currentTarget = possibleTarget;
+                    target = possibleTarget;
                     currentDist = dist;
                 }
             }
@@ -273,7 +302,26 @@ namespace DudeResqueSquad.UI
             //Remove nulls from elements list
             CleanList(elements);
 
-            return currentTarget;
+            // If there is no current target then stop detection
+            if (target == null && _currentTarget != null)
+            {
+                _currentTarget = null;
+                InteractablesController.OnStopDetection?.Invoke();
+            }
+
+            return target;
+        }
+
+        private void DebugShowElements(List<Transform> elements)
+        {
+            string message = string.Empty;
+            foreach (var item in elements)
+            {
+                if (item == null) continue;
+                message += $"- {item.name}";
+            }
+
+            Debug.Log($"Elements to check distance: {message}");
         }
 
         /// <summary>
@@ -331,6 +379,13 @@ namespace DudeResqueSquad.UI
             {
                 _canvas.enabled = true;
             }
+
+            if (target != _currentTarget)
+            {
+                InteractablesController.OnDetect?.Invoke(target.GetComponent<BaseInteractable>());
+
+                _currentTarget = target;
+            }
         }
 
         private void SetColor()
@@ -342,18 +397,21 @@ namespace DudeResqueSquad.UI
 
         private void PickedItem(string itemId)
         {
-            // If there isn't any interactable detected skip this
-            if (_currentInteractable == null) return;
+            var item = GetItem(itemId);
 
             var interactable = _currentInteractable.GetComponent<IInteractable>();
 
             // Remove it from the list
-            RemoveFromList(interactable.Priority, _currentInteractable);
+            if (item != null)
+            {
+                RemoveFromList(interactable.Priority, item);
+            }
 
             // Check if there isn't any interactable in the list then hide the indicator
             if (!RemainingInteractables())
             {
                 Hide();
+
                 return;
             }
 
@@ -361,8 +419,26 @@ namespace DudeResqueSquad.UI
             ShowNextInteractable();
         }
 
+        private Transform GetItem(string itemId)
+        {
+            foreach (var item in _interactablesByPriority[Enums.InteractablePriorities.PICKABLE_ITEM])
+            {
+                var pickable = item.GetComponent<ViewItemPicker>();
+
+                if (pickable == null) continue;
+
+                if (!pickable.ItemId.Equals(itemId)) continue;
+
+                return item;
+            }
+
+            return null;
+        }
+
         private void EnemyDead(Transform element)
         {
+            if (element == null) return;
+
             // If there isn't any interactable detected skip this
             if (_currentInteractable == null) return;
 
@@ -375,6 +451,7 @@ namespace DudeResqueSquad.UI
             if (!RemainingInteractables())
             {
                 Hide();
+
                 return;
             }
 
