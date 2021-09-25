@@ -112,7 +112,7 @@ namespace DudeResqueSquad
             if (!CanPerformAttack())
                 return;
 
-            Debug.Log($"<color=green>Start <b>ACTION</b></color> - {_character.Data.CurrentWeaponEquipped.DisplayName}");
+            //Debug.Log($"<color=green>Start <b>ACTION</b></color> - {_character.Data.CurrentWeaponEquipped.DisplayName}");
 
             OnStartAction?.Invoke(this, EventArgs.Empty);
         }

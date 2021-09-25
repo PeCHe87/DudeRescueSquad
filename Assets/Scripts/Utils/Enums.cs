@@ -20,5 +20,21 @@
             INTERACTABLE_ELEMENT = 20,
             ENEMY = 100,
         }
+
+        public enum ActionType {
+            NONE = 0,
+            MOVE = 1,
+            ATTACK = 2,
+            DASH = 3,
+        }
+
+        public enum CharacterState {
+            NONE = 0,
+            IDLE = 1, 
+            MOVING = 2, 
+            ATTACKING = 3,
+            DASHING = 4,
+            DEAD = 5,
+        }
     }
 }

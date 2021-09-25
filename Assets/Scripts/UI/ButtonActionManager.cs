@@ -17,6 +17,7 @@ namespace DudeResqueSquad
 
         #region Inspector properties
 
+        [SerializeField] private Enums.ActionType _actionType = Enums.ActionType.NONE;
         [SerializeField] private Character _playerCharacter = null;
         [SerializeField] private Image _imgFillEnableAction = null;
         [SerializeField] private Image _imgFillDurability = null;
@@ -293,7 +294,7 @@ namespace DudeResqueSquad
         {
             Debug.Log("<color=green>OnPointerDown</color> called.");
 
-            var evtArgs = new CustomEventArgs.StartActionEventArgs();
+            var evtArgs = new CustomEventArgs.StartActionEventArgs(_actionType);
             OnStartAction?.Invoke(evtArgs);
         }
 
@@ -301,7 +302,7 @@ namespace DudeResqueSquad
         {
             Debug.Log("<color=red>OnPointerUp</color> called.");
 
-            var evtArgs = new CustomEventArgs.StopActionEventArgs();
+            var evtArgs = new CustomEventArgs.StopActionEventArgs(_actionType);
             OnStopAction?.Invoke(evtArgs);
         }
 

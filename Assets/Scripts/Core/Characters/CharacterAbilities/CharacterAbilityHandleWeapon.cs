@@ -176,17 +176,59 @@ namespace DudeRescueSquad.Core.Characters
 
         private void StopAttacking(CustomEventArgs.StopActionEventArgs evtArgs)
         {
-            // TODO: check button type
+            // Check action type
+            if (evtArgs.Type != Enums.ActionType.ATTACK) return;
 
             _attackPressed = false;
             _attackIsPressing = false;
+
+            // Update character state
+            _character.StopAction(Enums.CharacterState.ATTACKING);
         }
 
         private void StartAttacking(CustomEventArgs.StartActionEventArgs evtArgs)
         {
-            // TODO: check button type
+            // Check action type
+            if (evtArgs.Type != Enums.ActionType.ATTACK) return;
 
             _attackPressed = true;
+        }
+
+        /// <summary>
+        /// Causes the character to start shooting
+        /// </summary>
+        private void UseWeapon()
+        {
+            // Check if it is available to be used
+            if (!CurrentWeapon.CanBeUsed()) return;
+
+            // Check character state
+            if (_character.State != Enums.CharacterState.ATTACKING)
+            {
+                // Check if it is possible based on character state
+                if (!_character.CanStartAction(Enums.ActionType.ATTACK)) return;
+
+                // Update character state
+                _character.UpdateState(Enums.CharacterState.ATTACKING);
+            }
+
+            CurrentWeapon.WeaponInputStart();
+        }
+
+        /// <summary>
+        /// The purpose of this method it to make possible test mobile UI input with keyboard keys
+        /// </summary>
+        private void TestAttackInput()
+        {
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                //UseWeapon();
+                StartAttacking(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.ATTACK));
+            }
+            else if (Input.GetKeyUp(KeyCode.A))
+            {
+                StopAttacking(new CustomEventArgs.StopActionEventArgs(Enums.ActionType.ATTACK));
+            }
         }
 
         #endregion
@@ -361,17 +403,6 @@ namespace DudeRescueSquad.Core.Characters
             ForceStop();*/
         }
 
-        /// <summary>
-        /// Causes the character to start shooting
-        /// </summary>
-        public virtual void UseWeapon()
-        {
-            // Check if it is available to be used
-            if (!CurrentWeapon.CanBeUsed()) return;
-
-            CurrentWeapon.WeaponInputStart();
-        }
-
         #endregion
 
         #region ICharacterAbility implementation
@@ -384,10 +415,7 @@ namespace DudeRescueSquad.Core.Characters
             if (CurrentWeapon == null) return;
 
             // For testing purposes
-            if (Input.GetKeyDown(KeyCode.A))
-            {
-                UseWeapon();
-            }
+            TestAttackInput();
 
             // Check first attack by pressing attack button
             if (_attackPressed)
@@ -410,49 +438,6 @@ namespace DudeRescueSquad.Core.Characters
                     }
                 }
             }
-
-            /*
-            if (!AbilityPermitted
-                || (_condition.CurrentState != CharacterStates.CharacterConditions.Normal))
-            {
-                return;
-            }
-            if ((_inputManager.ShootButton.State.CurrentState == MMInput.ButtonStates.ButtonDown) || (_inputManager.ShootAxis == MMInput.ButtonStates.ButtonDown))
-            {
-                ShootStart();
-            }
-
-            if (CurrentWeapon != null)
-            {
-                if (ContinuousPress && (CurrentWeapon.TriggerMode == Weapon.TriggerModes.Auto) && (_inputManager.ShootButton.State.CurrentState == MMInput.ButtonStates.ButtonPressed))
-                {
-                    ShootStart();
-                }
-                if (ContinuousPress && (CurrentWeapon.TriggerMode == Weapon.TriggerModes.Auto) && (_inputManager.ShootAxis == MMInput.ButtonStates.ButtonPressed))
-                {
-                    ShootStart();
-                }
-            }
-
-            if (_inputManager.ReloadButton.State.CurrentState == MMInput.ButtonStates.ButtonDown)
-            {
-                Reload();
-            }
-
-            if ((_inputManager.ShootButton.State.CurrentState == MMInput.ButtonStates.ButtonUp) || (_inputManager.ShootAxis == MMInput.ButtonStates.ButtonUp))
-            {
-                ShootStop();
-            }
-
-            if (CurrentWeapon != null)
-            {
-                if ((CurrentWeapon.WeaponState.CurrentState == Weapon.WeaponStates.WeaponDelayBetweenUses)
-                && ((_inputManager.ShootAxis == MMInput.ButtonStates.Off) && (_inputManager.ShootButton.State.CurrentState == MMInput.ButtonStates.Off)))
-                {
-                    CurrentWeapon.WeaponInputStop();
-                }
-            }
-            */
         }
 
         private bool IsAssaultWeapon(IWeaponDefinition data)

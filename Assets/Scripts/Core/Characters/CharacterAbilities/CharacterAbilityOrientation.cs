@@ -21,6 +21,9 @@ namespace DudeRescueSquad.Core.Characters
 
         #endregion
 
+        public Vector3 ModelDirection => _model.forward;
+        public Transform Model => _model;
+
         #region Private properties
 
         private ICharacterController _controller = null;

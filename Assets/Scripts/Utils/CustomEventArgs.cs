@@ -128,15 +128,21 @@ namespace DudeResqueSquad
 
         public class StartActionEventArgs
         {
-            public StartActionEventArgs()
+            public Enums.ActionType Type;
+
+            public StartActionEventArgs(Enums.ActionType type)
             {
+                this.Type = type;
             }
         }
 
         public class StopActionEventArgs
         {
-            public StopActionEventArgs()
+            public Enums.ActionType Type;
+
+            public StopActionEventArgs(Enums.ActionType type)
             {
+                this.Type = type;
             }
         }
 

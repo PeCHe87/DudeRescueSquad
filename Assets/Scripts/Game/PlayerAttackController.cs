@@ -194,7 +194,7 @@ namespace DudeResqueSquad
             // If auto fire then invoke again after fire rate (delay between bullets)
             if (_currentItemEquipped.CurrentBulletsMagazine == 0)
             {
-                Debug.Log("<b>STOP ACTION</b> - No more BULLETS");
+                //Debug.Log("<b>STOP ACTION</b> - No more BULLETS");
 
                 GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
 
@@ -326,7 +326,7 @@ namespace DudeResqueSquad
         {
             if (_autoFireActive)
             {
-                Debug.Log("<b>STOP ACTION</b> - START RELOADING");
+               // Debug.Log("<b>STOP ACTION</b> - START RELOADING");
 
                 GameEvents.OnStopAction?.Invoke(this, EventArgs.Empty);
             }
@@ -340,7 +340,7 @@ namespace DudeResqueSquad
             _currentItemEquipped.RemainingReloadTime = _currentItemEquipped.ReloadTime;
             _currentItemEquipped.IsReloading = true;
 
-            Debug.Log($"<color=green>Start <b>RELOADING</b></color> - character: {_character.Data.UID}, bullets: {_currentItemEquipped.BulletsToReload}, reloading time: {_currentItemEquipped.ReloadTime}");
+            //Debug.Log($"<color=green>Start <b>RELOADING</b></color> - character: {_character.Data.UID}, bullets: {_currentItemEquipped.BulletsToReload}, reloading time: {_currentItemEquipped.ReloadTime}");
 
             OnStartReloading?.Invoke(new CustomEventArgs.PlayerAttackEventArgs(_currentItemEquipped, _character.Data.UID));
         }
