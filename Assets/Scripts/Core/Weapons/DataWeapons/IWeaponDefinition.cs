@@ -1,4 +1,6 @@
-﻿namespace DudeRescueSquad.Core.Weapons
+﻿using UnityEngine;
+
+namespace DudeRescueSquad.Core.Weapons
 {
     public interface IWeaponDefinition
     {
@@ -8,5 +10,6 @@
         float AngleView { get; set; }
         bool IsLeftHand { get; set; }
         bool CanMoveWhileAttacking { get; }
+        Sprite Icon { get; }
     }
 }

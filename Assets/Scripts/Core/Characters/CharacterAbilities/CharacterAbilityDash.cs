@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DudeRescueSquad.Core.Events;
+using DudeRescueSquad.Core.LevelManagement;
 using DudeResqueSquad;
 using UnityEngine;
 
@@ -7,7 +8,7 @@ namespace DudeRescueSquad.Core.Characters
     /// <summary>
     /// Add this ability to a character and it'll be able to dash (cover the specified distance in the specified time)
     /// </summary>
-    public class CharacterAbilityDash : CharacterAbility
+    public class CharacterAbilityDash : CharacterAbility, IGameEventListener<GameLevelEvent>
     {
         #region Inspector properties
 
@@ -43,12 +44,28 @@ namespace DudeRescueSquad.Core.Characters
 
         private void Awake()
         {
-            ButtonActionManager.OnStartAction += StartAction;
+            //ButtonActionManager.OnStartAction += StartAction;
+        }
+
+        /// <summary>
+        /// On enable, we start listening for GameEvents. You may want to extend that to listen to other types of events.
+        /// </summary>
+        private void OnEnable()
+        {
+            this.EventStartListening<GameLevelEvent>();
+        }
+
+        /// <summary>
+        /// On disable, we stop listening for GameEvents. You may want to extend that to stop listening to other types of events.
+        /// </summary>
+        protected void OnDisable()
+        {
+            this.EventStopListening<GameLevelEvent>();
         }
 
         private void OnDestroy()
         {
-            ButtonActionManager.OnStartAction -= StartAction;
+            //ButtonActionManager.OnStartAction -= StartAction;
         }
 
         #endregion
@@ -96,6 +113,24 @@ namespace DudeRescueSquad.Core.Characters
 
         #endregion
 
+        #region GameEventListener<GameLevelEvent> implementation
+
+        /// <summary>
+        /// Check different events related with game level
+        /// </summary>
+        /// <param name="eventData">Inventory event.</param>
+        public virtual void OnGameEvent(GameLevelEvent eventData)
+        {
+            switch (eventData.EventType)
+            {
+                case GameLevelEventType.StartPlayerDash:
+                    StartAction();
+                    break;
+            }
+        }
+
+        #endregion
+
         #region Private methods
 
         private void StartAction(CustomEventArgs.StartActionEventArgs evtArgs)
@@ -103,6 +138,11 @@ namespace DudeRescueSquad.Core.Characters
             // Check action type
             if (evtArgs.Type != Enums.ActionType.DASH) return;
 
+            _dashPressed = true;
+        }
+
+        private void StartAction()
+        {
             _dashPressed = true;
         }
 
@@ -185,7 +225,9 @@ namespace DudeRescueSquad.Core.Characters
 
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                StartAction(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.DASH));
+                //StartAction(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.DASH));
+
+                StartAction();
             }
         }
 

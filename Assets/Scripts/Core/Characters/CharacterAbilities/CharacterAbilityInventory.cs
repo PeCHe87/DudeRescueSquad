@@ -156,9 +156,9 @@ namespace DudeRescueSquad.Core.Characters
                 // Check if current item is a weapon, else skip
                 if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
 
-                _inventory.Equip(itemId, slot);
-
                 EquipWeapon(itemId);
+
+                _inventory.Equip(itemId, slot);
             }
         }
 

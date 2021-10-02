@@ -3,6 +3,8 @@ using DudeRescueSquad.Tools;
 using DudeRescueSquad.Core.Weapons;
 using System;
 using DudeResqueSquad;
+using DudeRescueSquad.Core.Events;
+using DudeRescueSquad.Core.LevelManagement;
 //using MoreMountains.Feedbacks;
 
 namespace DudeRescueSquad.Core.Characters
@@ -14,7 +16,7 @@ namespace DudeRescueSquad.Core.Characters
     /// Animator parameters : defined from the Weapon's inspector
     /// </summary>
     [AddComponentMenu("DudeRescueSquad/Character/Abilities/Character Ability Handle Weapon")]
-    public class CharacterAbilityHandleWeapon : CharacterAbility
+    public class CharacterAbilityHandleWeapon : CharacterAbility, IGameEventListener<GameLevelEvent>
     {
         #region Inspector properties
 
@@ -144,14 +146,30 @@ namespace DudeRescueSquad.Core.Characters
 
         private void Awake()
         {
-            ButtonActionManager.OnStartAction += StartAttacking;
-            ButtonActionManager.OnStopAction += StopAttacking;
+            //ButtonActionManager.OnStartAction += StartAttacking;
+            //ButtonActionManager.OnStopAction += StopAttacking;
+        }
+
+        /// <summary>
+        /// On enable, we start listening for GameEvents. You may want to extend that to listen to other types of events.
+        /// </summary>
+        private void OnEnable()
+        {
+            this.EventStartListening<GameLevelEvent>();
+        }
+
+        /// <summary>
+        /// On disable, we stop listening for GameEvents. You may want to extend that to stop listening to other types of events.
+        /// </summary>
+        protected void OnDisable()
+        {
+            this.EventStopListening<GameLevelEvent>();
         }
 
         private void OnDestroy()
         {
-            ButtonActionManager.OnStartAction -= StartAttacking;
-            ButtonActionManager.OnStopAction -= StopAttacking;
+            //ButtonActionManager.OnStartAction -= StartAttacking;
+            //ButtonActionManager.OnStopAction -= StopAttacking;
 
             if (_fieldOfView != null)
             {
@@ -194,6 +212,20 @@ namespace DudeRescueSquad.Core.Characters
             _attackPressed = true;
         }
 
+        private void StartAttack()
+        {
+            _attackPressed = true;
+        }
+
+        private void StopAttack()
+        {
+            _attackPressed = false;
+            _attackIsPressing = false;
+
+            // Update character state
+            _character.StopAction(Enums.CharacterState.ATTACKING);
+        }
+
         /// <summary>
         /// Causes the character to start shooting
         /// </summary>
@@ -223,11 +255,13 @@ namespace DudeRescueSquad.Core.Characters
             if (Input.GetKeyDown(KeyCode.A))
             {
                 //UseWeapon();
-                StartAttacking(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.ATTACK));
+                //StartAttacking(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.ATTACK));
+                StartAttack();
             }
             else if (Input.GetKeyUp(KeyCode.A))
             {
-                StopAttacking(new CustomEventArgs.StopActionEventArgs(Enums.ActionType.ATTACK));
+                //StopAttacking(new CustomEventArgs.StopActionEventArgs(Enums.ActionType.ATTACK));
+                StopAttack();
             }
         }
 
@@ -356,9 +390,15 @@ namespace DudeRescueSquad.Core.Characters
             }
 
             if (newWeapon != null)
+            {
                 InstantiateWeapon(newWeapon, weaponID, combo);
+
+                // TODO: communicates about the weapon change
+            }
             else
+            {
                 CurrentWeapon = null;
+            }
         }
 
         /// <summary>
@@ -463,6 +503,28 @@ namespace DudeRescueSquad.Core.Characters
             UpdateAmmoDisplay();
             HandleBuffer();
             */
+        }
+
+        #endregion
+
+        #region GameEventListener<GameLevelEvent> implementation
+
+        /// <summary>
+        /// Check different events related with game level
+        /// </summary>
+        /// <param name="eventData">Inventory event.</param>
+        public virtual void OnGameEvent(GameLevelEvent eventData)
+        {
+            switch (eventData.EventType)
+            {
+                case GameLevelEventType.StartPlayerAttack:
+                    StartAttack();
+                    break;
+
+                case GameLevelEventType.StopPlayerAttack:
+                    StopAttack();
+                    break;
+            }
         }
 
         #endregion

@@ -9,6 +9,7 @@ namespace DudeRescueSquad.Core.Weapons
 
         [SerializeField] private string _id;
         [SerializeField] private WeaponType _type;
+        [SerializeField] private Sprite _icon = default;
         [SerializeField] private float _attackDamage;
         [SerializeField] private float _attackRange;
         [SerializeField] private float _attackDuration;
@@ -24,6 +25,7 @@ namespace DudeRescueSquad.Core.Weapons
 
         public WeaponType Type { get => _type; set => _type = value; }
         public string Id { get => _id; set => _id = value; }
+        public Sprite Icon => _icon;
         public float RadiusDetection { get => _radiusDetection; set => _radiusDetection = value; }
         public float AngleView { get => _angleView; set => _angleView = value; }
         public bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }

@@ -1,23 +1,56 @@
-﻿using DudeRescueSquad.Core.Inventory;
+﻿using DudeRescueSquad.Core.Events;
+using DudeRescueSquad.Core.Inventory;
 using DudeRescueSquad.Core.Inventory.View;
 using UnityEngine;
 
 namespace DudeRescueSquad.Core.LevelManagement
 {
-    public class LevelInventoryLoader : MonoBehaviour
+    public class LevelInventoryLoader : MonoBehaviour, IGameEventListener<GameLevelEvent>
     {
         [SerializeField] private ViewInventory _inventoryView = null;
         [SerializeField] private ViewItemPicker[] _pickers = null;
 
         private InventoryEntry _inventory = null;
 
-        private void Start()
+        #region GameEventListener<GameLevelEvent> implementation
+
+        /// <summary>
+        /// Check different events related with game level
+        /// </summary>
+        /// <param name="eventData">Inventory event.</param>
+        public virtual void OnGameEvent(GameLevelEvent eventData)
         {
-            // TODO: this should be called from an initializator for the whole level loaders
-            Initialization();
+            switch (eventData.EventType)
+            {
+                case GameLevelEventType.LevelLoaded:
+                    Initialization();
+                    break;
+            }
         }
 
-        public void Initialization()
+        #endregion
+
+        #region Unity Events
+
+        /// <summary>
+        /// On enable, we start listening for GameEvents. You may want to extend that to listen to other types of events.
+        /// </summary>
+        private void OnEnable()
+        {
+            this.EventStartListening<GameLevelEvent>();
+        }
+
+        /// <summary>
+        /// On disable, we stop listening for GameEvents. You may want to extend that to stop listening to other types of events.
+        /// </summary>
+        protected void OnDisable()
+        {
+            this.EventStopListening<GameLevelEvent>();
+        }
+
+        #endregion
+
+        private void Initialization()
         {
             _inventory = new InventoryEntry(10, 3);
 

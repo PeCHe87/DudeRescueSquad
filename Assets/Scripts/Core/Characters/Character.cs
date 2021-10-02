@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using DudeResqueSquad;
 using UnityEngine;
@@ -16,6 +15,9 @@ namespace DudeRescueSquad.Core.Characters
         [Header("Health information")]
         [SerializeField] private float _maxHealth = 0;
         [SerializeField] private float _initialHealth = 0;
+
+        [Header("Debug")]
+        [SerializeField] private bool _canDebug = false;
 
         #endregion
 
@@ -129,7 +131,10 @@ namespace DudeRescueSquad.Core.Characters
             // Update state to the new one
             _currentState = state;
 
-            Debug.Log($"Character -> UpdateState: {_currentState}");
+            if (_canDebug)
+            {
+                Debug.Log($"Character -> UpdateState: {_currentState}");
+            }
 
             // TODO: process everything related with current state change
 
@@ -146,7 +151,10 @@ namespace DudeRescueSquad.Core.Characters
 
             _currentState = Enums.CharacterState.IDLE;
 
-            Debug.Log($"Character -> UpdateState: {_currentState}");
+            if (_canDebug)
+            {
+                Debug.Log($"Character -> UpdateState: {_currentState}");
+            }
 
             // TODO: process everything related with current state change
 
