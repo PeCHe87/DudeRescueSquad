@@ -54,6 +54,8 @@ namespace DudeRescueSquad.Core.LevelManagement
         {
             _inventory = new InventoryEntry(10, 3);
 
+            _pickers = FindObjectsOfType<ViewItemPicker>();
+
             // Load item pickers
             foreach (var picker in _pickers)
             {

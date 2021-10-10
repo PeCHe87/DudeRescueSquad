@@ -10,6 +10,14 @@ namespace DudeRescueSquad.Core.Characters
     /// </summary>
     public class CharacterAbilityDash : CharacterAbility, IGameEventListener<GameLevelEvent>
     {
+        #region Events
+
+        public event System.Action OnStartAction;
+        public event System.Action<float> OnProcessActionProgress;
+        public event System.Action OnStopAction;
+
+        #endregion
+
         #region Inspector properties
 
         [Header("Configuration")]
@@ -37,6 +45,14 @@ namespace DudeRescueSquad.Core.Characters
         private Vector3 _dashOrigin = default;
         private Vector3 _dashDestination = default;
         private Vector3 _newPosition = default;
+
+        #endregion
+
+        #region Public properties
+
+        public bool CanProcessAction => _character.CanStartAction(Enums.ActionType.DASH);
+        public bool IsDashing => _dashStarted;
+        public float DashProgress => _dashTimer / _dashDuration;
 
         #endregion
 
@@ -167,6 +183,8 @@ namespace DudeRescueSquad.Core.Characters
             var characterOrientation = GetCharacterOrientation();
             _dashDestination = cacheTransform.position + characterOrientation * _dashDistance;
 
+            OnStartAction?.Invoke();
+
             ProcessDashMovement();
         }
 
@@ -177,15 +195,21 @@ namespace DudeRescueSquad.Core.Characters
                 return _characterMovement.CurrentDirection;
             }
 
-            return _characterMovement.LastInputDirection;
+            return _characterMovement.PreviousDirection;
         }
 
         private void ProcessDashMovement()
         {
-            _newPosition = Vector3.Lerp(_dashOrigin, _dashDestination, _dashCurve.Evaluate(_dashTimer / _dashDuration));
+            var progress = _dashTimer / _dashDuration;
+
+            _newPosition = Vector3.Lerp(_dashOrigin, _dashDestination, _dashCurve.Evaluate(progress));
             _dashTimer += Time.deltaTime;
 
+            progress = _dashTimer / _dashDuration;
+
             _characterMovement.MoveToPosition(_newPosition, _speed);
+
+            OnProcessActionProgress?.Invoke(progress);
         }
 
         private void ProcessDash()
@@ -217,6 +241,8 @@ namespace DudeRescueSquad.Core.Characters
 
             // Update character state
             _character.StopAction(Enums.CharacterState.DASHING);
+
+            OnStopAction?.Invoke();
         }
 
         private void TestInput()

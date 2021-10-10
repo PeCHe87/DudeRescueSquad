@@ -18,6 +18,8 @@ namespace DudeRescueSquad.UI.Gameplay
 
         [SerializeField] private GameObject _content = default;
         [SerializeField] private Button _button = default;
+        [SerializeField] private Image _imgColdownProgress = null;
+        [SerializeField] protected bool _useColdownByAction = false;
 
         #endregion
 
@@ -26,6 +28,8 @@ namespace DudeRescueSquad.UI.Gameplay
         private EventTrigger trigger;
         private EventTrigger.Entry entryPointerDown;
         private EventTrigger.Entry entryPointerUp;
+        private float _coldownStartTime = 0;
+        private float _coldownDuration = 0;
 
         #endregion
 
@@ -67,16 +71,21 @@ namespace DudeRescueSquad.UI.Gameplay
 
         #region Public methods
 
-        public virtual void Setup(bool startInvisible = true)
+        public virtual void Setup(DudeRescueSquad.Core.Characters.Character character, bool startVisible = false)
         {
-            if (startInvisible)
-            {
-                Hide();
-            }
-            else
+            if (startVisible)
             {
                 Show();
             }
+            else
+            {
+                Hide();
+            }
+        }
+
+        public virtual void Teardown()
+        {
+            Disable();
         }
 
         public virtual void Show()
@@ -102,6 +111,21 @@ namespace DudeRescueSquad.UI.Gameplay
         protected abstract void StartAction();
 
         protected abstract void StopAction();
+
+        protected void StartColdown()
+        {
+            _imgColdownProgress.fillAmount = 1;
+        }
+
+        protected void UpdateColdownProgress(float progress)
+        {
+            _imgColdownProgress.fillAmount = progress;
+        }
+
+        protected void FinishColdown()
+        {
+            _imgColdownProgress.fillAmount = 0;
+        }
 
         #endregion
     }

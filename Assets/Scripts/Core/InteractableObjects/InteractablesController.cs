@@ -26,9 +26,9 @@ namespace DudeRescueSquad.Core
 
         private void Update()
         {
-            if (!_wasInitialized) return;
+            //if (!_wasInitialized) return;
 
-            CheckProximity();
+            //CheckProximity();
         }
 
         #endregion

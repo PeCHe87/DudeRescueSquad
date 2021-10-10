@@ -11,5 +11,10 @@ namespace DudeRescueSquad.Core.LevelManagement
         {
             GameLevelEvent.Trigger(GameLevelEventType.LevelLoaded, _character);
         }
+
+        private void OnDestroy()
+        {
+            GameLevelEvent.Trigger(GameLevelEventType.LevelUnloaded);
+        }
     }
 }

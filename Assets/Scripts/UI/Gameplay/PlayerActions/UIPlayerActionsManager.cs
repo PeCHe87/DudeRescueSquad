@@ -11,6 +11,7 @@ namespace DudeRescueSquad.UI.Gameplay
         #region Inspector properties
 
         [SerializeField] private UIButtonPlayerActionAttack _attackButton = default;
+        [SerializeField] private UIButtonPlayerActionDash _dashButton = default;
 
         #endregion
 
@@ -48,6 +49,10 @@ namespace DudeRescueSquad.UI.Gameplay
                 case GameLevelEventType.LevelLoaded:
                     Initialize(eventData.Character);
                     break;
+
+                case GameLevelEventType.LevelUnloaded:
+                    Teardown();
+                    break;
             }
         }
 
@@ -83,7 +88,8 @@ namespace DudeRescueSquad.UI.Gameplay
 
             _characterHandleWeapon = _character.GetComponent<CharacterAbilityHandleWeapon>();
 
-            _attackButton.Setup();
+            _attackButton.Setup(_character);
+            _dashButton.Setup(_character, true);
         }
 
         private void EquipWeapon(string itemId)
@@ -96,6 +102,12 @@ namespace DudeRescueSquad.UI.Gameplay
             {
                 _attackButton.Show();
             }
+        }
+
+        private void Teardown()
+        {
+            _attackButton.Teardown();
+            _dashButton.Teardown();
         }
 
         #endregion

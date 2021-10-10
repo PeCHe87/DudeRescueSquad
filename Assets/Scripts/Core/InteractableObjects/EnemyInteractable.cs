@@ -5,11 +5,13 @@ namespace DudeRescueSquad.Core
 {
     public class EnemyInteractable : BaseInteractable
     {
+        [SerializeField] private string _id = default;
         [SerializeField] private int _distanceToBeDetected = 5;
 
         private bool _wasDetected = false;
         private IDamageable _damageable = default;
 
+        public override string Id => _id;
         public override float DistanceToBeDetected => _distanceToBeDetected;
 
         #region Unity events
@@ -50,26 +52,26 @@ namespace DudeRescueSquad.Core
 
             //if (_wasDetected) return;
 
-            base.Detect();
+            //base.Detect();
 
-            _wasDetected = true;
+            //_wasDetected = true;
 
-            CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
+            //CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
 
-            GameEvents.OnDetectInteractable?.Invoke(this, eventArgs);
+            //GameEvents.OnDetectInteractable?.Invoke(this, eventArgs);
         }
 
         public override void StopDetection()
         {
-            if (!_wasDetected) return;
+            //if (!_wasDetected) return;
 
-            base.StopDetection();
+            //base.StopDetection();
 
-            CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
+            //CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
 
-            GameEvents.OnStopDetectingIteractable?.Invoke(this, eventArgs);
+            //GameEvents.OnStopDetectingIteractable?.Invoke(this, eventArgs);
 
-            _wasDetected = false;
+            //_wasDetected = false;
         }
 
         #endregion

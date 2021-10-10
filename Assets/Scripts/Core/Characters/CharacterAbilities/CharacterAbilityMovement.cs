@@ -22,6 +22,7 @@ namespace DudeRescueSquad.Core.Characters
         private Transform _transform = null;
         private Vector3 _currentDirection = Vector3.zero;
         private Vector3 _lastInputDirection = Vector3.zero;
+        private Vector3 _previousDirection = Vector3.zero;
         private Rigidbody _rigidBody = null;
 
         #endregion
@@ -30,6 +31,7 @@ namespace DudeRescueSquad.Core.Characters
 
         public Vector3 CurrentDirection => _currentDirection;
         public Vector3 LastInputDirection => _lastInputDirection;
+        public Vector3 PreviousDirection => _previousDirection;
 
         #endregion
 
@@ -122,6 +124,8 @@ namespace DudeRescueSquad.Core.Characters
                 _currentDirection = Vector3.zero;
                 return;
             }
+
+            _previousDirection = _currentDirection;
 
             _currentDirection = _controller.Direction();
 

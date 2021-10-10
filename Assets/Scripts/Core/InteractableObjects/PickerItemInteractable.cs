@@ -6,16 +6,33 @@ namespace DudeRescueSquad.Core
 {
     public class PickerItemInteractable : BaseInteractable
     {
+        #region Inspector properties
+
+        [SerializeField] private string _id = default;
         [SerializeField] private int _distanceToBeDetected = 5;
+
+        #endregion
+
+        #region Private properties
 
         private bool _wasDetected = false;
         private ViewItemPicker _picker = default;
+        private Vector3 _positionToCompare = default;
 
+        #endregion
+
+        #region Public properties
+
+        public override string Id => _id;
         public override float DistanceToBeDetected => _distanceToBeDetected;
+
+        #endregion
+
+        #region Unity events
 
         private void Awake()
         {
-            _picker = GetComponent<ViewItemPicker>();
+            _picker = GetComponentInChildren<ViewItemPicker>();
             _picker.OnPicked += Picked;
         }
 
@@ -24,12 +41,32 @@ namespace DudeRescueSquad.Core
             _picker.OnPicked -= Picked;
         }
 
+        private void OnTriggerEnter(Collider other)
+        {
+            if (!other.tag.Equals("Player")) return;
+
+            Detect();
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (!other.tag.Equals("Player")) return;
+
+            StopDetection();
+        }
+
+        #endregion
+
+        #region Private methods
+
         private void Picked()
         {
             StopDetection();
 
             InteractableEvent.Trigger(InteractableEventType.PickItem, _picker.ItemId);
         }
+
+        #endregion
 
         #region BaseInteractable implementation
 
@@ -41,26 +78,7 @@ namespace DudeRescueSquad.Core
         {
             if (_picker.WasPicked) return;
 
-            if (_wasDetected) return;
-
             base.Detect();
-
-            _wasDetected = true;
-
-            CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
-
-            GameEvents.OnDetectInteractable?.Invoke(this, eventArgs);
-        }
-
-        public override void StopDetection()
-        {
-            base.StopDetection();
-
-            CustomEventArgs.InteractableArgs eventArgs = new CustomEventArgs.InteractableArgs(transform, this);
-
-            GameEvents.OnStopDetectingIteractable?.Invoke(this, eventArgs);
-
-            _wasDetected = false;
         }
 
         #endregion
