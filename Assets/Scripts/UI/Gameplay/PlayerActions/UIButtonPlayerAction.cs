@@ -41,7 +41,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
         #region Unity Events
 
-        private void Awake()
+        protected virtual void Awake()
         {
             // Add Event Triggers
             trigger = _button.GetComponent<EventTrigger>();
@@ -57,7 +57,7 @@ namespace DudeRescueSquad.UI.Gameplay
             trigger.triggers.Add(entryPointerUp);
         }
 
-        private void OnDestroy()
+        protected virtual void OnDestroy()
         {
             // Remove Event Triggers
             entryPointerDown.callback.RemoveListener((data) => { StartAction(); });
@@ -100,11 +100,15 @@ namespace DudeRescueSquad.UI.Gameplay
 
         public virtual void Enable()
         {
+            if (_button == null) return;
+
             _button.enabled = true; 
         }
 
         public virtual void Disable()
         {
+            if (_button == null) return;
+
             _button.enabled = false;
         }
 

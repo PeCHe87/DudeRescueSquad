@@ -1,11 +1,9 @@
 ﻿using UnityEngine;
 using DudeRescueSquad.Tools;
 using DudeRescueSquad.Core.Weapons;
-using System;
 using DudeResqueSquad;
 using DudeRescueSquad.Core.Events;
 using DudeRescueSquad.Core.LevelManagement;
-//using MoreMountains.Feedbacks;
 
 namespace DudeRescueSquad.Core.Characters
 {

@@ -10,7 +10,7 @@ namespace DudeRescueSquad.UI.Gameplay
     {
         #region Inspector properties
 
-        [SerializeField] private UIButtonPlayerActionAttack _attackButton = default;
+        [SerializeField] private UIButtonPlayerAimingActionAttack _attackButton = default;
         [SerializeField] private UIButtonPlayerActionDash _dashButton = default;
 
         #endregion

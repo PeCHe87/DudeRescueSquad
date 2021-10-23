@@ -26,20 +26,25 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Private properties
 
-        private ICharacterController _controller = null;
+        private ICharacterController _movementController = null;
+        private ICharacterController _aimingController = null;
         private Character _character = null;
         private CharacterAbilityHandleWeapon _characterAbilityHandleWeapon = null;
         private bool _wasInitialized = false;
         private float _targetAngle = 0;
         private float _turnSmoothVelocity = 0;
+        private Vector3 _currentRotation = Vector3.zero;
 
         #endregion
+
+        public Vector3 CurrentRotation => _currentRotation;
 
         #region ICharacterAbility implementation
 
         public void Initialization()
         {
-            this._controller = GetComponent<ICharacterController>();
+            this._movementController = GetComponent<JoystickCharacterController>();
+            this._aimingController = GetComponent<JoystickAimingController>();
 
             this._character = GetComponent<Character>();
 
@@ -70,16 +75,23 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Private methods
 
-        private void Awake()
+        /*private void Awake()
         {
             this._controller = GetComponent<ICharacterController>();
-        }
+        }*/
 
         /// <summary>
         /// Check the orientation based on the current equipped item (if corresponds) or the input direction
         /// </summary>
         private void CheckOrientation()
         {
+            // Check aiming controller input, if dead zone then skip it, else use it to orientate the character
+            if (_aimingController.Direction().magnitude > 0)
+            {
+                CheckOrientationBasedOnAiming();
+                return;
+            }
+
             // Check if there is a weapon equipped that can override the orientation based on its target
             if (_characterAbilityHandleWeapon.IsEquipped)
             {
@@ -91,7 +103,7 @@ namespace DudeRescueSquad.Core.Characters
                 }
             }
 
-            CheckOrientationBasedOnInput();
+            CheckOrientationBasedOnMovement();
         }
 
         /// <summary>
@@ -116,9 +128,34 @@ namespace DudeRescueSquad.Core.Characters
         /// <summary>
         /// Gets the orientation based on the input direction
         /// </summary>
-        private void CheckOrientationBasedOnInput()
+        private void CheckOrientationBasedOnMovement()
         {
-            var dir = _controller.Direction();
+            var dir = _movementController.Direction();
+
+            if (_instantRotation)
+            {
+                _targetAngle = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+            }
+            else
+            {
+                var angleGoal = Mathf.Atan2(dir.x, dir.y) * Mathf.Rad2Deg;
+
+                if (angleGoal == 0)
+                {
+                    _targetAngle = 0;
+                    return;
+                }
+
+                _targetAngle = Mathf.SmoothDampAngle(_model.eulerAngles.y, angleGoal, ref _turnSmoothVelocity, _turnSmoothTime);
+            }
+        }
+
+        /// <summary>
+        /// Gets the orientation based on the input direction
+        /// </summary>
+        private void CheckOrientationBasedOnAiming()
+        {
+            var dir = _aimingController.Direction();
 
             if (_instantRotation)
             {
@@ -146,6 +183,8 @@ namespace DudeRescueSquad.Core.Characters
             if (_targetAngle == 0) return;
 
             _model.rotation = Quaternion.Euler(0, _targetAngle, 0);
+
+            _currentRotation = _model.forward;
         }
 
         #endregion

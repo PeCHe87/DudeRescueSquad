@@ -76,8 +76,6 @@ namespace DudeRescueSquad.Core.Weapons
             var positionInitial = origin.position;
             var velocity = direction.normalized * _weaponData.ProjectileData.speed;
 
-            // TODO: use pool inside the spawn projectile method for better performance
-
             DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_weaponData.ProjectileData, positionInitial, velocity, transform.rotation);
         }
 

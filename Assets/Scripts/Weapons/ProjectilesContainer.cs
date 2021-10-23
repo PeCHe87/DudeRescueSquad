@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using DudeRescueSquad.Global;
+using System.Collections.Generic;
 using UnityEngine;
 using static DudeRescueSquad.Core.Weapons.Weapon;
 
@@ -32,7 +33,7 @@ namespace DudeResqueSquad.Weapons
 
             GameEvents.OnSpawnProjectile += SpawnProjectile;
         }
-        
+
         private void OnDestroy()
         {
             GameEvents.OnSpawnProjectile -= SpawnProjectile;
@@ -108,7 +109,8 @@ namespace DudeResqueSquad.Weapons
         private void DestroyBulletVisualRepresentation(ProjectileRaycast projectile)
         {
             var bullet = projectile.GetVisualRepresentation();
-            Destroy(bullet);
+
+            SimplePool.Despawn(bullet, false);     //Destroy(bullet);
         }
 
         /// <summary>
@@ -163,7 +165,7 @@ namespace DudeResqueSquad.Weapons
 
         public void SpawnProjectile(object sender, CustomEventArgs.SpawnProjectileEventArgs e)    
         {
-            GameObject bulletRepresentation = Instantiate(e.prefab, _container);
+            GameObject bulletRepresentation = SimplePool.Spawn(e.prefab, _container);
 
             bulletRepresentation.transform.position = e.positionInitial;
             bulletRepresentation.transform.rotation = e.initialRotation;
@@ -184,10 +186,12 @@ namespace DudeResqueSquad.Weapons
 
         public void SpawnSimpleProjectile(DudeRescueSquad.Core.Weapons.SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation)
         {
-            GameObject bulletRepresentation = Instantiate(data.prefab, _container);
+            GameObject bulletRepresentation = SimplePool.Spawn(data.prefab, _container);
 
             bulletRepresentation.transform.position = position;
             bulletRepresentation.transform.rotation = rotation;
+
+            // TODO: this should be replaced for another pooling and call to Setup each time it is spawn
             var projectile = new ProjectileRaycast(bulletRepresentation, position, velocity, 0, data.lifetime, null);
             projectile.Damage = data.damage;
             projectile.EntityUID = string.Empty;

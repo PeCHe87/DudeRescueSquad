@@ -60,7 +60,7 @@ namespace DudeRescueSquad.Core.Characters
 
         public void Initialization()
         {
-            _controller = GetComponent<ICharacterController>();
+            _controller = GetComponent<JoystickCharacterController>();
 
             _character = GetComponent<Character>();
 

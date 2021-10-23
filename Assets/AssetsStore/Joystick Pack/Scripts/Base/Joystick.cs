@@ -1,10 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
+    #region Events
+
+    public event System.Action OnPress;
+    public event System.Action<Vector2> OnRelease;
+
+    #endregion
+
+    #region Public properties
+
     public float Horizontal { get { return (snapX) ? SnapFloat(input.x, AxisOptions.Horizontal) : input.x; } }
     public float Vertical { get { return (snapY) ? SnapFloat(input.y, AxisOptions.Vertical) : input.y; } }
     public Vector2 Direction { get { return new Vector2(Horizontal, Vertical); } }
@@ -25,6 +32,10 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public bool SnapX { get { return snapX; } set { snapX = value; } }
     public bool SnapY { get { return snapY; } set { snapY = value; } }
 
+    #endregion
+
+    #region Inspector properties
+
     [SerializeField] private float handleRange = 1;
     [SerializeField] private float deadZone = 0;
     [SerializeField] private AxisOptions axisOptions = AxisOptions.Both;
@@ -33,12 +44,17 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     [SerializeField] protected RectTransform background = null;
     [SerializeField] private RectTransform handle = null;
-    private RectTransform baseRect = null;
 
+    #endregion
+
+    #region Private properties
+
+    private RectTransform baseRect = null;
     private Canvas canvas;
     private Camera cam;
-
     private Vector2 input = Vector2.zero;
+
+    #endregion
 
     protected virtual void Start()
     {
@@ -60,6 +76,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     public virtual void OnPointerDown(PointerEventData eventData)
     {
         OnDrag(eventData);
+
+        OnPress?.Invoke();
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -131,6 +149,8 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public virtual void OnPointerUp(PointerEventData eventData)
     {
+        OnRelease?.Invoke(input);
+
         input = Vector2.zero;
         handle.anchoredPosition = Vector2.zero;
     }
