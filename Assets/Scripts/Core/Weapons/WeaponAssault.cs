@@ -76,7 +76,7 @@ namespace DudeRescueSquad.Core.Weapons
             var positionInitial = origin.position;
             var velocity = direction.normalized * _weaponData.ProjectileData.speed;
 
-            DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_weaponData.ProjectileData, positionInitial, velocity, transform.rotation);
+            DudeResqueSquad.Weapons.ProjectilesContainer.Instance.SpawnSimpleProjectile(_weaponData.ProjectileData, positionInitial, velocity, transform.rotation, _weaponData.CanPushBackOnHit, _characterOwner.transform);
         }
 
         private void CheckAmmoForAutoReloading()

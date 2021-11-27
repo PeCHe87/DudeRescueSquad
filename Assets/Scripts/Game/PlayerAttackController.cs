@@ -460,7 +460,8 @@ namespace DudeResqueSquad
                     if (_canDebug)
                         Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
 
-                    target.TakeDamage(damage);
+                    //target.TakeDamage(damage);
+                    Debug.LogError($"PlayerAttackController::ApplyDamage", gameObject);
 
                     _cacheTargets.Add(target);
                 }
@@ -497,7 +498,8 @@ namespace DudeResqueSquad
 
                     Debug.Log($"<color=red>Combo Attack</color> - Health: {target.Health}, Damage: {damage}");
 
-                    target.TakeDamage(damage);
+                    //target.TakeDamage(damage);
+                    Debug.LogError($"PlayerAttackController::ApplyDamage", gameObject);
                 }
 
                 // TODO: apply weapon usability based on type of weapon: melee (uses) or assault (ammo)
@@ -538,7 +540,8 @@ namespace DudeResqueSquad
                     if (_canDebug)
                         Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
 
-                    target.TakeDamage(damage);
+                    //target.TakeDamage(damage);
+                    Debug.LogError($"PlayerAttackController::ApplyDamage", gameObject);
 
                     _cacheTargets.Add(target);
                 }

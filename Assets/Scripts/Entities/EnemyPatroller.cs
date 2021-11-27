@@ -9,8 +9,10 @@ namespace DudeResqueSquad
 {
     [RequireComponent(typeof(NavMeshAgent))]
     [RequireComponent(typeof(FieldOfView))]
-    public class EnemyPatroller : MonoBehaviour, IDamageable
+    public class EnemyPatroller : MonoBehaviour //, IDamageable    // DEPRECATED
     {
+        /*
+
         #region Inspector properties
 
         [SerializeField] private EnemyData _templateData = null;
@@ -257,5 +259,7 @@ namespace DudeResqueSquad
         }
 
         #endregion
+
+        */
     }
 }

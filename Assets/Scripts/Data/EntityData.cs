@@ -39,4 +39,6 @@ public class EntityData : ScriptableObject
 
     [Header("Take damage")]
     public float TimeForRecoveringAfterDamage;
+    public bool canBePushBackOnTakingDamage;
+    public float DelayToResumeAfterKnockBack;
 }

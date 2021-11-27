@@ -15,6 +15,7 @@ namespace DudeRescueSquad.Core.Weapons
         [Tools.Information("Indicates in which hand this item will be attached when equipped.", Tools.InformationAttribute.InformationType.Info, false)]
         [SerializeField] private bool _isLeftHand = false;
         [SerializeField] private bool _canMoveWhileAttacking = false;
+        [SerializeField] private bool _canPushBackOnHit = false;
         [SerializeField] private SimpleProjectileData _projectileData;
         [SerializeField] private int _initialAmmo;
         [SerializeField] private int _maxAmmo;
@@ -36,6 +37,7 @@ namespace DudeRescueSquad.Core.Weapons
         public float AngleView { get => _angleView; set => _angleView = value; }
         public bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
         public bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; }
+        public bool CanPushBackOnHit { get => _canPushBackOnHit; }
 
         #endregion
 

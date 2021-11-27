@@ -205,7 +205,7 @@ namespace DudeRescueSquad.Core.Characters
         public event System.EventHandler<DudeResqueSquad.CustomEventArgs.HealEventArgs> OnHealed;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void TakeDamage(float value)
+        public void TakeDamage(float value, bool canPushBack, Vector3 attackDirection)
         {
             if (IsDead) return;
 
@@ -216,7 +216,7 @@ namespace DudeRescueSquad.Core.Characters
                 OnDied?.Invoke(this, new DudeResqueSquad.CustomEventArgs.EntityDeadEventArgs(string.Empty));
             }
             else
-                OnTakeDamage?.Invoke(this, new DudeResqueSquad.CustomEventArgs.DamageEventArgs(string.Empty, value));
+                OnTakeDamage?.Invoke(this, new DudeResqueSquad.CustomEventArgs.DamageEventArgs(string.Empty, value, canPushBack, attackDirection));
         }
 
         public void Heal(float value)
@@ -285,7 +285,7 @@ namespace DudeRescueSquad.Core.Characters
         [ContextMenu("Apply Damage for Debug")]
         private void ApplyDamage()
         {
-            TakeDamage(UnityEngine.Random.Range(5f, 10f));
+            //TakeDamage(UnityEngine.Random.Range(5f, 10f));
         }
 
         #endregion

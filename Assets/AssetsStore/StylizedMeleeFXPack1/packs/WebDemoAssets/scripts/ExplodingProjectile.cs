@@ -123,7 +123,8 @@ public class ExplodingProjectile : MonoBehaviour
         if (damageable == null)
             return;
 
-        damageable.TakeDamage(_damage);
+        //damageable.TakeDamage(_damage);
+        Debug.LogError($"ExplodingProjectile::CheckDamageable", gameObject);
     }
 
     void OnCollisionEnter(Collision collision)

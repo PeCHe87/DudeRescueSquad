@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading;
 using System.Threading.Tasks;
 using DudeResqueSquad.Weapons;
 using UnityEngine;
@@ -30,10 +31,17 @@ namespace DudeResqueSquad
         private Ray _ray;
         private RaycastHit _hitInfo;
         private readonly List<ProjectileRaycast> _projectiles = new List<ProjectileRaycast>();
+        private CancellationToken _taskCancellationToken = default;
+        private CancellationTokenSource _token = default;
 
         #endregion
 
         #region Unity methods
+
+        protected override void OnDestroy()
+        {
+            _token.Cancel();
+        }
 
         private void Update()
         {
@@ -124,10 +132,10 @@ namespace DudeResqueSquad
 
         private async void FireProjectile()
         {
-            // TODO: use of cancellation token to avoid execution when the game was stopped or entity was destroyed
-            
             // Wait until create the projectile
             await Task.Delay(Mathf.FloorToInt(_weapon.DelayFireEffect * 1000));
+
+            if (_taskCancellationToken.IsCancellationRequested) return;
 
             // Check if unity is dead
             if (_entity.IsDead)
@@ -155,7 +163,7 @@ namespace DudeResqueSquad
             muzzle.transform.rotation *= transform.rotation;
             
             // Create projectile
-            GameEvents.OnSpawnProjectile?.Invoke(this, new CustomEventArgs.SpawnProjectileEventArgs(_weapon.projectileVisualPrefab, positionInitial, velocity, _weapon.projectileDropSpeed, _weapon.projectileLifetime, _weapon.Damage, _entity.UID, _weapon.HitVFX, _targetLayerMask, transform.rotation));
+            GameEvents.OnSpawnProjectile?.Invoke(this, new CustomEventArgs.SpawnProjectileEventArgs(_weapon.projectileVisualPrefab, positionInitial, velocity, _weapon.projectileDropSpeed, _weapon.projectileLifetime, _weapon.Damage, _entity.UID, _weapon.HitVFX, _targetLayerMask, transform.rotation, false, transform));
         }
 
         #endregion
@@ -165,6 +173,9 @@ namespace DudeResqueSquad
         protected override void Initialized()
         {
             base.Initialized();
+
+            _token = new CancellationTokenSource();
+            _taskCancellationToken = _token.Token;
 
             if (_weapon == null)
                 Debug.LogError($"Entity {_entity.name} doesn't have Weapon information");

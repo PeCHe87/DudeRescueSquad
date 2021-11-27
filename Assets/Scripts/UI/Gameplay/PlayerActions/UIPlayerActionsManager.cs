@@ -12,6 +12,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
         [SerializeField] private UIButtonPlayerAimingActionAttack _attackButton = default;
         [SerializeField] private UIButtonPlayerActionDash _dashButton = default;
+        [SerializeField] private UIButtonPlayerActionPickItem _pickItemButton = default;
 
         #endregion
 
@@ -90,6 +91,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
             _attackButton.Setup(_character);
             _dashButton.Setup(_character, true);
+            _pickItemButton.Setup(_character, false);
         }
 
         private void EquipWeapon(string itemId)
@@ -108,6 +110,7 @@ namespace DudeRescueSquad.UI.Gameplay
         {
             _attackButton.Teardown();
             _dashButton.Teardown();
+            _pickItemButton.Teardown();
         }
 
         #endregion

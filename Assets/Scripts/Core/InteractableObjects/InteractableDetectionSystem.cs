@@ -11,6 +11,8 @@ namespace DudeRescueSquad.Core
         #region Inspector properties
 
         [SerializeField] private Enums.InteractablePriorities _priority = Enums.InteractablePriorities.NONE;
+        [SerializeField] private float _distanceToBePicked = 0;
+        [SerializeField] private bool _canDebug = false;
 
         #endregion
 
@@ -105,7 +107,7 @@ namespace DudeRescueSquad.Core
             _nearInteractables.Remove(interactable.Id);
 
             // If the undetected object is the nearest then clean it
-            if (_nearest.Id.Equals(interactable.Id))
+            if (_nearest != null && _nearest.Id.Equals(interactable.Id))
             {
                 _nearest = null;
             }
@@ -143,13 +145,23 @@ namespace DudeRescueSquad.Core
                 }
             }
 
-            if (!hasChanged) return;
+            //if (!hasChanged) return;
 
-            var payload = new object[] { _nearest, _priority };
+            var pickable = false;
+
+            if (_nearest != null)
+            {
+                pickable = _distanceToCharacter <= _distanceToBePicked;
+            }
+
+            var payload = new object[] { _nearest, _priority, pickable };
 
             GameLevelEvent.Trigger(GameLevelEventType.InteractableChanged, payload);
 
-            Debug.Log($"{_priority} - <color=yellow>Object detected: </color>{((_nearest == null) ? "No element" : _nearest.Id)}, previous nearest: {oldNearest}", this);
+            if (_canDebug)
+            {
+                Debug.Log($"{_priority} - <color=yellow>Object detected: </color>{((_nearest == null) ? "No element" : _nearest.Id)}, previous nearest: {oldNearest}", this);
+            }
         }
 
         private void CalculateNearest(string currentId)

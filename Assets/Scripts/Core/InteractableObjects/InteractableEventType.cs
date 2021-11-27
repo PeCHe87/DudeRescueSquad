@@ -9,5 +9,6 @@ namespace DudeRescueSquad.Core
         EnemyDead,
         PickItem,
         InteractionCompleted,
+        PickItemFromButton,
     }
 }

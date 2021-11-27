@@ -98,7 +98,7 @@ namespace DudeResqueSquad.Weapons
                 
 
                 // Generate damage
-                GenerateDamage(projectile.Damage);
+                GenerateDamage(projectile);
             }
         }
         
@@ -117,13 +117,23 @@ namespace DudeResqueSquad.Weapons
         /// Generates and amount of damage in the IDamageable component, if it exists
         /// </summary>
         /// <param name="damage"></param>
-        private void GenerateDamage(float damage)
+        private void GenerateDamage(ProjectileRaycast projectile)
         {
+            float damage = projectile.Damage;
+            Vector3 attackDirection = Vector3.zero;
+            bool projectileCanPushBack = projectile.CanPushBack;
+
+            if (projectileCanPushBack)
+            {
+                var projectileOwner = projectile.Owner;
+                attackDirection = _hitInfo.transform.position - projectileOwner.position;
+            }
+
             var damageable = _hitInfo.collider.GetComponent<IDamageable>();
 
             Debug.Log($"[ProjectilesContainer] GenerateDamage to {damageable}, damage: {damage}");
 
-            damageable?.TakeDamage(damage);
+            damageable?.TakeDamage(damage, projectileCanPushBack, attackDirection);
         }
 
         /// <summary>
@@ -163,13 +173,13 @@ namespace DudeResqueSquad.Weapons
         
         #region Public methods
 
-        public void SpawnProjectile(object sender, CustomEventArgs.SpawnProjectileEventArgs e)    
+        public void SpawnProjectile(object sender, CustomEventArgs.SpawnProjectileEventArgs e)
         {
             GameObject bulletRepresentation = SimplePool.Spawn(e.prefab, _container);
 
             bulletRepresentation.transform.position = e.positionInitial;
             bulletRepresentation.transform.rotation = e.initialRotation;
-            var projectile = new ProjectileRaycast(bulletRepresentation, e.positionInitial, e.velocity, e.dropSpeed, e.lifeTime, null);
+            var projectile = new ProjectileRaycast(bulletRepresentation, e.positionInitial, e.velocity, e.dropSpeed, e.lifeTime, null, e.canPushBack, e.owner);
             projectile.Damage = e.damage;
             projectile.EntityUID = e.entityOwnerUID;
             projectile.HitVFX = e.prefabHitVFX;
@@ -184,7 +194,7 @@ namespace DudeResqueSquad.Weapons
             }
         }
 
-        public void SpawnSimpleProjectile(DudeRescueSquad.Core.Weapons.SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation)
+        public void SpawnSimpleProjectile(DudeRescueSquad.Core.Weapons.SimpleProjectileData data, Vector3 position, Vector3 velocity, Quaternion rotation, bool canPushBack, Transform owner)
         {
             GameObject bulletRepresentation = SimplePool.Spawn(data.prefab, _container);
 
@@ -192,7 +202,7 @@ namespace DudeResqueSquad.Weapons
             bulletRepresentation.transform.rotation = rotation;
 
             // TODO: this should be replaced for another pooling and call to Setup each time it is spawn
-            var projectile = new ProjectileRaycast(bulletRepresentation, position, velocity, 0, data.lifetime, null);
+            var projectile = new ProjectileRaycast(bulletRepresentation, position, velocity, 0, data.lifetime, null, canPushBack, owner);
             projectile.Damage = data.damage;
             projectile.EntityUID = string.Empty;
             projectile.HitVFX = data.hitVfx;

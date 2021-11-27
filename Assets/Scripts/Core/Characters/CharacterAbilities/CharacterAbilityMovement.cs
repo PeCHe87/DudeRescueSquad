@@ -25,6 +25,12 @@ namespace DudeRescueSquad.Core.Characters
         private Vector3 _previousDirection = Vector3.zero;
         private Rigidbody _rigidBody = null;
 
+        // Melee forward movement properties
+        private Vector3 _meleeAttackDestination = default;
+        private bool _meleeMovementEnabled = false;
+        private float _meleeForwardSpeed = 0;
+        private bool _processingMeleeAttack = false;
+
         #endregion
 
         #region Public properties
@@ -46,11 +52,18 @@ namespace DudeRescueSquad.Core.Characters
 
         public void Process()
         {
-            // Check if character can't make movement based on current state
-            if (!_character.CanStartAction(DudeResqueSquad.Enums.ActionType.MOVE)) return;
+            if (_meleeMovementEnabled)
+            {
+                MeleeMovement();
+            }
+            else if (!_processingMeleeAttack)
+            {
+                // Check if character can't make movement based on current state
+                if (!_character.CanStartAction(DudeResqueSquad.Enums.ActionType.MOVE)) return;
 
-            GetMovementDirection();
-            Move();
+                GetMovementDirection();
+                Move();
+            }
         }
 
         public bool WasInitialized()
@@ -106,6 +119,18 @@ namespace DudeRescueSquad.Core.Characters
             _rigidBody.angularVelocity = Vector3.zero;
         }
 
+        public void StartMeleeAttackForwardMovement(Vector3 direction, float speed, float duration, float attackDuration)
+        {
+            _processingMeleeAttack = true;
+
+            _meleeAttackDestination = direction;
+            _meleeForwardSpeed = speed;
+            _meleeMovementEnabled = true;
+
+            Invoke(nameof(StopMeleeAttackForwardMovement), duration);
+            Invoke(nameof(MeleeAttackFinished), attackDuration);
+        }
+
         #endregion
 
         #region Private methods
@@ -150,6 +175,39 @@ namespace DudeRescueSquad.Core.Characters
 
             _rigidBody.AddForce(_currentDirection * _speed, ForceMode.VelocityChange);
         }
+
+        #region Melee forward movement
+
+        private void StopMeleeAttackForwardMovement()
+        {
+            _meleeMovementEnabled = false;
+            _meleeAttackDestination = Vector3.zero;
+            _meleeForwardSpeed = 0;
+
+            Disable();
+
+            Debug.Log("<color=red>Melee attack</color> forward movement stopped");
+        }
+
+        private void MeleeAttackFinished()
+        {
+            _processingMeleeAttack = false;
+
+            Enable();
+        }
+
+        private void MeleeMovement()
+        {
+            Debug.DrawRay(_transform.position, _meleeAttackDestination * _speed, Color.yellow);
+
+            Debug.Log("<color=green>Melee attack</color> forward movement");
+
+            _rigidBody.velocity = Vector3.zero;
+
+            _rigidBody.AddForce(_meleeAttackDestination * _meleeForwardSpeed, ForceMode.VelocityChange);
+        }
+
+        #endregion
 
         #endregion
     }

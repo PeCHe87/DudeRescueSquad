@@ -50,6 +50,8 @@ namespace DudeResqueSquad
             // Decrease patrolling time
             _patrollingTime = Mathf.Clamp(_patrollingTime - Time.deltaTime, 0, _patrollingTime);
 
+            if (_entity.Follower.Target == null) return;
+
             // Check if it reaches the next goal point
             var remainingDistance = (_entity.Follower.Target.position - _entity.Follower.Agent.transform.position).magnitude;
 

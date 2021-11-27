@@ -30,6 +30,9 @@ namespace DudeResqueSquad
         //private float _distanceToStop = 0;
         private IDamageable _damageable = null;
         private bool _checkWhenAgentEnabled = false;
+        [SerializeReference]
+        private bool _knockbackInProgress = false;
+        private Rigidbody _rigidBody = default;
 
         #endregion
 
@@ -45,6 +48,7 @@ namespace DudeResqueSquad
         public EntityAnimations Animations { get => _animations; }
         public ItemWeaponData Weapon { get => _weapon; }
         public bool IsDead { get => _damageable.IsDead; }
+        public bool KnockBackInProgress => _knockbackInProgress;
 
         #endregion
 
@@ -62,6 +66,10 @@ namespace DudeResqueSquad
                 _damageable.OnTakeDamage += TakingDamage;
                 _damageable.OnDied += Dying;
             }
+
+            _rigidBody = GetComponent<Rigidbody>();
+
+            DisableRigidBody();
 
             // Animations
             _animations = GetComponent<EntityAnimations>();
@@ -107,12 +115,19 @@ namespace DudeResqueSquad
             {
                 _follower.OnAgentStateChanged -= FollowerMovementStateChanged;
             }
+
+            // Teardown Knockback component
+            if (TryGetComponent<EntityKnockback>(out var knockback))
+            {
+                knockback.Teardown();
+            }
         }
 
         private void Update()
         {
-            if (_stateMachine == null)
-                return;
+            if (_stateMachine == null) return;
+
+            if (_knockbackInProgress) return;
 
             _stateMachine.Tick();
 
@@ -420,6 +435,13 @@ namespace DudeResqueSquad
             }*/
         }
         
+        private void DisableRigidBody()
+        {
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            _rigidBody.isKinematic = true;
+        }
+
         #endregion
 
         #region Public Method
@@ -437,6 +459,12 @@ namespace DudeResqueSquad
             }
 
             InitStateMachine();
+
+            // Initializes the Knockback component
+            if (TryGetComponent<EntityKnockback>(out var knockback))
+            {
+                knockback.Init(this, _damageable, _rigidBody);
+            }
 
             OnInitialized?.Invoke();
         }
@@ -460,6 +488,26 @@ namespace DudeResqueSquad
                 
                 _visuals.OnFollowingStateChanged += VisualMovementStateChanged;
             }
+        }
+
+        public void StartKnockBack()
+        {
+            _knockbackInProgress = true;
+
+            //_follower.Agent.enabled = false;
+            //_follower.SetAgentEnabledState(false);
+
+            //_follower.Obstacle.enabled = false;
+        }
+
+        public void StopKnockBack()
+        {
+            DisableRigidBody();
+
+            // Move follower to the current position of the entity
+            //_follower.transform.position = transform.position;
+
+            _knockbackInProgress = false;
         }
 
         #endregion

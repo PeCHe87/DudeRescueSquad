@@ -23,7 +23,7 @@ namespace DudeResqueSquad
 
         bool IsTakingDamage { get; }
 
-        void TakeDamage(float damage);
+        void TakeDamage(float damage, bool canPushBack, UnityEngine.Vector3 attackDirection);
 
         void Heal(float newHealth);
         

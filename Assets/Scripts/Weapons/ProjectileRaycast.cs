@@ -14,6 +14,8 @@ namespace DudeResqueSquad.Weapons
         public string EntityUID;
         public float Damage;
         public GameObject HitVFX;
+        public bool CanPushBack;
+        public Transform Owner;
 
         private readonly GameObject bullet;
         private readonly Vector3 initialPosition;
@@ -21,13 +23,15 @@ namespace DudeResqueSquad.Weapons
         private readonly float dropSpeed;
         private TrailRenderer trail;
 
-        public ProjectileRaycast(GameObject bullet, Vector3 position, Vector3 velocity, float dropSpeed, float timeLife, TrailRenderer trail)
+        public ProjectileRaycast(GameObject bullet, Vector3 position, Vector3 velocity, float dropSpeed, float timeLife, TrailRenderer trail, bool canPushBack, Transform owner)
         {
             this.bullet = bullet;
             this.initialPosition = position;
             this.initialVelocity = velocity;
             this.dropSpeed = dropSpeed;
             this.trail = trail;
+            this.CanPushBack = canPushBack;
+            this.Owner = owner;
 
             this.LifeTime = timeLife;
             

@@ -116,7 +116,7 @@ namespace DudeResqueSquad
                     if (_canDebug)
                         Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {damage}");
 
-                    target.TakeDamage(damage);
+                    target.TakeDamage(damage, false, Vector3.zero);
 
                     _cacheTargets.Add(target);
                 }

@@ -47,6 +47,13 @@ namespace DudeResqueSquad
             {
                 var entity = _entities[i];
 
+                // Skip entity if it doing a knockback movement
+                if (entity.KnockBackInProgress)
+                {
+                    //Disable(entity);
+                    continue;
+                }
+
                 if (entity.State == Enums.EnemyStates.IDLE || entity.State == Enums.EnemyStates.DEAD)
                 {
                     Stop(entity);
@@ -55,15 +62,13 @@ namespace DudeResqueSquad
                 }
 
                 // Check if entity has a detected target
-                if (entity.Follower.Target == null)
-                    continue;
+                if (entity.Follower.Target == null) continue;
 
                 var agentTransform = _transforms[i];
                 
 
                 // Skip agents that aren't moving
-                if (!entity.Follower.Agent.enabled)
-                    continue;
+                if (!entity.Follower.Agent.enabled) continue;
 
                 var diff = (entity.Follower.Target.position - agentTransform.position).magnitude;
 
@@ -279,6 +284,14 @@ namespace DudeResqueSquad
                 entity.Follower.Agent.speed = entity.Data.SpeedChasingMovement;
             else if (entity.State == Enums.EnemyStates.PATROLLING)
                 entity.Follower.Agent.speed = entity.Data.SpeedPatrollingMovement;
+        }
+
+        private void Disable(Entity entity)
+        {
+            entity.Follower.Agent.enabled = false;
+            entity.Follower.SetAgentEnabledState(false);
+
+            entity.Follower.Obstacle.enabled = false;
         }
 
         #endregion

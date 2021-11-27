@@ -39,3 +39,5 @@ MonoBehaviour:
   MaxDamage: 0
   DistanceToStop: 2
   TimeForRecoveringAfterDamage: 1
+  canBePushBackOnTakingDamage: 1
+  DelayToResumeAfterKnockBack: 0.25

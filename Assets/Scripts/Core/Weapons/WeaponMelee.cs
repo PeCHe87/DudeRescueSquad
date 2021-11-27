@@ -56,7 +56,17 @@ namespace DudeRescueSquad.Core.Weapons
 
             _isUsing = true;
 
-            if (!_weaponData.CanMoveWhileAttacking)
+            if (_weaponData.CanMoveForwardDuringAttack)
+            {
+                // Cancel movement and rotation when melee attack is applied
+                var characterOrientation = _characterOrientation.CurrentRotation;
+
+                _characterOrientation.Disable();
+
+                // Prepare the movement forward direction and force based on the weapon data
+                _characterMovement.StartMeleeAttackForwardMovement(characterOrientation, _weaponData.AttackMoveForwardSpeed, _weaponData.AttackMoveForwardDuration, _weaponData.AttackDuration);
+            }
+            else if (!_weaponData.CanMoveWhileAttacking)
             {
                 // Cancel movement and rotation when melee attack is applied
                 _characterMovement.Disable();
@@ -122,8 +132,10 @@ namespace DudeRescueSquad.Core.Weapons
                     if (_canDebug)
                         Debug.Log($"Attack - Target: '{targets[i].name}', Health: {target.Health}, Damage: {_weaponData.AttackDamage}, distance: {distance}");
 
+                    var attackDirection = targetPosition - _characterTransform.position;
+
                     // Apply damage
-                    target.TakeDamage(_weaponData.AttackDamage);
+                    target.TakeDamage(_weaponData.AttackDamage, _weaponData.CanPushBackOnHit, attackDirection);
                 }
             }
         }

@@ -57,7 +57,7 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void TakeDamage(float value)
+        public void TakeDamage(float value, bool canPushBack, Vector3 attackDirection)
         {
             ShowHitEffect();
             
@@ -80,7 +80,7 @@ namespace DudeResqueSquad
                 //DudeRescueSquad.Core.InteractableEvent.Trigger(DudeRescueSquad.Core.InteractableEventType.EnemyDead, transform);
             }
             else
-                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));
+                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value, canPushBack, attackDirection));
         }
 
         public void Heal(float value)

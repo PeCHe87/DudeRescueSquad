@@ -191,15 +191,13 @@ namespace DudeRescueSquad.Core.Characters
         private Vector3 GetCharacterOrientation()
         {
             // If character is moving then make dash movement towards the input movement direction
-            if (_characterMovement.CurrentDirection != Vector3.zero)    //if (_character.State == Enums.CharacterState.MOVING)
+            if (_characterMovement.CurrentDirection != Vector3.zero)
             {
                 return _characterMovement.CurrentDirection;
             }
 
             // If character is not moving then use the current orientation
             return _characterOrientation.CurrentRotation;
-
-            //return _characterMovement.PreviousDirection;
         }
 
         private void ProcessDashMovement()

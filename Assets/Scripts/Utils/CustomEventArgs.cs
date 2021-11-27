@@ -22,11 +22,15 @@ namespace DudeResqueSquad
         {
             public string entityUID;
             public float damage;
+            public bool attackCanPushBack;
+            public Vector3 attackDirection;
 
-            public DamageEventArgs(string uid, float value)
+            public DamageEventArgs(string uid, float value, bool canPushBack, Vector3 direction)
             {
                 this.entityUID = uid;
                 this.damage = value;
+                this.attackCanPushBack = canPushBack;
+                this.attackDirection = direction;
             }
         }
         
@@ -98,8 +102,10 @@ namespace DudeResqueSquad
             public GameObject prefabHitVFX;
             public LayerMask layerMask;
             public Quaternion initialRotation;
+            public bool canPushBack;
+            public Transform owner;
             
-            public SpawnProjectileEventArgs(GameObject prefab, Vector3 positionInitial, Vector3 velocity, float dropSpeed, float lifeTime, float damage, string entityOwnerUid, GameObject hitVFX, LayerMask layerMask, Quaternion initialRotation)
+            public SpawnProjectileEventArgs(GameObject prefab, Vector3 positionInitial, Vector3 velocity, float dropSpeed, float lifeTime, float damage, string entityOwnerUid, GameObject hitVFX, LayerMask layerMask, Quaternion initialRotation, bool canPushBack, Transform owner)
             {
                 this.prefab = prefab;
                 this.positionInitial = positionInitial;
@@ -111,6 +117,8 @@ namespace DudeResqueSquad
                 this.prefabHitVFX = hitVFX;
                 this.layerMask = layerMask;
                 this.initialRotation = initialRotation;
+                this.canPushBack = canPushBack;
+                this.owner = owner;
             }
         }
 

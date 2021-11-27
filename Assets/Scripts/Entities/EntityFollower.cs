@@ -109,6 +109,16 @@ namespace DudeResqueSquad
             transform.rotation = Quaternion.LookRotation(direction);
         }
         
+        public void StopTakingDamage()
+        {
+            StopSpeed();
+        }
+
+        public void ResumeAfterTakingDamage()
+        {
+
+        }
+
         #endregion
     }
 }

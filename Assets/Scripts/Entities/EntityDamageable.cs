@@ -56,7 +56,7 @@ namespace DudeResqueSquad
         public event EventHandler<CustomEventArgs.HealEventArgs> OnHealed;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public void TakeDamage(float value)
+        public void TakeDamage(float value, bool canPushBack, Vector3 attackDirection)
         {
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
 
@@ -70,7 +70,7 @@ namespace DudeResqueSquad
             {
                 IsTakingDamage = true;
 
-                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value));
+                OnTakeDamage?.Invoke(this, new CustomEventArgs.DamageEventArgs(_uid, value, canPushBack, attackDirection));
 
                 Invoke("StopTakingDamage", _timeForRecoveringAfterDamage);
             }

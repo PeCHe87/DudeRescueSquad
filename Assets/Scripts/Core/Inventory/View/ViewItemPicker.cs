@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using DudeRescueSquad.Core.Events;
+using DudeRescueSquad.Core.LevelManagement;
+using UnityEngine;
 
 namespace DudeRescueSquad.Core.Inventory.View
 {
-    public class ViewItemPicker : MonoBehaviour
+    public class ViewItemPicker : MonoBehaviour, IGameEventListener<InteractableEvent>
     {
         public event System.Action OnPicked;
 
@@ -28,17 +30,31 @@ namespace DudeRescueSquad.Core.Inventory.View
 
         #region Unity methods
 
+        #region Unity events
+
+        private void OnEnable()
+        {
+            this.EventStartListening<InteractableEvent>();
+        }
+
+        private void OnDisable()
+        {
+            this.EventStopListening<InteractableEvent>();
+        }
+
+        #endregion
+
         /// <summary>
         /// Triggered when something collides with the picker
         /// </summary>
         /// <param name="collider">Other.</param>
-        public void OnTriggerEnter(Collider collider)
-        {
+        //public void OnTriggerEnter(Collider collider)
+        //{
             // if what's colliding with the picker ain't a characterBehavior, we do nothing and exit
-            if (!collider.CompareTag("Player")) return;
+            //if (!collider.CompareTag("Player")) return;
 
-            _picker.Pick(PickSuccess, PickFail);
-        }
+            //_picker.Pick(PickSuccess, PickFail);
+        //}
 
         #endregion
 
@@ -69,6 +85,26 @@ namespace DudeRescueSquad.Core.Inventory.View
             // TODO: apply SFX
 
             // TODO: trigger some floating text explaining the problem
+        }
+
+        #endregion
+
+        #region GameEventListener<InteractableEventType> implementation
+
+        public virtual void OnGameEvent(InteractableEvent eventData)
+        {
+            switch (eventData.EventType)
+            {
+                case InteractableEventType.PickItemFromButton:
+                    var id = eventData.ItemId;
+
+                    if (_itemId.Equals(id))
+                    {
+                        _picker.Pick(PickSuccess, PickFail);
+                    }
+
+                    break;
+            }
         }
 
         #endregion

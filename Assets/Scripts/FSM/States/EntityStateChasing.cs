@@ -61,6 +61,8 @@ namespace DudeResqueSquad
 
             _attackRangeDistance = _entity.Weapon.AttackAreaRadius;
 
+            if (_entity.Follower.Target == null) return;
+
             Debug.Log($"<b>ATTACKING</b> - <color=green>OnEnter</color> - target: {_entity.Follower.Target.name}, attack range distance: {_attackRangeDistance}");
         }
 
