@@ -6,6 +6,7 @@ namespace DudeRescueSquad.Core.Weapons
     {
         WeaponType Type { get; set; }
         string Id { get; set; }
+        string DisplayName { get; }
         float RadiusDetection { get; set; }
         float AngleView { get; set; }
         bool IsLeftHand { get; set; }

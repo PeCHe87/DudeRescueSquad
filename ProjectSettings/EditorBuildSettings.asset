@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/ForTesting/CharacterController_Aiming.unity
+    guid: a758e9687b5fb334da4625115ae31ea9
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 9daa1974ec362d348b2eac213b6df824,
       type: 2}

@@ -16,6 +16,7 @@ namespace DudeResqueSquad
         private Transform _transform = null;
         private Transform _cameraTransform = null;
         private IDamageable _damageable = null;
+        private bool _wasInitialized = false;
 
         private readonly Vector3 _up = Vector3.up;
         private readonly Vector3 _back = Vector3.back;
@@ -36,15 +37,17 @@ namespace DudeResqueSquad
 
         private void LateUpdate()
         {
-            if (_camera == null)
+            if (!_wasInitialized) return;
+
+            /*if (_camera == null)
                 return;
 
             if (_target == null)
                 return;
 
-            //_transform.position = _camera.ScreenToWorldPoint(_target.position + _up * _pivotOffset);
-            //_transform.LookAt(_camera.transform);
-            //_transform.Rotate(0, 180, 0);
+            if (_transform == null) return;
+
+            if (_cameraTransform == null) return;*/
 
             _transform.LookAt(_transform.position + _cameraTransform.rotation * _back, _cameraTransform.rotation * _up);
         }
@@ -105,6 +108,8 @@ namespace DudeResqueSquad
             _damageable.OnDied += Die;
 
             _imgFill.fillAmount = _damageable.Health / _damageable.MaxHealth;
+
+            _wasInitialized = true;
         }
     }
 }

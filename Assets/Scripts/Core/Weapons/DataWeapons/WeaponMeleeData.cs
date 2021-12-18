@@ -3,11 +3,12 @@
 namespace DudeRescueSquad.Core.Weapons
 {
     [CreateAssetMenu(fileName = "MeleeWeaponData", menuName = "Data/Weapons/Melee weapon")]
-    public class WeaponMeleeData : ScriptableObject, IWeaponDefinition, IWeaponMeleeDefinition
+    public class WeaponMeleeData : BaseWeaponDefinition, IWeaponMeleeDefinition //ScriptableObject, IWeaponDefinition, IWeaponMeleeDefinition
     {
         #region Inspector properties
 
         [SerializeField] private string _id;
+        [SerializeField] private string _displayName = default;
         [SerializeField] private WeaponType _type;
         [SerializeField] private Sprite _icon = default;
         [SerializeField] private float _attackDamage;
@@ -27,14 +28,15 @@ namespace DudeRescueSquad.Core.Weapons
 
         #region Implements IWeaponDefinition
 
-        public WeaponType Type { get => _type; set => _type = value; }
-        public string Id { get => _id; set => _id = value; }
-        public Sprite Icon => _icon;
-        public float RadiusDetection { get => _radiusDetection; set => _radiusDetection = value; }
-        public float AngleView { get => _angleView; set => _angleView = value; }
-        public bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
-        public bool CanMoveWhileAttacking => _canMoveWhileAttacking;
-        public bool CanPushBackOnHit { get => _canPushBackOnHit; }
+        public override WeaponType Type { get => _type; set => _type = value; }
+        public override string Id { get => _id; set => _id = value; }
+        public override string DisplayName => _displayName;
+        public override Sprite Icon => _icon;
+        public override float RadiusDetection { get => _radiusDetection; set => _radiusDetection = value; }
+        public override float AngleView { get => _angleView; set => _angleView = value; }
+        public override bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
+        public override bool CanMoveWhileAttacking => _canMoveWhileAttacking;
+        public override bool CanPushBackOnHit { get => _canPushBackOnHit; }
         public bool CanMoveForwardDuringAttack => _canMoveForwardDuringAttack;
         public float AttackMoveForwardSpeed => _attackMoveForwardSpeed;
         public float AttackMoveForwardDuration => _attackMoveForwardDuration;

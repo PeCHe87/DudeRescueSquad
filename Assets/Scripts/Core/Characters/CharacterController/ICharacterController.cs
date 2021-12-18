@@ -11,7 +11,7 @@ namespace DudeRescueSquad.Core.Characters
 
         float Horizontal();
         float Vertical();
-
         Vector3 Direction();
+        float DeadZone();
     }
 }

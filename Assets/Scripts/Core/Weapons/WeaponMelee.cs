@@ -162,6 +162,9 @@ namespace DudeRescueSquad.Core.Weapons
             _characterMovement.Enable();
             _characterOrientation.Enable();
 
+            // Update character state
+            _characterOwner.StopAction(DudeResqueSquad.Enums.CharacterState.ATTACKING);
+
             _isUsing = false;
         }
 

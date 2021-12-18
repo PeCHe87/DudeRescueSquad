@@ -11,8 +11,8 @@ namespace DudeRescueSquad.Core.LevelManagement
         LevelFinished,
         PlayerDead,             // should it be a player event type?
         PlayerLevelUp,          // should it be a player event type?
-        StartPlayerAttack,
-        StopPlayerAttack,
+        StartPlayerAction,
+        StopPlayerAction,
         StartPlayerDash,
         InteractableStartDetection,
         InteractableStopDetection,

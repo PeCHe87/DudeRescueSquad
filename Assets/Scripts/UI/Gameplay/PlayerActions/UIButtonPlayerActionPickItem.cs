@@ -41,6 +41,8 @@ namespace DudeRescueSquad.UI.Gameplay
             Debug.Log($"<color=green>Pick item from button</color> {_pickerId}");
 
             InteractableEvent.Trigger(InteractableEventType.PickItemFromButton, _pickerId);
+
+            Hide();
         }
 
         protected override void StopAction()
@@ -85,7 +87,14 @@ namespace DudeRescueSquad.UI.Gameplay
                     break;
 
                 case GameLevelEventType.InteractableChanged:
-                    RefreshContent((PickerItemInteractable) eventData.Payload[0], (bool) eventData.Payload[2]);
+                    var isPicker = eventData.Payload[0] is PickerItemInteractable;
+
+                    if (isPicker)
+                    {
+                        var picker = (PickerItemInteractable)eventData.Payload[0];
+                        RefreshContent(picker, (bool)eventData.Payload[2]);
+                    }
+
                     break;
             }
         }

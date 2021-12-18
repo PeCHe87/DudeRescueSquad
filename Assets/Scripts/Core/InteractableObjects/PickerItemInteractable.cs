@@ -1,4 +1,5 @@
 ﻿using DudeRescueSquad.Core.Inventory.View;
+using DudeRescueSquad.Core.Weapons;
 using DudeResqueSquad;
 using UnityEngine;
 
@@ -8,6 +9,7 @@ namespace DudeRescueSquad.Core
     {
         #region Inspector properties
 
+        [SerializeReference] private BaseWeaponDefinition _weaponDefinition = default;
         [SerializeField] private string _id = default;
         [SerializeField] private int _distanceToBeDetected = 5;
 
@@ -25,6 +27,7 @@ namespace DudeRescueSquad.Core
 
         public override string Id => _id;
         public override float DistanceToBeDetected => _distanceToBeDetected;
+        public override string DisplayName => _weaponDefinition.DisplayName;
 
         #endregion
 

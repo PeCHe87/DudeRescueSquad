@@ -11,6 +11,8 @@ namespace DudeRescueSquad.Core.Characters
 
         [SerializeField] private bool _isEnabled = false;
         [SerializeField] private float _speed = 1;
+        [SerializeField] private float _initialSpeed = 2;
+        [SerializeField] private float _speedMultiplier = 0.5f;
 
         #endregion
 
@@ -30,6 +32,8 @@ namespace DudeRescueSquad.Core.Characters
         private bool _meleeMovementEnabled = false;
         private float _meleeForwardSpeed = 0;
         private bool _processingMeleeAttack = false;
+
+        private float _currentSpeed = 0;
 
         #endregion
 
@@ -89,6 +93,7 @@ namespace DudeRescueSquad.Core.Characters
             _isEnabled = false;
 
             _currentDirection = Vector3.zero;
+            _currentSpeed = 0;
 
             _rigidBody.velocity = Vector3.zero;
             _rigidBody.angularVelocity = Vector3.zero;
@@ -108,13 +113,13 @@ namespace DudeRescueSquad.Core.Characters
 
             Debug.DrawRay(_transform.position, direction * speed, Color.magenta);
 
-            _rigidBody.velocity = Vector3.zero;
-
-            _rigidBody.AddForce(direction * speed, ForceMode.VelocityChange);
+            _rigidBody.velocity = direction * speed;
         }
 
         public void StopMovement()
         {
+            _currentSpeed = 0;
+
             _rigidBody.velocity = Vector3.zero;
             _rigidBody.angularVelocity = Vector3.zero;
         }
@@ -154,7 +159,9 @@ namespace DudeRescueSquad.Core.Characters
 
             _currentDirection = _controller.Direction();
 
-            _currentDirection = new Vector3(_currentDirection.x, 0, _currentDirection.y).normalized;
+            var notNormalized = new Vector3(_currentDirection.x, 0, _currentDirection.y);
+
+            _currentDirection = notNormalized.normalized;
 
             _lastInputDirection = _currentDirection;
 
@@ -163,20 +170,26 @@ namespace DudeRescueSquad.Core.Characters
 
         private void Move()
         {
-            _rigidBody.velocity = Vector3.zero;
-
             if (_currentDirection == Vector3.zero)
             {
+                _currentSpeed = 0;
+
+                _rigidBody.velocity = Vector3.zero;
                 _character.UpdateState(DudeResqueSquad.Enums.CharacterState.IDLE);
                 return;
             }
 
             _character.UpdateState(DudeResqueSquad.Enums.CharacterState.MOVING);
 
-            _rigidBody.AddForce(_currentDirection * _speed, ForceMode.VelocityChange);
+            _currentSpeed = Mathf.Clamp(_currentSpeed + _speedMultiplier * Time.deltaTime, _initialSpeed, _speed); //Mathf.MoveTowards(_currentSpeed, _speed, _speedMultiplier);
+
+            //_rigidBody.velocity = _currentDirection * _speed;
+            _rigidBody.velocity = _currentDirection * _currentSpeed;
         }
 
         #region Melee forward movement
+
+        // TODO: move to another class <CharacterAbilityMeleeAttackForwardMovement>
 
         private void StopMeleeAttackForwardMovement()
         {
@@ -185,8 +198,6 @@ namespace DudeRescueSquad.Core.Characters
             _meleeForwardSpeed = 0;
 
             Disable();
-
-            Debug.Log("<color=red>Melee attack</color> forward movement stopped");
         }
 
         private void MeleeAttackFinished()
@@ -200,11 +211,7 @@ namespace DudeRescueSquad.Core.Characters
         {
             Debug.DrawRay(_transform.position, _meleeAttackDestination * _speed, Color.yellow);
 
-            Debug.Log("<color=green>Melee attack</color> forward movement");
-
-            _rigidBody.velocity = Vector3.zero;
-
-            _rigidBody.AddForce(_meleeAttackDestination * _meleeForwardSpeed, ForceMode.VelocityChange);
+            _rigidBody.velocity = _meleeAttackDestination * _meleeForwardSpeed;
         }
 
         #endregion

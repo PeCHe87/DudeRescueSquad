@@ -5,6 +5,7 @@ namespace DudeRescueSquad.Core
 {
     public class EnemyInteractable : BaseInteractable
     {
+        [SerializeField] private EntityData _data = default;
         [SerializeField] private string _id = default;
         [SerializeField] private int _distanceToBeDetected = 5;
 
@@ -13,6 +14,7 @@ namespace DudeRescueSquad.Core
 
         public override string Id => _id;
         public override float DistanceToBeDetected => _distanceToBeDetected;
+        public override string DisplayName => _data.DisplayName;
 
         #region Unity events
 

@@ -21,8 +21,13 @@ namespace DudeRescueSquad.Core.Characters
 
         #endregion
 
+        #region Public properties
+
         public Vector3 ModelDirection => _model.forward;
         public Transform Model => _model;
+        public Vector3 CurrentRotation => _currentRotation;
+
+        #endregion
 
         #region Private properties
 
@@ -36,8 +41,6 @@ namespace DudeRescueSquad.Core.Characters
         private Vector3 _currentRotation = Vector3.zero;
 
         #endregion
-
-        public Vector3 CurrentRotation => _currentRotation;
 
         #region ICharacterAbility implementation
 
@@ -75,18 +78,13 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Private methods
 
-        /*private void Awake()
-        {
-            this._controller = GetComponent<ICharacterController>();
-        }*/
-
         /// <summary>
         /// Check the orientation based on the current equipped item (if corresponds) or the input direction
         /// </summary>
         private void CheckOrientation()
         {
             // Check aiming controller input, if dead zone then skip it, else use it to orientate the character
-            if (_aimingController.Direction().magnitude > 0)
+            if (_aimingController.Direction().magnitude > _aimingController.DeadZone()) //if (_aimingController.Direction().magnitude > 0)
             {
                 CheckOrientationBasedOnAiming();
                 return;

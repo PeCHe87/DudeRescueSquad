@@ -19,6 +19,9 @@ namespace DudeResqueSquad
                 if (damageable == null)
                     continue;
 
+                var damageableComponent = damageable.GetComponent<DamageableProp>();
+                damageableComponent.Init();
+
                 var healthBar = damageable.GetComponentInChildren<FloatingHealthBar>();
 
                 if (healthBar == null)

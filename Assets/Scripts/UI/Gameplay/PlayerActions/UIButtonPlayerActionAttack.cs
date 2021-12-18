@@ -31,14 +31,14 @@ namespace DudeRescueSquad.UI.Gameplay
 
             // TODO: check if it is possible to start the action
 
-            GameLevelEvent.Trigger(GameLevelEventType.StartPlayerAttack);
+            GameLevelEvent.Trigger(GameLevelEventType.StartPlayerAction);
         }
 
         protected override void StopAction()
         {
             Debug.Log("<color=red>OnPointerUp</color> called.");
 
-            GameLevelEvent.Trigger(GameLevelEventType.StopPlayerAttack);
+            GameLevelEvent.Trigger(GameLevelEventType.StopPlayerAction);
         }
 
         #endregion

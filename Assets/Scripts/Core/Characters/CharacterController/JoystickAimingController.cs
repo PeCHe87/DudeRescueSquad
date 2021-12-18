@@ -38,6 +38,11 @@ namespace DudeRescueSquad.Core.Characters
             return _joystick.Direction;
         }
 
+        public float DeadZone()
+        {
+            return _joystick.DeadZone;
+        }
+
         #endregion
     }
 }

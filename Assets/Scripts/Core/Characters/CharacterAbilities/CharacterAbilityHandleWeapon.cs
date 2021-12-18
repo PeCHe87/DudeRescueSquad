@@ -129,6 +129,7 @@ namespace DudeRescueSquad.Core.Characters
         private bool _isTargetDetected = false;
         private bool _attackIsPressing = false;
         private bool _attackPressed = false;
+        private bool _weaponEquipped = false;
 
         #endregion
 
@@ -210,18 +211,34 @@ namespace DudeRescueSquad.Core.Characters
             _attackPressed = true;
         }
 
-        private void StartAttack()
+        private void StartAction()
         {
-            _attackPressed = true;
+            if (!_weaponEquipped) return;
+
+            if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_ASSAULT)
+            {
+                _attackPressed = true;
+            }
         }
 
-        private void StopAttack()
+        private void StopAction()
         {
-            _attackPressed = false;
-            _attackIsPressing = false;
+            if (!_weaponEquipped) return;
 
-            // Update character state
-            _character.StopAction(Enums.CharacterState.ATTACKING);
+            if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_ASSAULT)
+            {
+                _attackPressed = false;
+                _attackIsPressing = false;
+            
+                // Update character state
+                _character.StopAction(Enums.CharacterState.ATTACKING);
+            }
+            else if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_MELEE)
+            {
+                UseWeapon();
+
+                //StopActionAfterMeleeAttack();
+            }
         }
 
         /// <summary>
@@ -254,12 +271,12 @@ namespace DudeRescueSquad.Core.Characters
             {
                 //UseWeapon();
                 //StartAttacking(new CustomEventArgs.StartActionEventArgs(Enums.ActionType.ATTACK));
-                StartAttack();
+                StartAction();
             }
             else if (Input.GetKeyUp(KeyCode.A))
             {
                 //StopAttacking(new CustomEventArgs.StopActionEventArgs(Enums.ActionType.ATTACK));
-                StopAttack();
+                StopAction();
             }
         }
 
@@ -283,6 +300,8 @@ namespace DudeRescueSquad.Core.Characters
 
             // Setup field of view to detect enemy targets based on current weapon stats
             _fieldOfView.Setup(CurrentWeapon.WeaponData.AngleView, CurrentWeapon.WeaponData.RadiusDetection);
+
+            _weaponEquipped = true;
         }
 
         /*
@@ -515,12 +534,12 @@ namespace DudeRescueSquad.Core.Characters
         {
             switch (eventData.EventType)
             {
-                case GameLevelEventType.StartPlayerAttack:
-                    StartAttack();
+                case GameLevelEventType.StartPlayerAction:
+                    StartAction();
                     break;
 
-                case GameLevelEventType.StopPlayerAttack:
-                    StopAttack();
+                case GameLevelEventType.StopPlayerAction:
+                    StopAction();
                     break;
             }
         }

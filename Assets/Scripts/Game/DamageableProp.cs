@@ -23,10 +23,10 @@ namespace DudeResqueSquad
             _collider = GetComponent<Collider>();
         }
 
-        private void Start()
+        /*private void Start()
         {
             Health = MaxHealth = _initialHealth;
-        }
+        }*/
 
         private void ShowHitEffect()
         {
@@ -96,5 +96,10 @@ namespace DudeResqueSquad
         }
 
         #endregion
+
+        public void Init()
+        {
+            Health = MaxHealth = _initialHealth;
+        }
     }
 }
