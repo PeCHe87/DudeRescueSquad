@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DudeRescueSquad.Core.LevelManagement;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -58,6 +59,8 @@ namespace DudeResqueSquad
 
         public void TakeDamage(float value, bool canPushBack, Vector3 attackDirection)
         {
+            if (Health <= 0) return;
+
             Health = Mathf.Clamp(Health - value, 0, MaxHealth);
 
             if (Health == 0)
@@ -65,6 +68,8 @@ namespace DudeResqueSquad
                 _collider.enabled = false;
 
                 OnDied?.Invoke(this, new CustomEventArgs.EntityDeadEventArgs(_uid));
+
+                GameLevelEvent.Trigger(GameLevelEventType.EnemyDied);
             }
             else
             {

@@ -12,7 +12,7 @@ namespace DudeResqueSquad
 
         [SerializeField] private float _debugForce = 5;
         [SerializeField] private ForceMode _pushBackForceMode = ForceMode.Force;
-        [SerializeField] private BoxCollider _collider = default;
+        [SerializeField] private Collider _collider = default;
 
         #endregion
 

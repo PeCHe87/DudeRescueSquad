@@ -16,6 +16,7 @@ namespace DudeRescueSquad.Core.Weapons
         public virtual bool IsLeftHand { get; set; }
         public virtual bool CanMoveWhileAttacking { get; }
         public virtual bool CanPushBackOnHit { get; }
+        public virtual bool AttackOnRelease { get; }
 
         #endregion 
     }

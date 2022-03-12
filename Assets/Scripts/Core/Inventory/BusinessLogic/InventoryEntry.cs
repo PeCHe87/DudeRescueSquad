@@ -94,6 +94,12 @@ namespace DudeRescueSquad.Core.Inventory
             InventoryEvent.Trigger(InventoryEventType.ItemEquipped, itemId, slot, 0);
         }
 
+        public void EquipFromQuickSlot(string itemId)
+        {
+            // Communicates about the success of the action
+            InventoryEvent.Trigger(InventoryEventType.ItemEquipped, itemId, null, 0);
+        }
+
         public void Unequip(string itemId)
         {
             // Move the current item to the first empty regular slot

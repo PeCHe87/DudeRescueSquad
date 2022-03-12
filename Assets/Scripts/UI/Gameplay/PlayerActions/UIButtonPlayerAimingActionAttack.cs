@@ -65,6 +65,8 @@ namespace DudeRescueSquad.UI.Gameplay
             _aimingController = character.GetComponent<JoystickAimingController>();
             _aimingController.Joystick.OnPress += JoystickWasPressed;
             _aimingController.Joystick.OnRelease += JoystickWasReleased;
+
+            _aimingController.Init();
         }
 
         public override void Teardown()
@@ -73,6 +75,8 @@ namespace DudeRescueSquad.UI.Gameplay
 
             _aimingController.Joystick.OnPress -= JoystickWasPressed;
             _aimingController.Joystick.OnRelease -= JoystickWasReleased;
+
+            _aimingController.Teardown();
         }
 
         #endregion

@@ -217,6 +217,9 @@ namespace DudeRescueSquad.Core.Characters
 
             if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_ASSAULT)
             {
+                // Check if weapon can start shooting or shot on release
+                if (CurrentWeapon.WeaponData.AttackOnRelease) return;
+
                 _attackPressed = true;
             }
         }
@@ -227,17 +230,22 @@ namespace DudeRescueSquad.Core.Characters
 
             if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_ASSAULT)
             {
-                _attackPressed = false;
-                _attackIsPressing = false;
-            
-                // Update character state
-                _character.StopAction(Enums.CharacterState.ATTACKING);
+                if (CurrentWeapon.WeaponData.AttackOnRelease)
+                {
+                    UseWeapon();
+                }
+                else
+                {
+                    _attackPressed = false;
+                    _attackIsPressing = false;
+
+                    // Update character state
+                    _character.StopAction(Enums.CharacterState.ATTACKING);
+                }
             }
             else if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_MELEE)
             {
                 UseWeapon();
-
-                //StopActionAfterMeleeAttack();
             }
         }
 

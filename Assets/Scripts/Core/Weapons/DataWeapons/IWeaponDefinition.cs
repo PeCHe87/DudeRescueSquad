@@ -13,5 +13,6 @@ namespace DudeRescueSquad.Core.Weapons
         bool CanMoveWhileAttacking { get; }
         Sprite Icon { get; }
         bool CanPushBackOnHit { get; }
+        bool AttackOnRelease { get; }
     }
 }

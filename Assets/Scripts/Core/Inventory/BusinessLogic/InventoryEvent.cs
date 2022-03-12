@@ -32,5 +32,13 @@ namespace DudeRescueSquad.Core.Inventory
 
             GameEventsManager.TriggerEvent(e);
         }
+
+        public static void Trigger(InventoryEventType eventType, string itemId)
+        {
+            e.EventType = eventType;
+            e.ItemId = itemId;
+
+            GameEventsManager.TriggerEvent(e);
+        }
     }
 }

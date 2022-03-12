@@ -32,7 +32,7 @@ namespace DudeRescueSquad.Core.Characters
         #region Private properties
 
         private ICharacterController _movementController = null;
-        private ICharacterController _aimingController = null;
+        private JoystickAimingController _aimingController = null;
         private Character _character = null;
         private CharacterAbilityHandleWeapon _characterAbilityHandleWeapon = null;
         private bool _wasInitialized = false;
@@ -84,7 +84,7 @@ namespace DudeRescueSquad.Core.Characters
         private void CheckOrientation()
         {
             // Check aiming controller input, if dead zone then skip it, else use it to orientate the character
-            if (_aimingController.Direction().magnitude > _aimingController.DeadZone()) //if (_aimingController.Direction().magnitude > 0)
+            if (_aimingController.Direction().magnitude > _aimingController.DeadZone())
             {
                 CheckOrientationBasedOnAiming();
                 return;
@@ -93,11 +93,15 @@ namespace DudeRescueSquad.Core.Characters
             // Check if there is a weapon equipped that can override the orientation based on its target
             if (_characterAbilityHandleWeapon.IsEquipped)
             {
-                // Check if current weapon type is assault and has target detected
-                if (_characterAbilityHandleWeapon.CurrentWeapon.WeaponType == Enums.ItemTypes.WEAPON_ASSAULT && _characterAbilityHandleWeapon.HasDetectedTarget)
+                // Check if manual aiming was started and it is in progress yet
+                if (!_aimingController.InProgress)
                 {
-                    CheckOrientationBasedOnWeapon();
-                    return;
+                    // Check if current weapon type is assault and has target detected
+                    if (_characterAbilityHandleWeapon.CurrentWeapon.WeaponType == Enums.ItemTypes.WEAPON_ASSAULT && _characterAbilityHandleWeapon.HasDetectedTarget)
+                    {
+                        CheckOrientationBasedOnWeapon();
+                        return;
+                    }
                 }
             }
 

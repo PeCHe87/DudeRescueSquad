@@ -30,6 +30,9 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private Transform _originProjectile = null;
         [SerializeField] private Transform[] _projectileOrigins = null;
 
+        [Header("Muzzle VFX")]
+        [SerializeField] private ParticleSystem _muzzle = default;
+
         #endregion
 
         #region Private properties
@@ -51,7 +54,8 @@ namespace DudeRescueSquad.Core.Weapons
                 SpawnBullet(i);
             }
 
-            // TODO: Show Muzzle
+            // Show Muzzle
+            _muzzle.Play();
 
             // Update time to be able to shoot again
             _expirationTimeLastShot = Time.time + _weaponData.FireRate;

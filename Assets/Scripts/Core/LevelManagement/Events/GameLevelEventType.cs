@@ -8,6 +8,7 @@ namespace DudeRescueSquad.Core.LevelManagement
     {
         LevelLoaded,
         LevelUnloaded,
+        LevelCompleted,
         LevelFinished,
         PlayerDead,             // should it be a player event type?
         PlayerLevelUp,          // should it be a player event type?
@@ -17,5 +18,6 @@ namespace DudeRescueSquad.Core.LevelManagement
         InteractableStartDetection,
         InteractableStopDetection,
         InteractableChanged,
+        EnemyDied
     }
 }

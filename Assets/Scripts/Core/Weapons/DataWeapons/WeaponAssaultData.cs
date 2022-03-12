@@ -26,6 +26,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private float _fireRate = 0;
         [SerializeField] private int _minAmountBulletsPerShot = 0;
         [SerializeField] private int _maxAmountBulletsPerShot = 0;
+        [SerializeField] private bool _attackOnRelease = false;
 
         #endregion
 
@@ -40,6 +41,7 @@ namespace DudeRescueSquad.Core.Weapons
         public override bool IsLeftHand { get => _isLeftHand; set => _isLeftHand = value; }
         public override bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; }
         public override bool CanPushBackOnHit { get => _canPushBackOnHit; }
+        public override bool AttackOnRelease => _attackOnRelease;
 
         #endregion
 

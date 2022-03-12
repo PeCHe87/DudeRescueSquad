@@ -7,6 +7,7 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
 
     public event System.Action OnPress;
     public event System.Action<Vector2> OnRelease;
+    public event System.Action OnDragging;
 
     #endregion
 
@@ -92,6 +93,11 @@ public class Joystick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
         FormatInput();
         HandleInput(input.magnitude, input.normalized, radius, cam);
         handle.anchoredPosition = input * radius * handleRange;
+
+        if (input != Vector2.zero)
+        {
+            OnDragging?.Invoke();
+        }
     }
 
     protected virtual void HandleInput(float magnitude, Vector2 normalised, Vector2 radius, Camera cam)

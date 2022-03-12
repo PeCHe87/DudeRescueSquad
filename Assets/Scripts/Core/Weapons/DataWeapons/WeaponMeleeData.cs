@@ -23,6 +23,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private bool _canMoveForwardDuringAttack = false;
         [SerializeField] private float _attackMoveForwardSpeed = 0;
         [SerializeField] private float _attackMoveForwardDuration = 0;
+        [SerializeField] private bool _attackOnRelease = false;
 
         #endregion
 
@@ -40,6 +41,7 @@ namespace DudeRescueSquad.Core.Weapons
         public bool CanMoveForwardDuringAttack => _canMoveForwardDuringAttack;
         public float AttackMoveForwardSpeed => _attackMoveForwardSpeed;
         public float AttackMoveForwardDuration => _attackMoveForwardDuration;
+        public override bool AttackOnRelease => _attackOnRelease;
 
         #endregion
 

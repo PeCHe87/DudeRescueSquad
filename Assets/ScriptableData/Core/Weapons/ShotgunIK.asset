@@ -30,3 +30,4 @@ MonoBehaviour:
   _fireRate: 0.5
   _minAmountBulletsPerShot: 3
   _maxAmountBulletsPerShot: 3
+  _attackOnRelease: 1

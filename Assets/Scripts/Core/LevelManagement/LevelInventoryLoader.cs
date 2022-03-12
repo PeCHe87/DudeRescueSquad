@@ -1,6 +1,7 @@
 ﻿using DudeRescueSquad.Core.Events;
 using DudeRescueSquad.Core.Inventory;
 using DudeRescueSquad.Core.Inventory.View;
+using DudeRescueSquad.Core.Weapons;
 using UnityEngine;
 
 namespace DudeRescueSquad.Core.LevelManagement
@@ -9,6 +10,7 @@ namespace DudeRescueSquad.Core.LevelManagement
     {
         [SerializeField] private ViewInventory _inventoryView = null;
         [SerializeField] private ViewItemPicker[] _pickers = null;
+        [SerializeField] private InventoryCatalogItems _catalog = default;
 
         private InventoryEntry _inventory = null;
 
@@ -52,8 +54,12 @@ namespace DudeRescueSquad.Core.LevelManagement
 
         private void Initialization()
         {
+            _catalog.Init();
+
+            // Create Inventory entry
             _inventory = new InventoryEntry(10, 3);
 
+            // Get pickers
             _pickers = FindObjectsOfType<ViewItemPicker>();
 
             // Load item pickers
@@ -62,6 +68,13 @@ namespace DudeRescueSquad.Core.LevelManagement
                 picker.Setup(_inventory);
             }
 
+            // Get inventory view
+            _inventoryView = FindObjectOfType<ViewInventory>();
+
+            // Init inventory view
+            _inventoryView.Init();
+
+            // Communicate that inventory was loaded
             InventoryEvent.Trigger(InventoryEventType.InventoryLoaded, string.Empty, null, 0, _inventory);
         }
     }

@@ -27,6 +27,7 @@ namespace DudeRescueSquad.Core.Inventory
         InventoryCloses,
         InventoryLoaded,
         MoveToQuickSlot,
-        EquipOnQuickSlot
+        EquipOnQuickSlot,
+        EquipFromQuickSlot
     }
 }
