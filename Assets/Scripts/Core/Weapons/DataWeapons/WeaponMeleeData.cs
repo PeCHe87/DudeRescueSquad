@@ -3,7 +3,7 @@
 namespace DudeRescueSquad.Core.Weapons
 {
     [CreateAssetMenu(fileName = "MeleeWeaponData", menuName = "Data/Weapons/Melee weapon")]
-    public class WeaponMeleeData : BaseWeaponDefinition, IWeaponMeleeDefinition //ScriptableObject, IWeaponDefinition, IWeaponMeleeDefinition
+    public class WeaponMeleeData : BaseWeaponDefinition, IWeaponMeleeDefinition
     {
         #region Inspector properties
 
@@ -24,6 +24,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private float _attackMoveForwardSpeed = 0;
         [SerializeField] private float _attackMoveForwardDuration = 0;
         [SerializeField] private bool _attackOnRelease = false;
+        [SerializeField] private float _range = default;
 
         #endregion
 
@@ -42,6 +43,7 @@ namespace DudeRescueSquad.Core.Weapons
         public float AttackMoveForwardSpeed => _attackMoveForwardSpeed;
         public float AttackMoveForwardDuration => _attackMoveForwardDuration;
         public override bool AttackOnRelease => _attackOnRelease;
+        public override float Range => _range;
 
         #endregion
 

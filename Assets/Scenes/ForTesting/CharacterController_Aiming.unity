@@ -1206,7 +1206,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <b>v.0.0.<color=black>10</color></b>.<i><color=orange>2022-03-05</color></i>
+  m_Text: <b>v.0.0.<color=black>13</color></b>.<i><color=orange>2022-03-19</color></i>
 --- !u!222 &127314523
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4951,6 +4951,7 @@ GameObject:
   - component: {fileID: 946932630}
   - component: {fileID: 946932631}
   - component: {fileID: 946932632}
+  - component: {fileID: 946932633}
   m_Layer: 14
   m_Name: Character
   m_TagString: Player
@@ -4966,7 +4967,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946932621}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.84, y: 0, z: -5.9}
+  m_LocalPosition: {x: 0.84, y: 0, z: -1.72}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 311363433}
@@ -5162,6 +5163,27 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _joystick: {fileID: 2929252285002658233}
   _delayTime: 5
+--- !u!114 &946932633
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946932621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bccca2ee337e3446993edbe6bbe20e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parent: {fileID: 74857701}
+  _colorAttackArea: {r: 0.4319067, g: 0, b: 1, a: 0.43137255}
+  _shaderType: Sprites/Default
+  _entities:
+  - {fileID: 951034934}
+  _layerObstacleMask:
+    serializedVersion: 2
+    m_Bits: 8192
+  _canDebug: 0
 --- !u!1 &947775258
 GameObject:
   m_ObjectHideFlags: 0
@@ -13132,7 +13154,7 @@ PrefabInstance:
     - target: {fileID: 6481590730480916761, guid: 569f5e0c51adb3341989fce12cfdf1a4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -25.9
+      value: -21.72
       objectReference: {fileID: 0}
     - target: {fileID: 6481590730480916761, guid: 569f5e0c51adb3341989fce12cfdf1a4,
         type: 3}
@@ -13207,7 +13229,7 @@ PrefabInstance:
     - target: {fileID: 6481590731005595583, guid: 569f5e0c51adb3341989fce12cfdf1a4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -25.9
+      value: -21.72
       objectReference: {fileID: 0}
     - target: {fileID: 6481590731005595583, guid: 569f5e0c51adb3341989fce12cfdf1a4,
         type: 3}
@@ -13857,7 +13879,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   handleRange: 1
-  deadZone: 0.5
+  deadZone: 0.4
   axisOptions: 0
   snapX: 0
   snapY: 0

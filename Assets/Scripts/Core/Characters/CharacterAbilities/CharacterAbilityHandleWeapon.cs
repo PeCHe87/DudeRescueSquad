@@ -224,9 +224,13 @@ namespace DudeRescueSquad.Core.Characters
             }
         }
 
-        private void StopAction()
+        private void StopAction(bool deadZoneRelease)
         {
+            // Weapon is not equipped
             if (!_weaponEquipped) return;
+
+            // Skip attack trigger if the weapon attack should be trigger on release but the release was done on dead zone
+            if (CurrentWeapon.WeaponData.AttackOnRelease && deadZoneRelease) return;
 
             if (CurrentWeapon.WeaponType == Inventory.Enums.ItemTypes.WEAPON_ASSAULT)
             {
@@ -284,7 +288,7 @@ namespace DudeRescueSquad.Core.Characters
             else if (Input.GetKeyUp(KeyCode.A))
             {
                 //StopAttacking(new CustomEventArgs.StopActionEventArgs(Enums.ActionType.ATTACK));
-                StopAction();
+                StopAction(false);
             }
         }
 
@@ -547,7 +551,7 @@ namespace DudeRescueSquad.Core.Characters
                     break;
 
                 case GameLevelEventType.StopPlayerAction:
-                    StopAction();
+                    StopAction(eventData.DeadZoneRelease);
                     break;
             }
         }

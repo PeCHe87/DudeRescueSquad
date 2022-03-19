@@ -55,7 +55,10 @@ namespace DudeRescueSquad.UI.Gameplay
         {
             Debug.Log("<color=red>OnPointerUp</color> called.");
 
-            GameLevelEvent.Trigger(GameLevelEventType.StopPlayerAction);
+            // Calculates if release was done on Dead Zone
+            var deadZoneRelease = CheckDeadZoneRelease();
+
+            GameLevelEvent.Trigger(GameLevelEventType.StopPlayerAction, deadZoneRelease);
         }
 
         public override void Setup(Character character, bool startVisible = false)
@@ -91,6 +94,18 @@ namespace DudeRescueSquad.UI.Gameplay
         private void JoystickWasReleased(Vector2 input)
         {
             StopAction();
+        }
+
+        private bool CheckDeadZoneRelease()
+        {
+            var deadZone = _aimingController.DeadZone();
+            var horizontal = Mathf.Abs(_aimingController.Horizontal());
+            var vertical = Mathf.Abs(_aimingController.Vertical());
+            var wasDragging = _aimingController.WasDragging();
+
+            if (wasDragging && horizontal <= deadZone && vertical <= deadZone) return true;
+
+            return false;
         }
 
         #endregion

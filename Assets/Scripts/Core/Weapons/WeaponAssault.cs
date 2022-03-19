@@ -3,6 +3,7 @@ using DudeRescueSquad.Tools;
 using DudeRescueSquad.Core.Characters;
 using DudeResqueSquad;
 using Character = DudeRescueSquad.Core.Characters.Character;
+using System.Threading.Tasks;
 
 namespace DudeRescueSquad.Core.Weapons
 {
@@ -125,6 +126,20 @@ namespace DudeRescueSquad.Core.Weapons
             _currentAmmo = Mathf.Clamp(_currentAmmo + ammo, 0, _weaponData.MaxAmmo);
         }
 
+        private async void ResumeCharacterAfterAttack()
+        {
+            var delayToResume = 500;
+
+            await Task.Delay(Mathf.FloorToInt(delayToResume));
+
+            //if (_token.Token.IsCancellationRequested) return;
+
+            //Debug.Log($"Weapon '{_displayName}' is resuming character after finishing attack");
+
+            // Update character state
+            _characterOwner.StopAction(Enums.CharacterState.ATTACKING);
+        }
+
         #endregion
 
         #region Protected methods
@@ -184,6 +199,12 @@ namespace DudeRescueSquad.Core.Weapons
         public override void WeaponInputStart()
         {
             FireProjectile(_characterHandleWeapon.CurrentTarget);
+
+            if (_weaponData.AttackOnRelease)
+            {
+                // Resume movement and rotation when attack has finished
+                ResumeCharacterAfterAttack();
+            }
         }
 
         public override bool CanBeUsed()

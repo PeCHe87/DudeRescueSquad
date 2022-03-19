@@ -3,7 +3,7 @@
 namespace DudeRescueSquad.Core.Weapons
 {
     [CreateAssetMenu(fileName = "AssaultWeaponData", menuName = "Data/Weapons/Assault weapon")]
-    public class WeaponAssaultData : BaseWeaponDefinition, IWeaponAssaultDefinition //ScriptableObject, IWeaponDefinition, IWeaponAssaultDefinition
+    public class WeaponAssaultData : BaseWeaponDefinition, IWeaponAssaultDefinition
     {
         #region Inspector properties
 
@@ -27,6 +27,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private int _minAmountBulletsPerShot = 0;
         [SerializeField] private int _maxAmountBulletsPerShot = 0;
         [SerializeField] private bool _attackOnRelease = false;
+        [SerializeField] private float _range = default;
 
         #endregion
 
@@ -42,6 +43,7 @@ namespace DudeRescueSquad.Core.Weapons
         public override bool CanMoveWhileAttacking { get => _canMoveWhileAttacking; }
         public override bool CanPushBackOnHit { get => _canPushBackOnHit; }
         public override bool AttackOnRelease => _attackOnRelease;
+        public override float Range => _range;
 
         #endregion
 

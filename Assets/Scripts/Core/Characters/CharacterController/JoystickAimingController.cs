@@ -55,6 +55,11 @@ namespace DudeRescueSquad.Core.Characters
             return _joystick.DeadZone;
         }
 
+        public bool WasDragging()
+        {
+            return _startDragging;
+        }
+
         #endregion
 
         #region Public methods

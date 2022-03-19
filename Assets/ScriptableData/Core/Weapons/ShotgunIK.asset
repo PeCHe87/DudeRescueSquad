@@ -17,7 +17,7 @@ MonoBehaviour:
   _displayName: Shotgun I
   _icon: {fileID: 21300000, guid: f145cf512a42c484e995310f3e5675fc, type: 3}
   _radiusDetection: 8
-  _angleView: 350
+  _angleView: 80
   _isLeftHand: 1
   _canMoveWhileAttacking: 1
   _canPushBackOnHit: 1
@@ -31,3 +31,4 @@ MonoBehaviour:
   _minAmountBulletsPerShot: 3
   _maxAmountBulletsPerShot: 3
   _attackOnRelease: 1
+  _range: 8
