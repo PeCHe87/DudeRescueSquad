@@ -37,13 +37,6 @@ namespace DudeRescueSquad.Core.Characters
         /// if this is set to true, the character can pick up PickableWeapons
         [Tooltip("if this is set to true, the character can pick up PickableWeapons")]
         public bool CanPickupWeapons = true;
-
-        // TODO: add MMFeedbacks to the project
-        //[Header("Feedbacks")]
-        /// a feedback that gets triggered at the character level everytime the weapon is used
-        //[Tooltip("a feedback that gets triggered at the character level everytime the weapon is used")]
-        //public MMFeedbacks WeaponUseFeedback;
-
         [Header("Binding")]
         [Tooltip("the position the weapon will be attached to at Left hand. If left blank, will be this.transform.")]
         public Transform WeaponAttachmentLeftHand;
@@ -92,13 +85,14 @@ namespace DudeRescueSquad.Core.Characters
         [Tooltip("the weapon currently equipped by the Character")]
         public BaseWeapon CurrentWeapon;
 
+        [Header("Weapon area detection")]
+        [Tooltip("Used to detect which enemies are in weapon range when the attack is triggered")]
+        [SerializeField] private WeaponAreaDetection _weaponAreaDetection = default;
+
         /// an animator to update when the weapon is used
         public Animator CharacterAnimator { get; set; }
 
         public bool IsEquipped { get => CurrentWeapon != null; }
-
-        /// the weapon's weapon aim component, if it has one
-        //public WeaponAim WeaponAimComponent { get { return _weaponAim; } }
 
         #endregion
 
@@ -138,6 +132,7 @@ namespace DudeRescueSquad.Core.Characters
         public bool HasDetectedTarget { get => _isTargetDetected; }
         public Transform CurrentTarget { get => _fieldOfView.NearestTarget; }
         public Transform[] VisibleTargets { get => _fieldOfView.VisibleTargets.ToArray(); }
+        public WeaponAreaDetection WeaponAreaDetection  => _weaponAreaDetection;
 
         #endregion
 
@@ -315,47 +310,6 @@ namespace DudeRescueSquad.Core.Characters
 
             _weaponEquipped = true;
         }
-
-        /*
-        protected virtual void HandleWeaponModel(Weapon newWeapon, string weaponID, bool combo = false, Weapon weapon = null)
-        {
-            foreach (WeaponModel model in _weaponModels)
-            {
-                model.Hide();
-
-                if (model.WeaponID == weaponID)
-                {
-                    model.Show();
-
-                    if (model.UseIK)
-                    {
-                        _weaponIK.SetHandles(model.LeftHandHandle, model.RightHandHandle);
-                    }
-
-                    if (weapon != null)
-                    {
-                        if (model.BindFeedbacks)
-                        {
-                            weapon.WeaponStartMMFeedback = model.WeaponStartMMFeedback;
-                            weapon.WeaponUsedMMFeedback = model.WeaponUsedMMFeedback;
-                            weapon.WeaponStopMMFeedback = model.WeaponStopMMFeedback;
-                            weapon.WeaponReloadMMFeedback = model.WeaponReloadMMFeedback;
-                            weapon.WeaponReloadNeededMMFeedback = model.WeaponReloadNeededMMFeedback;
-                        }
-                        if (model.AddAnimator)
-                        {
-                            weapon.Animators.Add(model.TargetAnimator);
-                        }
-
-                        if (model.OverrideWeaponUseTransform)
-                        {
-                            weapon.WeaponUseTransform = model.WeaponUseTransform;
-                        }
-                    }
-                }
-            }
-        }
-        */
 
         #endregion
 
@@ -557,216 +511,5 @@ namespace DudeRescueSquad.Core.Characters
         }
 
         #endregion
-
-        /*
-        /// <summary>
-        /// Sets the weapon attachment
-        /// </summary>
-        protected override void PreInitialization()
-        {
-            base.PreInitialization();
-            // filler if the WeaponAttachment has not been set
-            if (WeaponAttachment == null)
-            {
-                WeaponAttachment = transform;
-            }
-        }
-
-        
-
-        
-
-        
-
-        /// <summary>
-        /// Triggers the weapon used feedback if needed
-        /// </summary>
-        protected virtual void HandleFeedbacks()
-        {
-            if (CurrentWeapon != null)
-            {
-                if (CurrentWeapon.WeaponState.CurrentState == Weapon.WeaponStates.WeaponUse)
-                {
-                    WeaponUseFeedback?.PlayFeedbacks();
-                }
-            }
-        }
-
-        
-
-        /// <summary>
-        /// Triggers an attack if the weapon is idle and an input has been buffered
-        /// </summary>
-        protected virtual void HandleBuffer()
-        {
-            if (CurrentWeapon == null)
-            {
-                return;
-            }
-
-            // if we are currently buffering an input and if the weapon is now idle
-            if (_buffering && (CurrentWeapon.WeaponState.CurrentState == Weapon.WeaponStates.WeaponIdle))
-            {
-                // and if our buffer is still valid, we trigger an attack
-                if (Time.time < _bufferEndsAt)
-                {
-                    ShootStart();
-                }
-                else
-                {
-                    _buffering = false;
-                }
-            }
-        }
-
-        
-
-        protected virtual void ExtendBuffer()
-        {
-            if (!_buffering || NewInputExtendsBuffer)
-            {
-                _buffering = true;
-                _bufferEndsAt = Time.time + MaximumBufferDuration;
-            }
-        }
-
-        
-
-        /// <summary>
-        /// Forces the weapon to stop 
-        /// </summary>
-        public virtual void ForceStop()
-        {
-            StopStartFeedbacks();
-            PlayAbilityStopFeedbacks();
-            CurrentWeapon.TurnWeaponOff();
-        }
-
-        /// <summary>
-        /// Reloads the weapon
-        /// </summary>
-        protected virtual void Reload()
-        {
-            if (CurrentWeapon != null)
-            {
-                CurrentWeapon.InitiateReloadWeapon();
-            }
-        }
-
-        
-
-        
-
-        protected virtual void HandleWeaponIK()
-        {
-            if (_weaponIK != null)
-            {
-                _weaponIK.SetHandles(CurrentWeapon.LeftHandHandle, CurrentWeapon.RightHandHandle);
-            }
-            _projectileWeapon = CurrentWeapon.gameObject.MMFGetComponentNoAlloc<ProjectileWeapon>();
-            if (_projectileWeapon != null)
-            {
-                _projectileWeapon.SetProjectileSpawnTransform(ProjectileSpawn);
-            }
-        }
-
-        
-
-        /// <summary>
-        /// Flips the current weapon if needed
-        /// </summary>
-        public override void Flip()
-        {
-        }
-
-        /// <summary>
-        /// Updates the ammo display bar and text.
-        /// </summary>
-        public virtual void UpdateAmmoDisplay()
-        {
-            if ((GUIManager.Instance != null) && (_character.CharacterType == Character.CharacterTypes.Player))
-            {
-                if (CurrentWeapon == null)
-                {
-                    GUIManager.Instance.SetAmmoDisplays(false, _character.PlayerID, AmmoDisplayID);
-                    return;
-                }
-
-                if (!CurrentWeapon.MagazineBased && (CurrentWeapon.WeaponAmmo == null))
-                {
-                    GUIManager.Instance.SetAmmoDisplays(false, _character.PlayerID, AmmoDisplayID);
-                    return;
-                }
-
-                if (CurrentWeapon.WeaponAmmo == null)
-                {
-                    GUIManager.Instance.SetAmmoDisplays(true, _character.PlayerID, AmmoDisplayID);
-                    GUIManager.Instance.UpdateAmmoDisplays(CurrentWeapon.MagazineBased, 0, 0, CurrentWeapon.CurrentAmmoLoaded, CurrentWeapon.MagazineSize, _character.PlayerID, AmmoDisplayID, false);
-                    return;
-                }
-                else
-                {
-                    GUIManager.Instance.SetAmmoDisplays(true, _character.PlayerID, AmmoDisplayID);
-                    GUIManager.Instance.UpdateAmmoDisplays(CurrentWeapon.MagazineBased, CurrentWeapon.WeaponAmmo.CurrentAmmoAvailable + CurrentWeapon.CurrentAmmoLoaded, CurrentWeapon.WeaponAmmo.MaxAmmo, CurrentWeapon.CurrentAmmoLoaded, CurrentWeapon.MagazineSize, _character.PlayerID, AmmoDisplayID, true);
-                    return;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Adds required animator parameters to the animator parameters list if they exist
-        /// </summary>
-        protected override void InitializeAnimatorParameters()
-        {
-            if (CurrentWeapon == null)
-            { return; }
-
-            RegisterAnimatorParameter(_weaponEquippedAnimationParameterName, AnimatorControllerParameterType.Bool, out _weaponEquippedAnimationParameter);
-            RegisterAnimatorParameter(_weaponEquippedIDAnimationParameterName, AnimatorControllerParameterType.Int, out _weaponEquippedIDAnimationParameter);
-        }
-
-        /// <summary>
-        /// Override this to send parameters to the character's animator. This is called once per cycle, by the Character
-        /// class, after Early, normal and Late process().
-        /// </summary>
-        public override void UpdateAnimator()
-        {
-            MMAnimatorExtensions.UpdateAnimatorBool(_animator, _weaponEquippedAnimationParameter, (CurrentWeapon != null), _character._animatorParameters);
-            if (CurrentWeapon == null)
-            {
-                MMAnimatorExtensions.UpdateAnimatorInteger(_animator, _weaponEquippedIDAnimationParameter, -1, _character._animatorParameters);
-                return;
-            }
-            else
-            {
-                MMAnimatorExtensions.UpdateAnimatorInteger(_animator, _weaponEquippedIDAnimationParameter, CurrentWeapon.WeaponAnimationID, _character._animatorParameters);
-            }
-        }
-
-        protected override void OnHit()
-        {
-            base.OnHit();
-            if (GettingHitInterruptsAttack && (CurrentWeapon != null))
-            {
-                CurrentWeapon.Interrupt();
-            }
-        }
-
-        protected override void OnDeath()
-        {
-            base.OnDeath();
-            ShootStop();
-            if (CurrentWeapon != null)
-            {
-                ChangeWeapon(null, "");
-            }
-        }
-
-        protected override void OnRespawn()
-        {
-            base.OnRespawn();
-            Setup();
-        }
-        */
     }
 }

@@ -1206,7 +1206,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: <b>v.0.0.<color=black>13</color></b>.<i><color=orange>2022-03-19</color></i>
+  m_Text: <b>v.0.0.<color=black>14</color></b>.<i><color=orange>2022-04-09</color></i>
 --- !u!222 &127314523
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1711,6 +1711,66 @@ Transform:
   m_Father: {fileID: 946932622}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &312978166
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 312978167}
+  - component: {fileID: 312978169}
+  - component: {fileID: 312978168}
+  m_Layer: 0
+  m_Name: Picker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &312978167
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312978166}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1742074994}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &312978168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312978166}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bcd3bac04772de74182c0713c6e2bc88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _itemId: AK-47
+  _amount: 1
+  _art: {fileID: 1320901685}
+--- !u!135 &312978169
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 312978166}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 1.2
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &319968588
 GameObject:
   m_ObjectHideFlags: 0
@@ -4952,6 +5012,7 @@ GameObject:
   - component: {fileID: 946932631}
   - component: {fileID: 946932632}
   - component: {fileID: 946932633}
+  - component: {fileID: 946932634}
   m_Layer: 14
   m_Name: Character
   m_TagString: Player
@@ -5004,7 +5065,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _isEnabled: 1
   _speed: 6
-  _initialSpeed: 1.5
+  _initialSpeed: 1.8
   _speedMultiplier: 3
 --- !u!114 &946932625
 MonoBehaviour:
@@ -5108,6 +5169,7 @@ MonoBehaviour:
   MaximumBufferDuration: 0.25
   RequiresPerfectTile: 0
   CurrentWeapon: {fileID: 0}
+  _weaponAreaDetection: {fileID: 946932634}
 --- !u!114 &946932631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5147,7 +5209,7 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  _delayAfterDash: 0.25
+  _delayAfterDash: 0.1
   _speed: 22
 --- !u!114 &946932632
 MonoBehaviour:
@@ -5184,6 +5246,37 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8192
   _canDebug: 0
+--- !u!114 &946932634
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 946932621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 82e440ed3d82bc344a47bc49f405e7d7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _entityOrientation: {fileID: 74857701}
+  _entities:
+  - {fileID: 951034934}
+  - {fileID: 121975829}
+  - {fileID: 1592128499}
+  - {fileID: 1036833613}
+  - {fileID: 2026812523}
+  - {fileID: 870914779}
+  - {fileID: 2112678718}
+  - {fileID: 624899784}
+  - {fileID: 1977136378}
+  - {fileID: 511742257}
+  - {fileID: 52299355}
+  - {fileID: 1312162750}
+  - {fileID: 2071981249}
+  - {fileID: 2045762929}
+  _layerObstacleMask:
+    serializedVersion: 2
+    m_Bits: 8192
 --- !u!1 &947775258
 GameObject:
   m_ObjectHideFlags: 0
@@ -6173,6 +6266,10 @@ MonoBehaviour:
     prefab: {fileID: 5279276859514850368, guid: 693787305f0ef01409c5d3ea0f632858,
       type: 3}
     data: {fileID: 11400000, guid: e4e15f146c9c16341a545b2921703d00, type: 2}
+  - id: AK-47
+    type: 1
+    prefab: {fileID: 101128020612831693, guid: 306789ccb8c8e82429b586482b8cad84, type: 3}
+    data: {fileID: 11400000, guid: b7c7b64cd5673d3469361272c4c5a249, type: 2}
 --- !u!1001 &1036833612
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8127,6 +8224,87 @@ MonoBehaviour:
   m_EffectColor: {r: 1, g: 1, b: 1, a: 0.5}
   m_EffectDistance: {x: 4, y: -4}
   m_UseGraphicAlpha: 1
+--- !u!1001 &1320901683
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 1742074994}
+    m_Modifications:
+    - target: {fileID: 1490873028196816, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_Name
+      value: SM_Wep_AssaultRifle_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.157
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.81
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -0.157
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.38268343
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.92387956
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: a3fe0be603767ae42a0d14c81d777c2b, type: 3}
+--- !u!4 &1320901684 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4256746541367074, guid: a3fe0be603767ae42a0d14c81d777c2b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1320901683}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1320901685 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1490873028196816, guid: a3fe0be603767ae42a0d14c81d777c2b,
+    type: 3}
+  m_PrefabInstance: {fileID: 1320901683}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1356100559
 GameObject:
   m_ObjectHideFlags: 0
@@ -10588,6 +10766,68 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1719603813}
   m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1742074993
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1742074994}
+  - component: {fileID: 1742074996}
+  - component: {fileID: 1742074995}
+  m_Layer: 0
+  m_Name: ItemPicker_AK-47
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1742074994
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742074993}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -31.74, y: 0, z: 2.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 312978167}
+  - {fileID: 1320901684}
+  m_Father: {fileID: 2104748553}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1742074995
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742074993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 824272c3641a0fd4c8ea3bfc9fabf3f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponDefinition: {fileID: 11400000, guid: b7c7b64cd5673d3469361272c4c5a249, type: 2}
+  _id: AK-47
+  _distanceToBeDetected: 8
+--- !u!135 &1742074996
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1742074993}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 8
+  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!1 &1773656719
 GameObject:
   m_ObjectHideFlags: 0
@@ -13328,6 +13568,7 @@ Transform:
   m_Children:
   - {fileID: 1702437272}
   - {fileID: 1196556751}
+  - {fileID: 1742074994}
   m_Father: {fileID: 963321868}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

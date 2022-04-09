@@ -41,6 +41,7 @@ namespace DudeRescueSquad.Core.Weapons
         private int _currentAmmo = 0;
         private float _expirationTimeLastShot = -1;
         private bool _isReloading = false;
+        private Transform _attackerBody;
 
         #endregion
 
@@ -55,15 +56,12 @@ namespace DudeRescueSquad.Core.Weapons
                 SpawnBullet(i);
             }
 
-            // Show Muzzle
-            _muzzle.Play();
-
-            // Update time to be able to shoot again
+            /*// Update time to be able to shoot again
             _expirationTimeLastShot = Time.time + _weaponData.FireRate;
 
             _currentAmmo = Mathf.Max(_currentAmmo - _weaponData.AmmoConsumptionPerShot, 0);
 
-            CheckAmmoForAutoReloading();
+            CheckAmmoForAutoReloading();*/
         }
 
         private void SpawnBullet(int index)
@@ -140,6 +138,16 @@ namespace DudeRescueSquad.Core.Weapons
             _characterOwner.StopAction(Enums.CharacterState.ATTACKING);
         }
 
+        private void UpdateAmmoAfterFiring()
+        {
+            // Update time to be able to shoot again
+            _expirationTimeLastShot = Time.time + _weaponData.FireRate;
+
+            _currentAmmo = Mathf.Max(_currentAmmo - _weaponData.AmmoConsumptionPerShot, 0);
+
+            CheckAmmoForAutoReloading();
+        }
+
         #endregion
 
         #region Protected methods
@@ -153,6 +161,8 @@ namespace DudeRescueSquad.Core.Weapons
 
             _characterOwner = characterOwner;
             _characterHandleWeapon = _characterOwner.GetComponent<CharacterAbilityHandleWeapon>();
+
+            _attackerBody = _characterOwner.transform;
         }
 
         /// <summary>
@@ -198,7 +208,37 @@ namespace DudeRescueSquad.Core.Weapons
         /// </summary>
         public override void WeaponInputStart()
         {
-            FireProjectile(_characterHandleWeapon.CurrentTarget);
+            if (_weaponData.InstantDamage)
+            {
+                var detectedTargets = _characterHandleWeapon.WeaponAreaDetection.GetEntitiesOnArea();
+
+                var damage = _weaponData.ProjectileData.damage;
+                var canPushBack = _weaponData.CanPushBackOnHit;
+                var attackDirection = Vector3.zero;
+
+                for (int i = 0; i < detectedTargets.Length; i++)
+                {
+                    var target = detectedTargets[i];
+
+                    if (!target.TryGetComponent<IDamageable>(out var targetDamageable)) continue;
+
+                    if (targetDamageable.IsDead) continue;
+
+                    attackDirection = (target.position - _attackerBody.position).normalized;
+
+                    targetDamageable.TakeDamage(damage, canPushBack, attackDirection);
+                }
+            }
+            else
+            {
+                FireProjectile(_characterHandleWeapon.CurrentTarget);
+            }
+
+            // Update ammo after firing
+            UpdateAmmoAfterFiring();
+
+            // Show Muzzle
+            _muzzle.Play();
 
             if (_weaponData.AttackOnRelease)
             {

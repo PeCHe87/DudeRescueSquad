@@ -11,5 +11,6 @@
         float FireRate { get; set; }
         int MinAmountBulletsPerShot { get; }
         int MaxAmountBulletsPerShot { get; }
+        bool InstantDamage { get; }
     }
 }

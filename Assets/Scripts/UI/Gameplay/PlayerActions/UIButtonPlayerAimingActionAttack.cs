@@ -44,7 +44,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
         protected override void StartAction()
         {
-            Debug.Log("<color=green>OnPointerDown</color> called.");
+            //Debug.Log("<color=green>OnPointerDown</color> called.");
 
             // TODO: check if it is possible to start the action
 
@@ -53,7 +53,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
         protected override void StopAction()
         {
-            Debug.Log("<color=red>OnPointerUp</color> called.");
+            //Debug.Log("<color=red>OnPointerUp</color> called.");
 
             // Calculates if release was done on Dead Zone
             var deadZoneRelease = CheckDeadZoneRelease();

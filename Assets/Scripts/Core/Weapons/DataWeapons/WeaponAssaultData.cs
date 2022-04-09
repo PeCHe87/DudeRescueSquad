@@ -28,6 +28,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private int _maxAmountBulletsPerShot = 0;
         [SerializeField] private bool _attackOnRelease = false;
         [SerializeField] private float _range = default;
+        [SerializeField] private bool _instantDamage = default;
 
         #endregion
 
@@ -58,6 +59,7 @@ namespace DudeRescueSquad.Core.Weapons
         public int AmmoConsumptionPerShot { get => _ammoConsumptionPerShot; }
         public int MinAmountBulletsPerShot => _minAmountBulletsPerShot; 
         public int MaxAmountBulletsPerShot => _maxAmountBulletsPerShot;
+        public bool InstantDamage => _instantDamage;
 
         #endregion
     }
