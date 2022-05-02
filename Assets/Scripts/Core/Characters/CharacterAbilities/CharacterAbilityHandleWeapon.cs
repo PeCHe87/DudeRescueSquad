@@ -291,7 +291,7 @@ namespace DudeRescueSquad.Core.Characters
 
         #region Protected methods
 
-        protected virtual void InstantiateWeapon(BaseWeapon newWeapon, string weaponID, bool combo = false)
+        protected virtual void InstantiateWeapon(BaseWeapon newWeapon, bool combo, Inventory.BaseItem itemInstance)
         {
             var position = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand.transform.position + newWeapon.WeaponAttachmentOffset : WeaponAttachmentRightHand.transform.position + newWeapon.WeaponAttachmentOffset;
             var rotation = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand.transform.rotation : WeaponAttachmentRightHand.transform.rotation;
@@ -300,10 +300,10 @@ namespace DudeRescueSquad.Core.Characters
 
             CurrentWeapon.transform.parent = (newWeapon.WeaponData.IsLeftHand) ? WeaponAttachmentLeftHand : WeaponAttachmentRightHand;
             CurrentWeapon.transform.localPosition = newWeapon.WeaponAttachmentOffset;
-            CurrentWeapon.WeaponID = weaponID;
+            CurrentWeapon.WeaponID = itemInstance.TemplateId;
 
             // Turn off the gun's emitters.
-            CurrentWeapon.Initialization(_character);
+            CurrentWeapon.Initialization(_character, itemInstance);
 
             // Setup field of view to detect enemy targets based on current weapon stats
             _fieldOfView.Setup(CurrentWeapon.WeaponData.AngleView, CurrentWeapon.WeaponData.RadiusDetection);
@@ -320,27 +320,6 @@ namespace DudeRescueSquad.Core.Characters
         /// </summary>
         public virtual void Setup()
         {
-            /*
-            _character = this.gameObject.MMGetComponentNoAlloc<Character>();
-            _characterGridMovement = this.gameObject.GetComponent<CharacterGridMovement>();
-            _weaponModels = new List<WeaponModel>();
-            foreach (WeaponModel model in this.gameObject.GetComponentsInChildren<WeaponModel>())
-            {
-                _weaponModels.Add(model);
-            }
-            CharacterAnimator = _animator;
-            // filler if the WeaponAttachment has not been set
-            if (WeaponAttachment == null)
-            {
-                WeaponAttachment = transform;
-            }
-            if ((_animator != null) && (AutoIK))
-            {
-                _weaponIK = _animator.GetComponent<WeaponIK>();
-            }
-            
-            */
-
             _character = GetComponent<Character>();
 
             _fieldOfView = _character.GetComponentInChildren<DudeResqueSquad.FieldOfView>();
@@ -350,7 +329,7 @@ namespace DudeRescueSquad.Core.Characters
             // Set the initial weapon if not null
             if (InitialWeapon != null)
             {
-                ChangeWeapon(InitialWeapon, InitialWeapon.DisplayName, false);
+                ChangeWeapon(InitialWeapon, false, null);
             }
         }
 
@@ -358,7 +337,7 @@ namespace DudeRescueSquad.Core.Characters
         /// Changes the character's current weapon to the one passed as a parameter
         /// </summary>
         /// <param name="newWeapon">The new weapon.</param>
-        public virtual void ChangeWeapon(BaseWeapon newWeapon, string weaponID, bool combo = false)
+        public virtual void ChangeWeapon(BaseWeapon newWeapon, bool combo, Inventory.BaseItem itemInstance)
         {
             // if the character already has a weapon, we make it stop shooting
             if (CurrentWeapon != null)
@@ -374,7 +353,7 @@ namespace DudeRescueSquad.Core.Characters
 
             if (newWeapon != null)
             {
-                InstantiateWeapon(newWeapon, weaponID, combo);
+                InstantiateWeapon(newWeapon, combo, itemInstance);
 
                 // TODO: communicates about the weapon change
             }

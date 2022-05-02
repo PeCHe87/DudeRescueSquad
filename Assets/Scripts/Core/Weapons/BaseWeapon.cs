@@ -24,10 +24,11 @@ namespace DudeRescueSquad.Core.Weapons
         public Enums.ItemTypes WeaponType { get => _type; }
         public Vector3 WeaponAttachmentOffset { get => _attachmentOffset; }
 
-        public abstract void Initialization(Character characterOwner);
+        public abstract void Initialization(Character characterOwner, BaseItem itemInstance);
         public abstract void WeaponInputStart();
         public abstract void TurnWeaponOff();
         public abstract bool CanBeUsed();
+        public abstract void SetItemInstance(BaseItem itemInstance);
 
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using DudeRescueSquad.Core.Events;
+﻿using DudeRescueSquad.Core.Characters;
+using DudeRescueSquad.Core.Events;
 using DudeRescueSquad.Core.Inventory;
 using DudeRescueSquad.Core.Inventory.View;
 using DudeRescueSquad.Core.Weapons;
@@ -8,9 +9,11 @@ namespace DudeRescueSquad.Core.LevelManagement
 {
     public class LevelInventoryLoader : MonoBehaviour, IGameEventListener<GameLevelEvent>
     {
+        [SerializeField] private Character _character = default;
         [SerializeField] private ViewInventory _inventoryView = null;
         [SerializeField] private ViewItemPicker[] _pickers = null;
         [SerializeField] private InventoryCatalogItems _catalog = default;
+        [SerializeField] private InventoryInstanceItems _instances = default;
 
         private InventoryEntry _inventory = null;
 
@@ -56,8 +59,10 @@ namespace DudeRescueSquad.Core.LevelManagement
         {
             _catalog.Init();
 
+            _instances.Init();
+
             // Create Inventory entry
-            _inventory = new InventoryEntry(10, 3);
+            _inventory = new InventoryEntry(10, 3, _instances);
 
             // Get pickers
             _pickers = FindObjectsOfType<ViewItemPicker>();
@@ -71,8 +76,11 @@ namespace DudeRescueSquad.Core.LevelManagement
             // Get inventory view
             _inventoryView = FindObjectOfType<ViewInventory>();
 
+            // Get player's character
+            _character = FindObjectOfType<Character>();
+
             // Init inventory view
-            _inventoryView.Init();
+            _inventoryView.Init(_character);
 
             // Communicate that inventory was loaded
             InventoryEvent.Trigger(InventoryEventType.InventoryLoaded, string.Empty, null, 0, _inventory);

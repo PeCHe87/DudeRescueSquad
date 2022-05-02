@@ -1,4 +1,9 @@
-﻿using DudeRescueSquad.Core.Events;
+﻿using DudeRescueSquad.Core.Characters;
+using DudeRescueSquad.Core.Events;
+using DudeRescueSquad.Core.Weapons;
+using DudeResqueSquad;
+using System;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,11 +19,23 @@ namespace DudeRescueSquad.Core.Inventory.View
         [SerializeField] private Image _icon = default;
         [SerializeField] private Image _selectionBorder = default;
 
+        [Header("Assault weapon info")]
+        [SerializeField] private GameObject _assaultInfo = default;
+        [SerializeField] private TextMeshProUGUI _txtAmmo = default;
+        [SerializeField] private TextMeshProUGUI _txtMagazine = default;
+        [SerializeField] private Image _imgReloading = default;
+
         #endregion
 
         #region Private properties
 
         private string _itemId = default;
+        private bool _isReloading = false;
+        private ViewInventory _inventory = default;
+        private WeaponAssaultData _assaultWeaponData = default;
+        private WeaponAssault _currentWeapon = default;
+        private bool _isAssault = false;
+        private BaseItem _itemInstance = default;
 
         #endregion
 
@@ -50,27 +67,42 @@ namespace DudeRescueSquad.Core.Inventory.View
 
         #region Public methods
 
-        public void Init()
+        public void Init(ViewInventory inventory)
         {
+            _inventory = inventory;
+
             _btn.onClick.AddListener(Select);
 
-            Setup(string.Empty);
+            WeaponAssault.OnShoot += OnAssaultShooting;
+            WeaponAssault.OnStartReloading += OnAssaultStartReloading;
+            WeaponAssault.OnStopReloading += OnAssaultStopReloading;
+
+            Setup(string.Empty, null);
         }
 
         public void Teardown()
         {
             _btn.onClick.RemoveAllListeners();
+
+            WeaponAssault.OnShoot -= OnAssaultShooting;
+            WeaponAssault.OnStartReloading -= OnAssaultStartReloading;
+            WeaponAssault.OnStopReloading -= OnAssaultStopReloading;
         }
 
-        public void Setup(string id)
+        public void Setup(string id, BaseItem itemInstance)
         {
             _itemId = id;
+            _itemInstance = itemInstance;
 
             if (string.IsNullOrEmpty(id))
             {
                 _txtName.text = string.Empty;
                 _icon.sprite = null;
                 _selectionBorder.enabled = false;
+
+                _isAssault = false;
+
+                HideAssaultInfo();
             }
             else
             {
@@ -80,6 +112,24 @@ namespace DudeRescueSquad.Core.Inventory.View
                 _txtName.text = item.data.DisplayName;
                 _icon.sprite = item.data.Icon;
                 _selectionBorder.enabled = true;
+
+                if (item.type == Enums.ItemTypes.WEAPON_ASSAULT)
+                {
+                    _isAssault = true;
+
+                    _assaultWeaponData = (WeaponAssaultData)_inventory.CharacterHandleWeapon.CurrentWeapon.WeaponData;
+                    _currentWeapon = (WeaponAssault)_inventory.CharacterHandleWeapon.CurrentWeapon;
+
+                    StopReloading();
+
+                    ShowAssaultInfo(_currentWeapon.CurrentAmmo);
+                }
+                else
+                {
+                    _isAssault = false;
+
+                    HideAssaultInfo();
+                }
             }
         }
 
@@ -99,7 +149,7 @@ namespace DudeRescueSquad.Core.Inventory.View
                 case InventoryEventType.EquipFromQuickSlot:
                     if (string.IsNullOrEmpty(_itemId)) return;
 
-                    if (_itemId.Equals(eventData.ItemId)) return;
+                    if (_itemId.Equals(eventData.ItemInstance.TemplateId)) return;
 
                     Unselect();
 
@@ -108,7 +158,7 @@ namespace DudeRescueSquad.Core.Inventory.View
                 case InventoryEventType.EquipOnQuickSlot:
                     if (string.IsNullOrEmpty(_itemId)) return;
 
-                    if (_itemId.Equals(eventData.ItemId)) return;
+                    if (_itemId.Equals(eventData.ItemInstance.TemplateId)) return;
 
                     Unselect();
 
@@ -127,12 +177,108 @@ namespace DudeRescueSquad.Core.Inventory.View
 
             _selectionBorder.enabled = true;
 
-            InventoryEvent.Trigger(InventoryEventType.EquipFromQuickSlot, _itemId);
+            InventoryEvent.Trigger(InventoryEventType.EquipFromQuickSlot, null, 1, _itemInstance);
         }
 
         private void Unselect()
         {
             _selectionBorder.enabled = false;
+        }
+
+        #endregion
+
+        #region Assault weapon information
+
+        private void HideAssaultInfo()
+        {
+            _assaultInfo.Toggle(false);
+        }
+
+        private void ShowAssaultInfo(int ammo)
+        {
+            _txtMagazine.text = $"{_assaultWeaponData.MaxAmmo}";
+
+            UpdateCurrentAmmo(ammo);
+
+            _assaultInfo.Toggle(true);
+        }
+
+        private void UpdateCurrentAmmo(int amount)
+        {
+            _txtAmmo.text = $"{amount}";
+        }
+
+        private void StartReloading()
+        {
+            _isReloading = true;
+
+            _imgReloading.fillAmount = 0;
+
+            _imgReloading.enabled = true;
+
+            StartCoroutine(Reloading());
+        }
+
+        private IEnumerator Reloading()
+        {
+            var duration = _assaultWeaponData.ReloadingTime;
+            float progress = 0;
+
+            while (progress < duration && _isReloading)
+            {
+                progress += Time.deltaTime;
+
+                _imgReloading.fillAmount = progress / duration;
+
+                yield return new WaitForEndOfFrame();
+            }
+
+            StopReloading();
+        }
+
+        private void StopReloading()
+        {
+            _isReloading = false;
+
+            _imgReloading.enabled = false;
+        }
+
+        private void OnAssaultShooting(CustomEventArgs.WeaponShootEventArgs evt)
+        {
+            if (!IsAssaultWeapon()) return;
+
+            if (!_itemId.Equals(evt.itemId)) return;
+
+            UpdateCurrentAmmo(evt.currentAmmo);
+        }
+
+        private void OnAssaultStartReloading(CustomEventArgs.WeaponStartReloadingEventArgs evt)
+        {
+            if (!IsAssaultWeapon()) return;
+
+            if (!_itemId.Equals(evt.itemId)) return;
+
+            StartReloading();
+        }
+
+        private void OnAssaultStopReloading(CustomEventArgs.WeaponStopReloadingEventArgs evt)
+        {
+            if (!IsAssaultWeapon()) return;
+
+            if (!_itemId.Equals(evt.itemId)) return;
+
+            StopReloading();
+
+            UpdateCurrentAmmo(evt.currentAmmo);
+        }
+
+        private bool IsAssaultWeapon()
+        {
+            if (string.IsNullOrEmpty(_itemId)) return false;
+
+            if (!_isAssault) return false;
+
+            return true;
         }
 
         #endregion

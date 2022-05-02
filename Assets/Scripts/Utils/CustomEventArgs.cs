@@ -160,18 +160,37 @@ namespace DudeResqueSquad
 
         public class WeaponStartReloadingEventArgs
         {
+            public string itemId;
             public float time;
 
-            public WeaponStartReloadingEventArgs(float time)
+            public WeaponStartReloadingEventArgs(string id, float time)
             {
+                this.itemId = id;
                 this.time = time;
+            }
+        }
+
+        public class WeaponShootEventArgs
+        {
+            public string itemId;
+            public int currentAmmo;
+
+            public WeaponShootEventArgs(string id, int amount)
+            {
+                this.itemId = id;
+                this.currentAmmo = amount;
             }
         }
 
         public class WeaponStopReloadingEventArgs
         {
-            public WeaponStopReloadingEventArgs()
+            public string itemId;
+            public int currentAmmo;
+
+            public WeaponStopReloadingEventArgs(string id, int ammo)
             {
+                this.itemId = id;
+                this.currentAmmo = ammo;
             }
         }
 

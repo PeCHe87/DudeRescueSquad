@@ -66,8 +66,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: '[Interactable type]'
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0760a0fe4c3996e45812bc587517a662, type: 2}
-  m_sharedMaterial: {fileID: 4704659515518087120, guid: 0760a0fe4c3996e45812bc587517a662,
+  m_fontAsset: {fileID: 11400000, guid: fc6e7ae0595199149b5dd98b7ba85390, type: 2}
+  m_sharedMaterial: {fileID: 5390547800262806870, guid: fc6e7ae0595199149b5dd98b7ba85390,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -192,7 +192,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: -10}
-  m_SizeDelta: {x: 20, y: 40}
+  m_SizeDelta: {x: 0, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2103693335165602845
 CanvasRenderer:
@@ -372,8 +372,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Name
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0760a0fe4c3996e45812bc587517a662, type: 2}
-  m_sharedMaterial: {fileID: 4704659515518087120, guid: 0760a0fe4c3996e45812bc587517a662,
+  m_fontAsset: {fileID: 11400000, guid: fc6e7ae0595199149b5dd98b7ba85390, type: 2}
+  m_sharedMaterial: {fileID: 5390547800262806870, guid: fc6e7ae0595199149b5dd98b7ba85390,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -529,8 +529,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 000000
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 0760a0fe4c3996e45812bc587517a662, type: 2}
-  m_sharedMaterial: {fileID: 4704659515518087120, guid: 0760a0fe4c3996e45812bc587517a662,
+  m_fontAsset: {fileID: 11400000, guid: fc6e7ae0595199149b5dd98b7ba85390, type: 2}
+  m_sharedMaterial: {fileID: 5390547800262806870, guid: fc6e7ae0595199149b5dd98b7ba85390,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -656,10 +656,10 @@ RectTransform:
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -70}
-  m_SizeDelta: {x: -400, y: 50}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 20, y: -100}
+  m_SizeDelta: {x: 450, y: 50}
+  m_Pivot: {x: 0, y: 1}
 --- !u!1 &7940626707707823010
 GameObject:
   m_ObjectHideFlags: 0
@@ -758,7 +758,7 @@ MonoBehaviour:
   _txtName: {fileID: 1509071143396248662}
   _txtHealth: {fileID: 7750720274953971004}
   _txtType: {fileID: 393572535674978960}
-  _canDebug: 1
+  _canDebug: 0
 --- !u!1 &8543109817735496898
 GameObject:
   m_ObjectHideFlags: 0

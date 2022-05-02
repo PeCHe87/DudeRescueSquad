@@ -4,6 +4,8 @@ using DudeRescueSquad.Core.Characters;
 using DudeResqueSquad;
 using Character = DudeRescueSquad.Core.Characters.Character;
 using System.Threading.Tasks;
+using System;
+using DudeRescueSquad.Core.Inventory.Items.Weapons;
 
 namespace DudeRescueSquad.Core.Weapons
 {
@@ -13,8 +15,9 @@ namespace DudeRescueSquad.Core.Weapons
     [SelectionBase]
     public class WeaponAssault : BaseWeapon
     {
-        public static System.Action<CustomEventArgs.WeaponStartReloadingEventArgs> OnStartReloading;
-        public static System.Action<CustomEventArgs.WeaponStopReloadingEventArgs> OnStopReloading;
+        public static Action<CustomEventArgs.WeaponShootEventArgs> OnShoot;
+        public static Action<CustomEventArgs.WeaponStartReloadingEventArgs> OnStartReloading;
+        public static Action<CustomEventArgs.WeaponStopReloadingEventArgs> OnStopReloading;
 
         #region Inspector properties
 
@@ -38,10 +41,16 @@ namespace DudeRescueSquad.Core.Weapons
 
         #region Private properties
 
-        private int _currentAmmo = 0;
         private float _expirationTimeLastShot = -1;
         private bool _isReloading = false;
         private Transform _attackerBody;
+        private AssaultWeaponItem _instance = default;
+
+        #endregion
+
+        #region Public properties
+
+        public int CurrentAmmo => _instance.CurrentAmmo;
 
         #endregion
 
@@ -84,9 +93,9 @@ namespace DudeRescueSquad.Core.Weapons
 
         private void CheckAmmoForAutoReloading()
         {
-            if (_currentAmmo > 0) return;
+            if (_instance.CurrentAmmo > 0) return;
 
-            if (_isReloading) return;
+            if (_instance.IsReloading) return;
 
             // TODO: check if it should wait some time to start reloading to connect with the respective animation
 
@@ -95,33 +104,46 @@ namespace DudeRescueSquad.Core.Weapons
 
         private void StartReloading()
         {
-            _isReloading = true;
+            //_isReloading = true;
 
-            Debug.Log("<color=orange>START reloading</color>");
+            Debug.Log($"<color=orange>START reloading</color> {_weaponData.Id}");
 
             // Communicates through GameEvent that reloading has started
-            var evtArgs = new CustomEventArgs.WeaponStartReloadingEventArgs(_weaponData.ReloadingTime);
+            var evtArgs = new CustomEventArgs.WeaponStartReloadingEventArgs(_weaponData.Id, _weaponData.ReloadingTime);
             OnStartReloading?.Invoke(evtArgs);
 
-            Invoke(nameof(StopReloading), _weaponData.ReloadingTime);
+            //Invoke(nameof(StopReloading), _weaponData.ReloadingTime);
+
+            _instance.ReloadAmmo(_weaponData.ReloadingTime, _weaponData.MaxAmmo, StopInstanceReload);
         }
 
-        private void StopReloading()
+        /*private void StopReloading()
         {
             AddAmmo(_weaponData.MaxAmmo);
 
             _isReloading = false;
 
-            Debug.Log($"<color=orange> -- STOP -- reloading</color>. Current Ammo: {_currentAmmo}");
+            Debug.Log($"<color=orange> -- STOP -- reloading</color>. Current Ammo: {_instance.CurrentAmmo}");
 
             // Communicates through GameEvent that reloading has finished
-            var evtArgs = new CustomEventArgs.WeaponStopReloadingEventArgs();
+            var evtArgs = new CustomEventArgs.WeaponStopReloadingEventArgs(_weaponData.Id, _instance.CurrentAmmo);
+            OnStopReloading?.Invoke(evtArgs);
+        }*/
+
+        private void StopInstanceReload(string id, int ammo)
+        {
+            Debug.Log($"<color=orange> -- STOP -- reloading</color>. {id} Current Ammo: {ammo}");
+
+            // Communicates through GameEvent that reloading has finished
+            var evtArgs = new CustomEventArgs.WeaponStopReloadingEventArgs(id, ammo);
             OnStopReloading?.Invoke(evtArgs);
         }
 
         private void AddAmmo(int ammo)
         {
-            _currentAmmo = Mathf.Clamp(_currentAmmo + ammo, 0, _weaponData.MaxAmmo);
+            int currentAmmo = Mathf.Clamp(_instance.CurrentAmmo + ammo, 0, _weaponData.MaxAmmo);
+
+            _instance.UpdateCurrentAmmo(currentAmmo);
         }
 
         private async void ResumeCharacterAfterAttack()
@@ -143,7 +165,9 @@ namespace DudeRescueSquad.Core.Weapons
             // Update time to be able to shoot again
             _expirationTimeLastShot = Time.time + _weaponData.FireRate;
 
-            _currentAmmo = Mathf.Max(_currentAmmo - _weaponData.AmmoConsumptionPerShot, 0);
+            int currentAmmo = Mathf.Max(_instance.CurrentAmmo - _weaponData.AmmoConsumptionPerShot, 0);
+
+            _instance.UpdateCurrentAmmo(currentAmmo);
 
             CheckAmmoForAutoReloading();
         }
@@ -155,9 +179,11 @@ namespace DudeRescueSquad.Core.Weapons
         /// <summary>
         /// Initialize this weapon.
         /// </summary>
-        public override void Initialization(Character characterOwner)
+        public override void Initialization(Character characterOwner, Inventory.BaseItem itemInstance)
         {
-            AddAmmo(_weaponData.InitialAmmo);
+            _instance = itemInstance as AssaultWeaponItem;
+
+            //AddAmmo(_weaponData.InitialAmmo);
 
             _characterOwner = characterOwner;
             _characterHandleWeapon = _characterOwner.GetComponent<CharacterAbilityHandleWeapon>();
@@ -208,6 +234,8 @@ namespace DudeRescueSquad.Core.Weapons
         /// </summary>
         public override void WeaponInputStart()
         {
+            var amountBullets = UnityEngine.Random.Range(_weaponData.MinAmountBulletsPerShot, _weaponData.MaxAmountBulletsPerShot);
+
             if (_weaponData.InstantDamage)
             {
                 var detectedTargets = _characterHandleWeapon.WeaponAreaDetection.GetEntitiesOnArea();
@@ -237,6 +265,10 @@ namespace DudeRescueSquad.Core.Weapons
             // Update ammo after firing
             UpdateAmmoAfterFiring();
 
+            Debug.Log($"<color=orange>SHOOT</color> {_weaponData.Id} ({_instance.CurrentAmmo}/{_weaponData.MaxAmmo})");
+            var eventArgs = new CustomEventArgs.WeaponShootEventArgs(_weaponData.Id, _instance.CurrentAmmo);
+            OnShoot?.Invoke(eventArgs);
+
             // Show Muzzle
             _muzzle.Play();
 
@@ -250,10 +282,10 @@ namespace DudeRescueSquad.Core.Weapons
         public override bool CanBeUsed()
         {
             // Check if it is reloading
-            if (_isReloading) return false;
+            if (_instance.IsReloading) return false;
 
             // Check if there is remaining ammo
-            if (_currentAmmo <= 0)
+            if (_instance.CurrentAmmo <= 0)
             {
                 Debug.Log("<color=red>No more bullets</color>");
                 return false;
@@ -263,6 +295,11 @@ namespace DudeRescueSquad.Core.Weapons
             if (_expirationTimeLastShot > -1 && _expirationTimeLastShot > Time.time) return false;
 
             return true;
+        }
+
+        public override void SetItemInstance(Inventory.BaseItem itemInstance)
+        {
+            
         }
 
         #endregion

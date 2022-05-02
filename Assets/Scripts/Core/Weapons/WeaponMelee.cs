@@ -80,7 +80,7 @@ namespace DudeRescueSquad.Core.Weapons
             ResumeCharacterAfterAttack();
         }
 
-        public override void Initialization(Character characterOwner)
+        public override void Initialization(Character characterOwner, Inventory.BaseItem itemInstance)
         {
             _characterOwner = characterOwner;
             _characterTransform = characterOwner.transform;
@@ -97,6 +97,11 @@ namespace DudeRescueSquad.Core.Weapons
         public override bool CanBeUsed()
         {
             return true;
+        }
+
+        public override void SetItemInstance(Inventory.BaseItem itemInstance)
+        {
+            // TODO: not needed now
         }
 
         #endregion

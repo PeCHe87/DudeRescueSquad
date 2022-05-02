@@ -140,7 +140,7 @@ namespace DudeRescueSquad.Core.Weapons
             switch (eventData.EventType)
             {
                 case InventoryEventType.ItemEquipped:
-                    EquipWeapon(eventData.ItemId);
+                    EquipWeapon(eventData.ItemInstance.TemplateId);
                     break;
             }
         }

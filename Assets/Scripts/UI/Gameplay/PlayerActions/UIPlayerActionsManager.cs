@@ -34,7 +34,7 @@ namespace DudeRescueSquad.UI.Gameplay
             switch (eventData.EventType)
             {
                 case InventoryEventType.ItemEquipped:
-                    EquipWeapon(eventData.ItemId);
+                    EquipWeapon(eventData.ItemInstance.TemplateId);
                     break;
             }
         }

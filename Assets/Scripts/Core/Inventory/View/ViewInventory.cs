@@ -1,4 +1,5 @@
-﻿using DudeRescueSquad.Core.Events;
+﻿using DudeRescueSquad.Core.Characters;
+using DudeRescueSquad.Core.Events;
 using UnityEngine;
 
 namespace DudeRescueSquad.Core.Inventory.View
@@ -12,14 +13,28 @@ namespace DudeRescueSquad.Core.Inventory.View
     {
         [SerializeField] private ViewInventoryQuickSlot[] _quickSlots = default;
 
+        #region Private properties
+
+        private CharacterAbilityHandleWeapon _characterHandleWeapon = default;
+
+        #endregion
+
+        #region Public properties
+
+        public CharacterAbilityHandleWeapon CharacterHandleWeapon => _characterHandleWeapon;
+
+        #endregion
+
         #region Public methods
 
-        public void Init()
+        public void Init(Character character)
         {
+            _characterHandleWeapon = character.GetComponent<CharacterAbilityHandleWeapon>();
+
             for (int i = 0; i < _quickSlots.Length; i++)
             {
                 var slot = _quickSlots[i];
-                slot.Init();
+                slot.Init(this);
             }
         }
 
@@ -68,7 +83,7 @@ namespace DudeRescueSquad.Core.Inventory.View
             switch (eventData.EventType)
             {
                 case InventoryEventType.PickSuccess:
-                    CheckQuickSlots(eventData.ItemId);
+                    CheckQuickSlots(eventData.ItemInstance.TemplateId, eventData.ItemInstance);
 
                     break;
             }
@@ -78,7 +93,7 @@ namespace DudeRescueSquad.Core.Inventory.View
 
         #region Private methods
 
-        private void CheckQuickSlots(string itemId)
+        private void CheckQuickSlots(string itemId, BaseItem itemInstance)
         {
             for (int i = 0; i < _quickSlots.Length; i++)
             {
@@ -86,7 +101,7 @@ namespace DudeRescueSquad.Core.Inventory.View
 
                 if (!slot.IsEmpty) continue;
 
-                slot.Setup(itemId);
+                slot.Setup(itemId, itemInstance);
 
                 break;
             }

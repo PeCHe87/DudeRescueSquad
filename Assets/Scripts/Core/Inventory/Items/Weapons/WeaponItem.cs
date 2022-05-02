@@ -8,8 +8,12 @@ namespace DudeRescueSquad.Core.Inventory.Items.Weapons
     /// </summary>
     public class WeaponItem : Item
     {
+        public string InstanceId { get => _instanceId; }
+        public string TemplateId { get => _templateId; }
         public Enums.ItemTypes Type { get => _type; }
 
+        protected string _instanceId = string.Empty;
+        protected string _templateId = string.Empty;
         protected Enums.ItemTypes _type = Enums.ItemTypes.NONE;
 
         private Transform _target = null;

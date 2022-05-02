@@ -19,6 +19,7 @@ namespace DudeRescueSquad.Core.Characters
         public enum WeaponRotationModes { Normal, AddEmptySlot, AddInitialWeapon }
 
         [SerializeField] private bool _canEquipPickedItemWhenUnequip = false;
+        [SerializeReference] private BaseItem _equippedItemInstance = default;
 
         #endregion
 
@@ -78,53 +79,26 @@ namespace DudeRescueSquad.Core.Characters
         /// Equips the weapon with the name passed in parameters
         /// </summary>
         /// <param name="weaponID"></param>
-		protected virtual void EquipWeapon(string itemId, bool fromQuickSlot)
+		protected virtual void EquipWeapon(bool fromQuickSlot, BaseItem itemInstance)
         {
             var previousWeapon = _characterHandleWeapon.CurrentWeapon;
 
-            var weapon = InventoryCatalogItems.GetItemPrefabById<Weapons.BaseWeapon>(itemId);
+            var weapon = InventoryCatalogItems.GetItemPrefabById<Weapons.BaseWeapon>(itemInstance.TemplateId);
 
-            _characterHandleWeapon.ChangeWeapon(weapon, itemId);
+            _characterHandleWeapon.ChangeWeapon(weapon, false, itemInstance);
 
             if (previousWeapon == null) return;
 
             if (fromQuickSlot) return;
 
             _inventory.Unequip(previousWeapon.WeaponData.Id);
-
-            /*if ((weaponID.Equals(_emptySlotWeaponName)) && (_characterHandleWeapon != null))
-            {
-                InventoryEvent.Trigger(InventoryEventType.UnEquipRequest, null, WeaponInventoryName, WeaponInventory.Content[0], 0, 0);
-                _characterHandleWeapon.ChangeWeapon(null, _emptySlotWeaponName, false);
-                InventoryEvent.Trigger(InventoryEventType.Redraw, null, WeaponInventory.name, null, 0, 0);
-                return;
-            }
-
-            if ((weaponID.Equals(_initialSlotWeaponName)) && (_characterHandleWeapon != null))
-            {
-                InventoryEvent.Trigger(InventoryEventType.UnEquipRequest, null, WeaponInventoryName, WeaponInventory.Content[0], 0, 0);
-                _characterHandleWeapon.ChangeWeapon(_characterHandleWeapon.InitialWeapon, _emptySlotWeaponName, false);
-                InventoryEvent.Trigger(InventoryEventType.Redraw, null, WeaponInventory.name, null, 0, 0);
-                return;
-            }
-
-            for (int i = 0; i < MainInventory.Content.Length; i++)
-            {
-                if (InventoryItem.IsNull(MainInventory.Content[i])) continue;
-
-                if (MainInventory.Content[i].ItemID.Equals(weaponID))
-                {
-                    InventoryEvent.Trigger(InventoryEventType.EquipRequest, null, MainInventory.name, MainInventory.Content[i], 0, i);
-                    break;
-                }
-            }*/
         }
 
         #endregion
 
         #region Private methods
 
-        private void EquipPickedItem(string itemId, InventorySlotItem slot)
+        private void EquipPickedItem(string itemId, InventorySlotItem slot, BaseItem itemInstance)
         {
             if (_canEquipPickedItemWhenUnequip)
             {
@@ -133,22 +107,26 @@ namespace DudeRescueSquad.Core.Characters
                 // Check if current item is a weapon, else skip
                 if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
 
-                EquipWeapon(itemId, false);
+                EquipWeapon(false, itemInstance);
 
-                _inventory.Equip(itemId, slot);
+                _equippedItemInstance = itemInstance;
+
+                _inventory.Equip(slot, itemInstance);
             }
         }
 
-        private void EquipQuickSlotSelected(string itemId)
+        private void EquipQuickSlotSelected(BaseItem itemInstance)
         {
-            var itemData = InventoryCatalogItems.GetItemDataById(itemId);
+            var itemData = InventoryCatalogItems.GetItemDataById(itemInstance.TemplateId);
 
             // Check if current item is a weapon, else skip
             if (itemData.type != Enums.ItemTypes.WEAPON_ASSAULT && itemData.type != Enums.ItemTypes.WEAPON_MELEE) return;
 
-            EquipWeapon(itemId, true);
+            EquipWeapon(true, itemInstance);
 
-            _inventory.EquipFromQuickSlot(itemId);
+            _equippedItemInstance = itemInstance;
+
+            _inventory.EquipFromQuickSlot(itemInstance);
         }
 
         #endregion
@@ -169,7 +147,7 @@ namespace DudeRescueSquad.Core.Characters
         {
             if (_nextFrameWeapon)
             {
-                EquipWeapon(_nextFrameWeaponName, false);
+                EquipWeapon(false, null);
                 _nextFrameWeapon = false;
             }
         }
@@ -196,11 +174,11 @@ namespace DudeRescueSquad.Core.Characters
                     break;
 
                 case InventoryEventType.PickSuccess:
-                    EquipPickedItem(eventData.ItemId, eventData.Slot);
+                    EquipPickedItem(eventData.ItemInstance.TemplateId, eventData.Slot, eventData.ItemInstance);
                     break;
 
                 case InventoryEventType.EquipFromQuickSlot:
-                    EquipQuickSlotSelected(eventData.ItemId);
+                    EquipQuickSlotSelected(eventData.ItemInstance);
                     break;
             }
         }

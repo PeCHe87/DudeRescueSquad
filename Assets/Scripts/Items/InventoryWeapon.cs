@@ -77,7 +77,7 @@ namespace DudeRescueSquad.Core
 
             if (characterHandleWeapon != null)
             {
-                characterHandleWeapon.ChangeWeapon(newWeapon, this.ItemID);
+                characterHandleWeapon.ChangeWeapon(newWeapon, false, null);
             }
         }
 
