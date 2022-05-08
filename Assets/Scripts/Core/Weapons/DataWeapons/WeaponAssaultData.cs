@@ -29,6 +29,8 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private bool _attackOnRelease = false;
         [SerializeField] private float _range = default;
         [SerializeField] private bool _instantDamage = default;
+        [Tools.Information("Indicates if this assault weapon makes area damage or single target damage.", Tools.InformationAttribute.InformationType.Info, false)]
+        [SerializeField] private bool _areaDamage = false;
 
         #endregion
 
@@ -62,5 +64,7 @@ namespace DudeRescueSquad.Core.Weapons
         public bool InstantDamage => _instantDamage;
 
         #endregion
+
+        public bool AreaDamage => _areaDamage;
     }
 }

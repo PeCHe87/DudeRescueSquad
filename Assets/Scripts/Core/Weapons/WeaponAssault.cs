@@ -238,23 +238,43 @@ namespace DudeRescueSquad.Core.Weapons
 
             if (_weaponData.InstantDamage)
             {
-                var detectedTargets = _characterHandleWeapon.WeaponAreaDetection.GetEntitiesOnArea();
-
+                var isAreaDamage = _weaponData.AreaDamage;
                 var damage = _weaponData.ProjectileData.damage;
                 var canPushBack = _weaponData.CanPushBackOnHit;
                 var attackDirection = Vector3.zero;
 
-                for (int i = 0; i < detectedTargets.Length; i++)
+                if (isAreaDamage)
                 {
-                    var target = detectedTargets[i];
+                    var detectedTargets = _characterHandleWeapon.WeaponAreaDetection.GetEntitiesOnArea();
 
-                    if (!target.TryGetComponent<IDamageable>(out var targetDamageable)) continue;
+                    for (int i = 0; i < detectedTargets.Length; i++)
+                    {
+                        var target = detectedTargets[i];
 
-                    if (targetDamageable.IsDead) continue;
+                        if (!target.TryGetComponent<IDamageable>(out var targetDamageable)) continue;
 
-                    attackDirection = (target.position - _attackerBody.position).normalized;
+                        if (targetDamageable.IsDead) continue;
 
-                    targetDamageable.TakeDamage(damage, canPushBack, attackDirection);
+                        attackDirection = (target.position - _attackerBody.position).normalized;
+
+                        targetDamageable.TakeDamage(damage, canPushBack, attackDirection);
+                    }
+                }
+                else
+                {
+                    // Check if there is a target available first
+                    if (_characterHandleWeapon.WeaponAreaDetection.TryGetNearestTarget(out var nearestTarget))
+                    {
+                        if (nearestTarget.TryGetComponent<IDamageable>(out var targetDamageable))
+                        {
+                            if (!targetDamageable.IsDead)
+                            {
+                                attackDirection = (nearestTarget.position - _attackerBody.position).normalized;
+
+                                targetDamageable.TakeDamage(damage, canPushBack, attackDirection);
+                            }
+                        }
+                    }
                 }
             }
             else

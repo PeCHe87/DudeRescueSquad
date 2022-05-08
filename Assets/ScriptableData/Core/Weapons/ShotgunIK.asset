@@ -33,3 +33,4 @@ MonoBehaviour:
   _attackOnRelease: 1
   _range: 8
   _instantDamage: 1
+  _areaDamage: 1

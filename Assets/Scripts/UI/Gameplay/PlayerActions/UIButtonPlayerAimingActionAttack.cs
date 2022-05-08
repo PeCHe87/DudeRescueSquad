@@ -34,12 +34,12 @@ namespace DudeRescueSquad.UI.Gameplay
 
         protected override void Awake()
         {
-
+            // This is to avoid the base.Awake();
         }
 
         protected override void OnDestroy()
         {
-
+            // This is to avoid the base.OnDestroy();
         }
 
         protected override void StartAction()

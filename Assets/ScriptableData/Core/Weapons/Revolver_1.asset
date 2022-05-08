@@ -10,27 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f26be9c6be85764f86e2bf1e6e811a4, type: 3}
-  m_Name: AK-47
+  m_Name: Revolver_1
   m_EditorClassIdentifier: 
-  _id: AK-47
-  _type: 4
-  _displayName: AK - 47
-  _icon: {fileID: 21300000, guid: 3d2605d82d669ae4cb89d37030806dda, type: 3}
+  _id: revolver_1
+  _type: 3
+  _displayName: Revolver 1
+  _icon: {fileID: 21300000, guid: 10d780d03d467d449aae4b2af6c9c159, type: 3}
   _radiusDetection: 12
   _angleView: 30
   _isLeftHand: 1
   _canMoveWhileAttacking: 1
   _canPushBackOnHit: 1
-  _projectileData: {fileID: 11400000, guid: 749678ffe2092db49a07b3e5b739fd6b, type: 2}
-  _initialAmmo: 40
-  _maxAmmo: 50
+  _projectileData: {fileID: 11400000, guid: 09e20639efb14e94193919ecce9df9bc, type: 2}
+  _initialAmmo: 6
+  _maxAmmo: 6
   _ammoConsumptionPerShot: 1
-  _reloadingTime: 2
-  _isAutoFire: 1
-  _fireRate: 0.2
+  _reloadingTime: 1
+  _isAutoFire: 0
+  _fireRate: 0.35
   _minAmountBulletsPerShot: 1
   _maxAmountBulletsPerShot: 1
-  _attackOnRelease: 0
-  _range: 14
+  _attackOnRelease: 1
+  _range: 12
   _instantDamage: 1
   _areaDamage: 0

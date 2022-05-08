@@ -23,11 +23,17 @@ namespace DudeRescueSquad.UI.Gameplay
         private void OnEnable()
         {
             this.EventStartListening<GameLevelEvent>();
+
+            InteractableCharacterDetection.OnShowButton += ShowButton;
+            InteractableCharacterDetection.OnHideButton += HideButton;
         }
 
         private void OnDisable()
         {
             this.EventStopListening<GameLevelEvent>();
+
+            InteractableCharacterDetection.OnShowButton -= ShowButton;
+            InteractableCharacterDetection.OnHideButton -= HideButton;
         }
 
         #endregion
@@ -36,7 +42,7 @@ namespace DudeRescueSquad.UI.Gameplay
 
         protected override void StartAction()
         {
-            _pickerId = (_interactable == null) ? "NO PICKER" : _interactable.Id;
+            //_pickerId = (_interactable == null) ? "NO PICKER" : _interactable.Id;
 
             Debug.Log($"<color=green>Pick item from button</color> {_pickerId}");
 
@@ -73,13 +79,25 @@ namespace DudeRescueSquad.UI.Gameplay
             }
         }
 
+        private void ShowButton(string id)
+        {
+            _pickerId = id;
+
+            Show();
+        }
+
+        private void HideButton()
+        {
+            Hide();
+        }
+
         #endregion
 
         #region GameEventListener<GameLevelEvent> implementation
 
         public virtual void OnGameEvent(GameLevelEvent eventData)
         {
-            switch (eventData.EventType)
+            /*switch (eventData.EventType)
             {
                 case GameLevelEventType.InteractableStartDetection:
                     PickerItemInteractable interactable = (PickerItemInteractable) eventData.Payload[0];
@@ -96,7 +114,7 @@ namespace DudeRescueSquad.UI.Gameplay
                     }
 
                     break;
-            }
+            }*/
         }
 
         #endregion

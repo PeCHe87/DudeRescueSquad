@@ -79,6 +79,9 @@ namespace DudeResqueSquad
             {
                 var possibleTarget = _visibleTargets[i];
 
+                // Check if it is an entity, in other case skip it
+                if (!possibleTarget.TryGetComponent<Entity>(out var entity)) continue;
+
                 // Check if target is alive before considering to detection
                 IDamageable damageable = possibleTarget.GetComponent<IDamageable>();
 
@@ -177,8 +180,9 @@ namespace DudeResqueSquad
         /// <param name="radius"></param>
         public void Setup(float angle, float radius)
         {
-            _viewAngle = angle;
-            _viewRadius = radius;
+            // TODO: check if it is really needed
+            //_viewAngle = angle;
+            //_viewRadius = radius;
         }
 
         #endregion

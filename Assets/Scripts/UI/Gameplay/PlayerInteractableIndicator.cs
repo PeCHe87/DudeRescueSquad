@@ -38,6 +38,9 @@ namespace DudeResqueSquad.UI
 
             _originalParent = _cacheTransform.parent;
 
+            InteractableCharacterDetection.OnDetected += Detected;
+            InteractableCharacterDetection.OnUndetected += Undetected;
+
             Hide();
         }
 
@@ -61,10 +64,11 @@ namespace DudeResqueSquad.UI
 
         private void OnDestroy()
         {
-            
+            InteractableCharacterDetection.OnDetected -= Detected;
+            InteractableCharacterDetection.OnUndetected -= Undetected;
 
             //GameEvents.OnDetectInteractable -= InteractableDetected;
-           // GameEvents.OnStopDetectingIteractable -= InteractableLost;
+            // GameEvents.OnStopDetectingIteractable -= InteractableLost;
         }
 
         #endregion
@@ -94,7 +98,7 @@ namespace DudeResqueSquad.UI
             }
         }
 
-        private void Refresh(object[] payload)
+        /*private void Refresh(object[] payload)
         {
             if (payload == null) return;
 
@@ -116,7 +120,7 @@ namespace DudeResqueSquad.UI
             {
                 Show(interactable.transform);
             }
-        }
+        }*/
 
         #endregion
 
@@ -128,12 +132,30 @@ namespace DudeResqueSquad.UI
         /// <param name="eventData">Interactable event.</param>
         public virtual void OnGameEvent(GameLevelEvent eventData)
         {
-            switch (eventData.EventType)
+            /*switch (eventData.EventType)
             {
                 case GameLevelEventType.InteractableChanged:
                     Refresh(eventData.Payload);
                     break;
-            }
+            }*/
+        }
+
+        #endregion
+
+        #region InteractableCharacterDetection listeners
+
+        private void Detected(Transform target, Enums.InteractablePriorities priority)
+        {
+            if (priority != _priority) return;
+
+            Show(target);
+        }
+
+        private void Undetected(Enums.InteractablePriorities priority)
+        {
+            if (priority != _priority) return;
+
+            Hide();
         }
 
         #endregion

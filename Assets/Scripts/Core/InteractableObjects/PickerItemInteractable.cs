@@ -20,6 +20,7 @@ namespace DudeRescueSquad.Core
         private bool _wasDetected = false;
         private ViewItemPicker _picker = default;
         private Vector3 _positionToCompare = default;
+        private bool _wasPicked = false;
 
         #endregion
 
@@ -28,6 +29,7 @@ namespace DudeRescueSquad.Core
         public override string Id => _id;
         public override float DistanceToBeDetected => _distanceToBeDetected;
         public override string DisplayName => _weaponDefinition.DisplayName;
+        public bool WasPicked => _wasPicked;
 
         #endregion
 
@@ -64,6 +66,8 @@ namespace DudeRescueSquad.Core
 
         private void Picked()
         {
+            _wasPicked = true;
+
             StopDetection();
 
             InteractableEvent.Trigger(InteractableEventType.PickItem, _picker.ItemId);

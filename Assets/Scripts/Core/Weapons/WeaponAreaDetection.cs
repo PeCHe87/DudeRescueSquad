@@ -70,7 +70,7 @@ namespace DudeRescueSquad.Core.Weapons
             {
                 var entity = _entities[i];
 
-                if (CheckUnderAttackArea(_entityOrientation, entity, _angle, _radiusDetection, out var entityAngle))
+                if (CheckUnderAttackArea(_entityOrientation, entity, _angle, _radiusDetection, out var entityAngle, true))
                 {
                     //Debug.LogError($"Attacked: {entity.name} - angle:<color=cyan> {entityAngle}</color>");
                     _detectedTargets.Add(entity);
@@ -78,6 +78,66 @@ namespace DudeRescueSquad.Core.Weapons
             }
 
             return _detectedTargets.ToArray();
+        }
+
+        public bool TryGetNearestTargetPRevious(out Transform nearest)
+        {
+            nearest = _entities[0];
+            var minAngle = float.MaxValue;
+            var foundTarget = false;
+
+            for (int i = 0; i < _entities.Length; i++)
+            {
+                var entity = _entities[i];
+
+                var damageable = entity.GetComponent<DudeResqueSquad.IDamageable>();
+
+                if (damageable.IsDead) continue;
+
+                if (CheckUnderAttackArea(_entityOrientation, entity, _angle, _radiusDetection, out var entityAngle, true))
+                {
+                    if (entityAngle > minAngle) continue;
+
+                    foundTarget = true;
+
+                    nearest = entity;
+                    minAngle = entityAngle;
+                }
+            }
+
+            return foundTarget;
+        }
+
+        public bool TryGetNearestTarget(out Transform nearest)
+        {
+            nearest = _entities[0];
+            var minAngle = float.MaxValue;
+            var foundTarget = false;
+
+            var targets = new List<Transform>();
+
+            for (int i = 0; i < _entities.Length; i++)
+            {
+                var entity = _entities[i];
+
+                var damageable = entity.GetComponent<DudeResqueSquad.IDamageable>();
+
+                if (damageable.IsDead) continue;
+
+                // TODO: remove from local list all dead entities
+
+                if (CheckUnderAttackArea(_entityOrientation, entity, _angle, _radiusDetection, out var entityAngle, false))
+                {
+                    if (entityAngle > minAngle) continue;
+
+                    foundTarget = true;
+
+                    nearest = entity;
+                    minAngle = entityAngle;
+                }
+            }
+
+            return foundTarget;
         }
 
         #endregion
@@ -92,17 +152,20 @@ namespace DudeRescueSquad.Core.Weapons
         ///< param name = "angle" > sector angle < / param >
         ///< param name = "radius" > sector radius < / param >
         /// <returns></returns>
-        private bool CheckUnderAttackArea(Transform attacker, Transform attacked, float angle, float radius, out float attackedAngle)
+        private bool CheckUnderAttackArea(Transform attacker, Transform attacked, float angle, float radius, out float attackedAngle, bool checkObstacles)
         {
             Vector3 direction = attacked.position - attacker.position;
 
             Vector3 attackerPosition = attacker.position + Vector3.up * 0.5f;
 
             // Check if there is a direct raycast from attacker towards entity, else is not under attack
-            if (Physics.Raycast(attackerPosition, direction, direction.magnitude, _layerObstacleMask))
+            if (checkObstacles)
             {
-                attackedAngle = 0;
-                return false;
+                if (Physics.Raycast(attackerPosition, direction, direction.magnitude, _layerObstacleMask))
+                {
+                    attackedAngle = 0;
+                    return false;
+                }
             }
 
             // Mathf.Rad2Deg  : radian value to degree conversion constant

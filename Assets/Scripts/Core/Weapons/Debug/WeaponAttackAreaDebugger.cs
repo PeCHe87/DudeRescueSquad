@@ -15,6 +15,7 @@ namespace DudeRescueSquad.Core.Weapons
         [SerializeField] private string _shaderType = "Transparent/Diffuse";
         [SerializeField] private Transform[] _entities; // under attack
         [SerializeField] private LayerMask _layerObstacleMask = default;
+        [SerializeField] private List<Transform> _targets = default;
         [SerializeField] private bool _canDebug = false;
 
         #endregion
@@ -53,7 +54,14 @@ namespace DudeRescueSquad.Core.Weapons
 
         private void Update()
         {
+            if (!_canDebug) return;
+
             if (!_hasWeaponEquipped) return;
+
+            if (_canDebug)
+            {
+                _targets.Clear();
+            }
 
             for (int i = 0; i < _entities.Length; i++)
             {
@@ -61,10 +69,11 @@ namespace DudeRescueSquad.Core.Weapons
 
                 if (CheckUnderAttackArea(_parent, entity, _angle, _radiusDetection, out var entityAngle))
                 {
-                    if (_canDebug)
-                    {
-                        Debug.LogError($"Attacked: {entity.name} - angle:<color=cyan> {entityAngle}</color>");
-                    }
+                    //if (_canDebug)
+                    //{
+                    //    _targets.Add(entity);
+                    //    Debug.LogError($"Attacked: {entity.name} - angle:<color=cyan> {entityAngle}</color>");
+                    //}
                 }
             }
         }
@@ -88,32 +97,37 @@ namespace DudeRescueSquad.Core.Weapons
             Vector3 attackerPosition = attacker.position + Vector3.up * 0.5f;
             Vector3 attackedPosition = attacked.position + Vector3.up * 0.5f;
 
+            var result = false;
+            var existObstacle = false;
+
+            attackedAngle = 0;
+
             // Check if there is a direct raycast from attacker towards entity, else is not under attack
-            if (Physics.Raycast(attackerPosition, direction, direction.magnitude, _layerObstacleMask))
+            /*if (Physics.Raycast(attackerPosition, direction, direction.magnitude, _layerObstacleMask))
             {
-                if (_canDebug)
-                {
-                    Debug.DrawLine(attackerPosition, attackedPosition, Color.red);
-                }
-                attackedAngle = 0;
-                return false;
-            }
-            else
+                result = false; // return false;
+
+                existObstacle = true;
+            }*/
+
+            if (!existObstacle)
             {
-                if (_canDebug)
+                // Mathf.Rad2Deg  : radian value to degree conversion constant
+                // Mathf.Acos (f) : returns the arccosine value of parameter F
+                attackedAngle = Mathf.Acos(Vector3.Dot(direction.normalized, attacker.forward)) * Mathf.Rad2Deg;
+
+                if (attackedAngle < angle * 0.5f && direction.magnitude < radius)
                 {
-                    Debug.DrawLine(attackerPosition, attackedPosition, Color.green);
+                    result = true;  // return true;
                 }
             }
 
+            if (_canDebug)
+            {
+                Debug.DrawLine(attackerPosition, attackedPosition, (result) ? Color.green : Color.red);
+            }
 
-            // Mathf.Rad2Deg  : radian value to degree conversion constant
-            // Mathf.Acos (f) : returns the arccosine value of parameter F
-            attackedAngle = Mathf.Acos(Vector3.Dot(direction.normalized, attacker.forward)) * Mathf.Rad2Deg;
-
-            if (attackedAngle < angle * 0.5f && direction.magnitude < radius) return true;
-
-            return false;
+            return result;
         }
 
         private IEnumerator DrawAttackArea(Transform t, Vector3 center, float angle, float radius)
@@ -186,6 +200,8 @@ namespace DudeRescueSquad.Core.Weapons
             _angle = itemData.data.AngleView;
             _range = itemData.data.Range;
             _radiusDetection = _range + _detectionOffset;
+
+            _hasWeaponEquipped = true;
 
             StartCoroutine(DrawAttackArea(_parent, transform.localPosition, _angle, _range));
         }
